@@ -2728,8 +2728,8 @@ if (typeof topicBank === 'undefined' || !topicBank) {
           </div>
 
           <div class="top-level-meta">
-            <strong id="top-level-xp-text">0/100 XP</strong>
-            <span id="top-level-remaining">Còn 100 XP để lên Level 2</span>
+            <strong id="top-level-xp-text">0/70 XP</strong>
+            <span id="top-level-remaining">Còn 70 XP để lên Level 2</span>
           </div>
           <div id="top-level-rank-name" class="top-level-rank-name">Tập sự • Xe đạp</div>
         </div>
@@ -2819,7 +2819,7 @@ if (typeof topicBank === 'undefined' || !topicBank) {
               </div>
             </div>
             <div id="profile-rank-card" class="mini-card profile-rank-card rookie legacy-rank-card"><div class="mini-card-title">LEVEL HIỆN TẠI CỦA BẠN</div><div class="profile-rank-head"><div id="profile-rank-icon-big" class="profile-rank-icon-big">🚲</div><div><div class="mini-card-value" id="profile-rank-short">🚲 Tập sự • Xe đạp</div><div class="profile-mini-sub" id="profile-best-score">Level 1 • Kỷ lục: 0%</div></div></div><div class="profile-next-theme" id="profile-next-theme">Chặng kế tiếp: Xe đạp địa hình (Lv 11)</div></div>
-            <div class="mini-card legacy-level-next-card"><div class="info-title-row"><div class="mini-card-title">Còn thiếu để lên level</div><button class="info-mini-btn" type="button" onclick="openRankCollectionModal()">Xem danh hiệu</button></div><div class="mini-card-value" id="profile-next-xp">100 XP</div><div class="profile-mini-sub" id="profile-perfect-topics">Mốc tiếp theo: Xe đạp địa hình (Lv 11) • Chủ đề hoàn hảo: 0</div></div>
+            <div class="mini-card legacy-level-next-card"><div class="info-title-row"><div class="mini-card-title">Còn thiếu để lên level</div><button class="info-mini-btn" type="button" onclick="openRankCollectionModal()">Xem danh hiệu</button></div><div class="mini-card-value" id="profile-next-xp">70 XP</div><div class="profile-mini-sub" id="profile-perfect-topics">Mốc tiếp theo: Xe đạp địa hình (Lv 11) • Chủ đề hoàn hảo: 0</div></div>
           </div>
 
           <div class="input-grid">
@@ -4076,7 +4076,7 @@ let gameState = {
 };
 
 function createDefaultProfile() {
-  return { xp:0, totalXP:0, lifetimeXP:0, level:1, xpCurveVersion:2, lastXPEventId:"", bestPercent:0, perfectTopics:0, streakCount:0, lastPlayedDate:"", petStageSeen:1, topicStats:{}, badges:[], rewardInventory:[], explorerMilestones:[], lootCollection:{}, lootBoxHistory:[], lastLootResult:null };
+  return { xp:0, totalXP:0, lifetimeXP:0, level:1, xpCurveVersion:5, lastXPEventId:"", bestPercent:0, perfectTopics:0, streakCount:0, lastPlayedDate:"", petStageSeen:1, topicStats:{}, badges:[], rewardInventory:[], explorerMilestones:[], lootCollection:{}, lootBoxHistory:[], lastLootResult:null };
 }
 
 function normalizePlayerName(name) {
@@ -4176,7 +4176,17 @@ function normalizeProfile(profile) {
   safe.totalXP = resolvedCurrentXP;
   safe.lifetimeXP = Math.max(0, Number(raw.lifetimeXP ?? safe.lifetimeXP) || 0);
   safe.level = Math.max(1, Math.floor(Number(raw.level ?? safe.level) || 1));
-  safe.xpCurveVersion = Math.max(2, Number(raw.xpCurveVersion ?? safe.xpCurveVersion) || 2);
+  safe.xpCurveVersion = 5;
+
+  // Tự sửa hồ sơ cũ/bị gián đoạn: XP trong level không được phép lớn hơn ngưỡng level hiện tại.
+  // Phần XP dư được chuyển tuần tự qua các level tiếp theo, không làm mất XP.
+  let profileLevelGuard = 0;
+  while (safe.xp >= getRequiredXPForLevel(safe.level) && profileLevelGuard < 10000) {
+    safe.xp -= getRequiredXPForLevel(safe.level);
+    safe.level += 1;
+    profileLevelGuard += 1;
+  }
+  safe.totalXP = safe.xp;
   safe.lastXPEventId = String(raw.lastXPEventId ?? safe.lastXPEventId ?? "");
   safe.bestPercent = Math.max(0, Number(raw.bestPercent ?? safe.bestPercent) || 0);
   safe.perfectTopics = Math.max(0, Number(raw.perfectTopics ?? safe.perfectTopics) || 0);
@@ -4655,15 +4665,22 @@ function triggerPetEvolutionCelebration(oldStage, newStage, petState) {
 }
 
 
-const XP_CURVE_VERSION = 2;
+const XP_CURVE_VERSION = 5;
 const XP_EVENT_GUARD = new Set();
+const XP_BALANCE_CONFIG = Object.freeze({
+  curveVersion: 5,
+  modeMultiplier: Object.freeze({ quick:0.5, standard:1, speed:2, survival:3 }),
+  completionBonus: Object.freeze({ quick:0, standard:20, speed:35, survival:60 }),
+  accuracyBonus: Object.freeze({ pass80:50, pass90:100, perfect100:200 }),
+  equationMultiplier: 1.5
+});
 
 function getRequiredXPForLevel(level) {
   const lv = Math.max(1, Math.floor(Number(level) || 1));
-  if (lv <= 100) return 150 + (lv * 15);
-  if (lv <= 500) return 1650 + ((lv - 100) * 30);
-  if (lv <= 1000) return 13650 + ((lv - 500) * 60);
-  return 43650 + ((lv - 1000) * 120);
+  // Đường cong bậc hai mềm: level thấp lên nhanh, level cao cần nhiều XP hơn rõ rệt.
+  // XP cần = 60 + 10L + 1.6L², làm tròn đến bội số 5 gần nhất.
+  const requiredXP = 60 + (10 * lv) + (1.6 * lv * lv);
+  return Math.max(5, Math.round(requiredXP / 5) * 5);
 }
 function getXPThreshold(level) { return getRequiredXPForLevel(level); }
 
@@ -4729,7 +4746,7 @@ function checkLevelUp(profile, options = {}) {
   profile.level = level;
   profile.xp = remainingXP;
   profile.totalXP = remainingXP;
-  profile.xpCurveVersion = 4;
+  profile.xpCurveVersion = 5;
   return { gainedLevels:levelSequence.length, previousLevel, currentLevel:level, spentXP, remainingXP, levelSequence };
 }
 
@@ -4943,7 +4960,7 @@ function getModeLabel(mode) {
 }
 
 function getModeXpMultiplier(mode) {
-  return ({ quick:0.2, standard:1, speed:2, survival:5 })[mode] ?? 1;
+  return ({ quick:0.5, standard:1, speed:2, survival:3 })[mode] ?? 1;
 }
 
 function getDifficultyXpMultiplier(level) {
@@ -4997,14 +5014,11 @@ function calcQuestionXP(q, streak, mode, topicStats) {
 }
 
 function getModeCompletionBonus(mode, percent, topicStats) {
-  const modeBonus = { quick:0, standard:20, speed:35, survival:45 }[mode] || 0;
-  let scoreBonus = 0;
-  if (percent >= 80) scoreBonus += 50;
-  if (percent >= 90) scoreBonus += 40;
-  if (percent === 100) scoreBonus += 80;
-  const total = modeBonus + scoreBonus;
-  if (!total) return 0;
-  return Math.max(5, Math.round(total * getTopicFarmDecayMultiplier(topicStats)));
+  const modeBonus = { quick:0, standard:20, speed:35, survival:60 }[mode] || 0;
+  const accuracy = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+  // Chỉ nhận một mốc thưởng độ chính xác cao nhất, không cộng dồn 80% + 90% + 100%.
+  const scoreBonus = accuracy === 100 ? 200 : accuracy >= 90 ? 100 : accuracy >= 80 ? 50 : 0;
+  return modeBonus + scoreBonus;
 }
 
 function shuffleArray(arr) {
@@ -5220,7 +5234,7 @@ function fitEquationToViewport() {
     if (!available || !natural) return;
 
     const isPhone = (window.visualViewport?.width || window.innerWidth) <= 768;
-    const minScale = isPhone ? 0.76 : 0.88;
+    const minScale = isPhone ? 0.42 : 0.60;
     const scale = Math.max(minScale, Math.min(1, available / natural));
     play.style.setProperty('--eq-fit-scale', scale.toFixed(3));
 
@@ -6540,6 +6554,9 @@ function retryWrongQuestions() {
   gameState.rewardCards = [];
   gameState.mode = "quick";
   gameState.timeLeft = config.startTime;
+  gameState.sessionCode = generateSessionCode(gameState.name, gameState.className, gameState.topic);
+  gameState.startedAt = Date.now();
+  delete gameState.__finalizedResultToken;
 
   document.getElementById("result-screen").classList.remove("active");
   document.getElementById("game-screen").classList.add("active");
@@ -7125,7 +7142,7 @@ if (studentClassInput) {
     quick: { label: 'Khởi động', count: 10, startTime: 40, xpMultiplier: 0.5, rank: 1 },
     standard: { label: 'Luyện tập', count: 20, startTime: 50, xpMultiplier: 1.0, rank: 2 },
     speed: { label: 'Thử thách', count: 20, startTime: 28, xpMultiplier: 2.0, rank: 3 },
-    survival: { label: 'Boss', count: 30, startTime: 25, lives: 3, xpMultiplier: 5.0, rank: 4 }
+    survival: { label: 'Boss', count: 30, startTime: 25, lives: 3, xpMultiplier: 3.0, rank: 4 }
   };
   const PET_TIER_RULES = [
     { name: 'Sơ sinh', min: 1, max: 10, minModeRank: 1, requiredLabel: 'Khởi động', emoji: '🥚', themeClass: 'pet-stage-theme-1', className: 'pet-stage-egg' },
@@ -7306,7 +7323,17 @@ if (studentClassInput) {
       finiteNumber(base.lifetimeXP) || 0
     );
     safe.level = Math.max(1, Math.floor(finiteNumber(raw.level) || finiteNumber(base.level) || 1));
-    safe.xpCurveVersion = Math.max(2, finiteNumber(raw.xpCurveVersion) || finiteNumber(base.xpCurveVersion) || 2);
+    safe.xpCurveVersion = 5;
+
+    // Đồng bộ level cho hồ sơ cũ hoặc lượt lưu bị ngắt giữa chừng.
+    // XP ở đây là XP đang có trong level hiện tại, nên phần vượt ngưỡng phải được chuyển tiếp.
+    let levelRepairGuard = 0;
+    while (safe.xp >= getRequiredXPForLevel(safe.level) && levelRepairGuard < 10000) {
+      safe.xp -= getRequiredXPForLevel(safe.level);
+      safe.level += 1;
+      levelRepairGuard += 1;
+    }
+    safe.totalXP = safe.xp;
     safe.lastXPEventId = String(raw.lastXPEventId ?? base.lastXPEventId ?? '');
 
     // Sao chép sâu các trường tiến trình để ensureTopicStats chỉ bổ sung trường thiếu, không reset dữ liệu cũ.
@@ -7799,16 +7826,17 @@ if (studentClassInput) {
     return { previousTopic, before, after: prevStats.playCount };
   }
 
-  function renderXpBreakdown(baseXP, modeMultiplier, masteryMultiplier, finalXP, modeLabel){
+  function renderXpBreakdown(questionXP, completionBonus, modeMultiplier, masteryMultiplier, finalXP, modeLabel){
     const box = document.getElementById('res-xp-breakdown');
     if (!box) return;
+    const subtotalXP = Math.max(0, questionXP + completionBonus);
     box.innerHTML = `
       <div style="font-weight:900;color:#1d4ed8;margin-bottom:8px;">🧮 Chi tiết XP nhận được</div>
       <div class="xp-breakdown-grid">
-        <div class="xp-breakdown-card"><div class="xp-breakdown-title">XP gốc</div><div class="xp-breakdown-value">${baseXP}</div></div>
-        <div class="xp-breakdown-card"><div class="xp-breakdown-title">Hệ số mode</div><div class="xp-breakdown-value">${modeLabel} • x${modeMultiplier.toFixed(1)}</div></div>
+        <div class="xp-breakdown-card"><div class="xp-breakdown-title">XP câu đúng</div><div class="xp-breakdown-value">${questionXP} XP</div><div style="margin-top:4px;font-size:.74rem;color:#64748b;">Đã gồm hệ số ${modeLabel} x${modeMultiplier.toFixed(1)}</div></div>
+        <div class="xp-breakdown-card"><div class="xp-breakdown-title">Thưởng cuối lượt</div><div class="xp-breakdown-value">+${completionBonus} XP</div><div style="margin-top:4px;font-size:.74rem;color:#64748b;">Thưởng chế độ và mốc chính xác cao nhất</div></div>
         <div class="xp-breakdown-card"><div class="xp-breakdown-title">Hệ số tinh thông</div><div class="xp-breakdown-value">${masteryBadge(masteryMultiplier)}</div></div>
-        <div class="xp-breakdown-card"><div class="xp-breakdown-title">XP cuối cùng</div><div class="xp-breakdown-value">(${baseXP} × ${modeMultiplier.toFixed(1)}) × ${masteryMultiplier.toFixed(1)} = ${finalXP}</div></div>
+        <div class="xp-breakdown-card"><div class="xp-breakdown-title">XP trước hiệu ứng vật phẩm</div><div class="xp-breakdown-value">${subtotalXP} × ${masteryMultiplier.toFixed(1)} = ${finalXP}</div></div>
       </div>`;
   }
 
@@ -7824,6 +7852,21 @@ if (studentClassInput) {
 
     try {
       activateResultScreen();
+
+      // Chặn xử lý kết quả lặp do timer/nút bấm cùng gọi showResults.
+      // Mỗi mã phiên chỉ được cập nhật điểm, thống kê và level đúng một lần.
+      const resultToken = String(
+        gameState.sessionCode ||
+        `adhoc:${gameState.startedAt || 0}:${gameState.topic || ''}:${gameState.mode || ''}`
+      );
+      if (gameState.__finalizedResultToken === resultToken) {
+        return {
+          ok: true,
+          duplicate: true,
+          level: getProfile(gameState.playerKey || getCurrentPlayerKey()).level
+        };
+      }
+      gameState.__finalizedResultToken = resultToken;
 
       const total = Math.max(Number(gameState.questionPool?.length) || 0, 1);
       const percent = Math.max(0, Math.min(100, Math.round(((Number(gameState.score) || 0) * 100) / total)));
@@ -7843,8 +7886,13 @@ if (studentClassInput) {
       const masteryMultiplier = Math.max(0.1, Number(getTopicMasteryMultiplier(topicStats)) || 1);
       const modeMeta = MODE_META[gameState.mode] || MODE_META.standard;
       const modeMultiplier = Math.max(0, Number(modeMeta.xpMultiplier) || 0);
-      const baseXP = Math.max(0, Math.round(Number(gameState.xpEarned) || 0));
-      const finalXP = Math.max(0, Math.round(baseXP * modeMultiplier * masteryMultiplier));
+      const questionXP = Math.max(0, Math.round(Number(gameState.xpEarned) || 0));
+      // XP câu đã gồm hệ số chế độ. Thưởng cuối lượt chỉ lấy một mốc chính xác cao nhất.
+      const completionBonus = Math.max(0, Math.round(getModeCompletionBonus(gameState.mode, percent, topicStats)));
+      const subtotalXP = questionXP + completionBonus;
+      // Cuối trận chỉ áp dụng hệ số tinh thông một lần cho tổng XP hợp lệ.
+      const finalXP = Math.max(0, Math.round(subtotalXP * masteryMultiplier));
+      if (completionBonus > 0) gameState.earnedBadges.push(`🎁 Thưởng cuối lượt +${completionBonus} XP`);
 
       topicStats.bestPercent = Math.max(topicStats.bestPercent, percent);
       topicStats.playCount += 1;
@@ -7866,7 +7914,7 @@ if (studentClassInput) {
 
       profile.badges = [...new Set([...(profile.badges || []), ...(gameState.earnedBadges || [])])];
       const xpApply = addXP(profile, finalXP);
-      gameState.rawXPEarned = baseXP;
+      gameState.rawXPEarned = subtotalXP;
       gameState.xpEarned = xpApply.finalXP;
       const gainedLevels = xpApply.gainedLevels;
 
@@ -7904,17 +7952,17 @@ if (studentClassInput) {
       setText('res-mode', modeMeta.label);
       setText('res-score', `${gameState.score}/${total}`);
       setText('res-percent', `${percent}%`);
-      setText('res-xp', `+${finalXP}`);
+      setText('res-xp', `+${xpApply.finalXP}`);
       setText('res-level', profile.level);
       setText('res-best-streak', gameState.bestStreak);
       setText('res-code', gameState.sessionCode);
       setText('res-badge', `🎖️ Huy hiệu: ${badge}`);
       setText('res-near-box', buildNearMessage(percent, total, gameState.score));
       const recordText = isNewRecord
-        ? `🎉 Kỷ lục mới của chủ đề ${gameState.topic}: ${percent}% • XP trận này = (${baseXP} × ${modeMultiplier.toFixed(1)}) × ${masteryMultiplier.toFixed(1)} = ${finalXP}`
+        ? `🎉 Kỷ lục mới của chủ đề ${gameState.topic}: ${percent}% • ${baseXP} XP trong trận đã gồm hệ số ${modeMeta.label} x${modeMultiplier.toFixed(1)}; sau tinh thông x${masteryMultiplier.toFixed(1)} = ${finalXP} XP`
         : `📌 Kỷ lục chủ đề hiện tại: ${topicStats.bestPercent}% | Lượt này: ${percent}% • Hệ số tinh thông hiện tại: ${masteryBadge(getTopicMasteryMultiplier(topicStats))}`;
       setText('res-record-box', recordText + (recovery ? ` • Hồi phục: ${recovery.previousTopic} còn ${recovery.after} lượt.` : ''));
-      renderXpBreakdown(baseXP, modeMultiplier, masteryMultiplier, finalXP, modeMeta.label);
+      renderXpBreakdown(questionXP, completionBonus, modeMultiplier, masteryMultiplier, finalXP, modeMeta.label);
 
       const chips = [...new Set([...(gameState.earnedBadges || [])])];
       const earnedBadgesEl = document.getElementById('res-earned-badges');
@@ -9561,6 +9609,14 @@ document.addEventListener("DOMContentLoaded", () => {
     p.totalXP = Math.max(0, Number(p.totalXP ?? p.xp) || 0);
     p.xp = p.totalXP;
     p.level = Math.max(1, Math.floor(Number(p.level) || 1));
+    p.xpCurveVersion = 5;
+    let levelRepairGuard = 0;
+    while (p.xp >= getRequiredXPForLevel(p.level) && levelRepairGuard < 10000) {
+      p.xp -= getRequiredXPForLevel(p.level);
+      p.level += 1;
+      levelRepairGuard += 1;
+    }
+    p.totalXP = p.xp;
 
     const pet = p.pet && typeof p.pet === "object" ? { ...p.pet } : {};
     pet.level = Math.max(1, Math.floor(Number(pet.level) || 1));
@@ -10663,6 +10719,14 @@ document.addEventListener("DOMContentLoaded", () => {
     p.totalXP = currentXP;
     p.lifetimeXP = Math.max(currentXP, Number(p.lifetimeXP) || 0);
     p.level = Math.max(1, Math.floor(Number(p.level) || 1));
+    p.xpCurveVersion = 5;
+    let levelRepairGuard = 0;
+    while (p.xp >= getRequiredXPForLevel(p.level) && levelRepairGuard < 10000) {
+      p.xp -= getRequiredXPForLevel(p.level);
+      p.level += 1;
+      levelRepairGuard += 1;
+    }
+    p.totalXP = p.xp;
     p.bestPercent = Math.max(0, Number(p.bestPercent) || 0);
     p.perfectTopics = Math.max(0, Number(p.perfectTopics) || 0);
     p.streakCount = Math.max(0, Number(p.streakCount) || 0);
@@ -11110,7 +11174,15 @@ document.addEventListener("DOMContentLoaded", () => {
       catch (_) { rank.textContent = theme.badge || "Nhà thám hiểm"; }
     }
     const desc = byId("levelup-desc") || overlay.querySelector(".levelup-desc");
-    if (desc) desc.innerHTML = `Bạn đã tăng <b>${safeGained}</b> level và toàn bộ XP, Pet, tài nguyên cùng lịch sử thi đã được cập nhật.`;
+    if (desc) {
+      const previousLevel = Math.max(1, safeLevel - safeGained);
+      let progressText = "";
+      try {
+        const progress = typeof window.getLevelProgress === "function" ? window.getLevelProgress(getProfile()) : null;
+        if (progress) progressText = `<br>XP hiện tại: <b>${progress.currentXP}/${progress.requiredXP}</b> • Còn <b>${progress.remainingXP} XP</b> để lên Level ${progress.level + 1}.`;
+      } catch (_) {}
+      desc.innerHTML = `Level <b>${previousLevel}</b> → <b>${safeLevel}</b> • Tăng <b>${safeGained}</b> level.${progressText}<br>Toàn bộ XP, Pet, tài nguyên và lịch sử thi đã được cập nhật.`;
+    }
 
     const oldButton = byId("levelup-btn") || overlay.querySelector(".levelup-btn");
     if (oldButton) {
@@ -11524,7 +11596,7 @@ button, input, select, textarea { max-width: 100%; }
   overflow: visible !important;
   white-space: nowrap !important;
   margin: 0 auto;
-  font-size: calc(1.22rem * var(--eq-fit-scale)) !important;
+  font-size: calc(2.44rem * var(--eq-fit-scale)) !important;
 }
 .equation-side,
 #game-screen .equation-side {
@@ -11602,7 +11674,7 @@ button, input, select, textarea { max-width: 100%; }
     padding-right: 0;
   }
   #game-screen .equation-play {
-    font-size: calc(1.16rem * var(--eq-fit-scale)) !important;
+    font-size: calc(2.32rem * var(--eq-fit-scale)) !important;
     gap: calc(5px * var(--eq-fit-scale));
     padding: calc(11px * var(--eq-fit-scale)) calc(3px * var(--eq-fit-scale));
   }
@@ -11615,22 +11687,22 @@ button, input, select, textarea { max-width: 100%; }
   #game-screen .coeff-input,
   #game-screen input.coeff-input[type="text"] {
     box-sizing: border-box;
-    flex: 0 0 calc(29px * var(--eq-fit-scale)) !important;
-    width: calc(29px * var(--eq-fit-scale)) !important;
-    min-width: calc(29px * var(--eq-fit-scale)) !important;
-    max-width: calc(29px * var(--eq-fit-scale)) !important;
-    height: calc(32px * var(--eq-fit-scale)) !important;
-    min-height: calc(32px * var(--eq-fit-scale)) !important;
+    flex: 0 0 calc(44px * var(--eq-fit-scale)) !important;
+    width: calc(44px * var(--eq-fit-scale)) !important;
+    min-width: calc(44px * var(--eq-fit-scale)) !important;
+    max-width: calc(44px * var(--eq-fit-scale)) !important;
+    height: calc(48px * var(--eq-fit-scale)) !important;
+    min-height: calc(48px * var(--eq-fit-scale)) !important;
     padding: 0 2px !important;
     border-width: 1.5px;
-    border-radius: calc(8px * var(--eq-fit-scale));
-    font-size: calc(.82rem * var(--eq-fit-scale)) !important;
+    border-radius: calc(10px * var(--eq-fit-scale));
+    font-size: calc(1.2rem * var(--eq-fit-scale)) !important;
     line-height: 1;
   }
 
   /* Năm chất vẫn giữ chữ dễ đọc; JavaScript chỉ thu nhỏ vừa đủ khi thật sự cần. */
   #game-screen .equation-play[data-compounds="5"] {
-    font-size: calc(1.06rem * var(--eq-fit-scale)) !important;
+    font-size: calc(2.12rem * var(--eq-fit-scale)) !important;
     gap: calc(4px * var(--eq-fit-scale));
   }
   #game-screen .equation-play[data-compounds="5"] .equation-side {
@@ -11641,13 +11713,13 @@ button, input, select, textarea { max-width: 100%; }
   }
   #game-screen .equation-play[data-compounds="5"] .coeff-input,
   #game-screen .equation-play[data-compounds="5"] input.coeff-input[type="text"] {
-    flex-basis: calc(26px * var(--eq-fit-scale)) !important;
-    width: calc(26px * var(--eq-fit-scale)) !important;
-    min-width: calc(26px * var(--eq-fit-scale)) !important;
-    max-width: calc(26px * var(--eq-fit-scale)) !important;
-    height: calc(29px * var(--eq-fit-scale)) !important;
-    min-height: calc(29px * var(--eq-fit-scale)) !important;
-    font-size: calc(.76rem * var(--eq-fit-scale)) !important;
+    flex-basis: calc(40px * var(--eq-fit-scale)) !important;
+    width: calc(40px * var(--eq-fit-scale)) !important;
+    min-width: calc(40px * var(--eq-fit-scale)) !important;
+    max-width: calc(40px * var(--eq-fit-scale)) !important;
+    height: calc(44px * var(--eq-fit-scale)) !important;
+    min-height: calc(44px * var(--eq-fit-scale)) !important;
+    font-size: calc(1.08rem * var(--eq-fit-scale)) !important;
   }
 }
 
@@ -11657,10 +11729,10 @@ button, input, select, textarea { max-width: 100%; }
     padding-right: 5px;
   }
   #game-screen .equation-play {
-    font-size: calc(1.12rem * var(--eq-fit-scale)) !important;
+    font-size: calc(2.24rem * var(--eq-fit-scale)) !important;
   }
   #game-screen .equation-play[data-compounds="5"] {
-    font-size: calc(1.02rem * var(--eq-fit-scale)) !important;
+    font-size: calc(2.04rem * var(--eq-fit-scale)) !important;
   }
 }
 </style>
