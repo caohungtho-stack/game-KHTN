@@ -5160,22 +5160,26 @@ function formatChemical(formula) {
 function renderEquationQuestion(q) {
   const leftHTML = q.left.map((formula, idx) => `
     <span class="equation-part">
-      <input class="coeff-input" id="coeff-${idx}" type="text" inputmode="numeric" maxlength="2" autocomplete="off"  />
-      <span>${formatChemical(formula)}</span>
+      <input class="coeff-input" id="coeff-${idx}" type="text" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Hệ số của ${formula}" />
+      <span class="equation-compound">${formatChemical(formula)}</span>
     </span>
-  `).join('<span class="equation-symbol"> + </span>');
+  `).join('<span class="equation-symbol equation-plus">+</span>');
 
   const offset = q.left.length;
   const rightHTML = q.right.map((formula, idx) => `
     <span class="equation-part">
-      <input class="coeff-input" id="coeff-${offset + idx}" type="text" inputmode="numeric" maxlength="2" autocomplete="off"  />
-      <span>${formatChemical(formula)}</span>
+      <input class="coeff-input" id="coeff-${offset + idx}" type="text" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Hệ số của ${formula}" />
+      <span class="equation-compound">${formatChemical(formula)}</span>
     </span>
-  `).join('<span class="equation-symbol"> + </span>');
+  `).join('<span class="equation-symbol equation-plus">+</span>');
 
   document.getElementById("options-grid").innerHTML = `
-    <div style="grid-column:1/-1;">
-      <div class="equation-play">${leftHTML}<span class="equation-symbol">→</span>${rightHTML}</div>
+    <div style="grid-column:1/-1;min-width:0;">
+      <div class="equation-play">
+        <div class="equation-side equation-left">${leftHTML}</div>
+        <span class="equation-symbol equation-arrow" aria-label="tạo thành">→</span>
+        <div class="equation-side equation-right">${rightHTML}</div>
+      </div>
       <div class="equation-help">📱 Chạm vào từng ô để nhập hệ số trên điện thoại. 💻 Trên máy tính, bấm vào ô rồi gõ số từ bàn phím. Mỗi ô cần nhập hệ số đúng để cân bằng phương trình.</div>
       <div id="equation-success-box"></div>
     </div>
@@ -11429,6 +11433,116 @@ button, input, select, textarea { max-width: 100%; }
   body:not([data-screen="game"]) .mobile-bottom-nav {
     padding-left: max(8px, env(safe-area-inset-left));
     padding-right: max(8px, env(safe-area-inset-right));
+  }
+}
+</style>
+
+<style id="equation-mobile-portrait-fit">
+/* Cân bằng phương trình: căn gọn theo từng vế và vừa màn hình điện thoại dọc */
+.equation-play {
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+}
+.equation-side {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 8px;
+  min-width: 0;
+}
+.equation-part {
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+}
+.equation-compound {
+  display: inline-block;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.equation-arrow { flex: 0 0 auto; }
+
+@media (max-width: 768px) and (orientation: portrait) {
+  #game-screen .equation-play {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    gap: 3px;
+    padding: 7px 5px;
+    overflow: visible;
+    flex-wrap: initial;
+  }
+  #game-screen .equation-side {
+    width: 100%;
+    gap: 4px 5px;
+    padding: 1px 0;
+  }
+  #game-screen .equation-part {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    font-size: clamp(.78rem, 3.45vw, .94rem);
+    line-height: 1.2;
+  }
+  #game-screen .coeff-input,
+  #game-screen input.coeff-input[type="text"] {
+    box-sizing: border-box;
+    flex: 0 0 26px;
+    width: 26px;
+    min-width: 26px;
+    max-width: 26px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0 2px;
+    border-width: 1.5px;
+    border-radius: 7px;
+    font-size: .78rem;
+    line-height: 26px;
+  }
+  #game-screen .equation-symbol {
+    font-size: clamp(.82rem, 3.5vw, 1rem);
+    line-height: 1;
+  }
+  #game-screen .equation-plus {
+    flex: 0 0 auto;
+    margin: 0 -1px;
+  }
+  #game-screen .equation-arrow {
+    justify-self: center;
+    margin: 0;
+    transform: rotate(90deg);
+    font-size: 1.1rem;
+  }
+  #game-screen .equation-compound sub {
+    font-size: .7em;
+    line-height: 0;
+  }
+}
+
+@media (max-width: 380px) and (orientation: portrait) {
+  #game-screen .equation-play { padding: 6px 3px; gap: 2px; }
+  #game-screen .equation-side { gap: 3px 4px; }
+  #game-screen .equation-part {
+    gap: 2px;
+    font-size: clamp(.72rem, 3.35vw, .84rem);
+  }
+  #game-screen .coeff-input,
+  #game-screen input.coeff-input[type="text"] {
+    flex-basis: 23px;
+    width: 23px;
+    min-width: 23px;
+    max-width: 23px;
+    height: 26px;
+    min-height: 26px;
+    border-radius: 6px;
+    font-size: .72rem;
+    line-height: 24px;
   }
 }
 </style>
