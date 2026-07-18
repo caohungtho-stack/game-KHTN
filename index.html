@@ -12052,5 +12052,362 @@ button, input, select, textarea { max-width: 100%; }
 </script>
 <!-- KHTN8_NAVIGATION_FREEZE_FIX_V1_END -->
 
+
+
+<!-- KHTN8_LEADERBOARD_TOP5_MODAL_V2_START -->
+<style id="khtn8-leaderboard-top5-modal-style">
+  #khtn8-leaderboard-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9900;
+    display: none;
+    background: rgba(15, 23, 42, .62);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+  #khtn8-leaderboard-backdrop.active { display: block; }
+
+  body.khtn8-leaderboard-modal-open { overflow: hidden !important; }
+
+  body > .leaderboard-panel.khtn8-leaderboard-modal {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    inset: auto !important;
+    z-index: 9901 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: min(980px, calc(100vw - 24px)) !important;
+    max-width: 980px !important;
+    max-height: calc(100dvh - 24px) !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    transform: translate(-50%, -50%) !important;
+    overflow: hidden !important;
+    border-radius: 22px !important;
+    background: linear-gradient(135deg, #fffdf2, #fff 55%, #eff6ff) !important;
+    box-shadow: 0 28px 90px rgba(15, 23, 42, .42) !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+
+  body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-head,
+  body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-note {
+    flex: 0 0 auto;
+  }
+
+  body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-list {
+    flex: 0 1 auto;
+    width: 100%;
+    max-height: var(--khtn8-top5-height, min(62vh, 540px)) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 5px;
+  }
+
+  body > .leaderboard-panel.khtn8-leaderboard-modal .mobile-panel-close {
+    display: inline-flex !important;
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    body > .leaderboard-panel.khtn8-leaderboard-modal {
+      width: calc(100vw - 14px) !important;
+      max-height: calc(100dvh - 14px) !important;
+      padding: 10px !important;
+      border-radius: 18px !important;
+    }
+
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-head {
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 7px;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-title {
+      font-size: .94rem;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-status {
+      font-size: .68rem;
+      line-height: 1.25;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-actions {
+      gap: 5px;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-actions .leaderboard-btn:not(.mobile-panel-close) {
+      display: none !important;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal > .leaderboard-note {
+      display: none !important;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-summary {
+      margin: 0 0 6px;
+      gap: 5px;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-summary-chip {
+      padding: 6px 8px;
+      font-size: .67rem;
+    }
+
+    /* Mỗi người là một hàng gọn, để 5 người đầu cùng xuất hiện trong cửa sổ. */
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-row:not(.head) {
+      display: grid !important;
+      grid-template-columns: 46px minmax(0, 1fr) auto auto !important;
+      align-items: center !important;
+      gap: 7px !important;
+      min-height: 61px;
+      margin: 0 0 6px !important;
+      padding: 7px 8px !important;
+      border-radius: 14px !important;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-row.head {
+      display: none !important;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-rank {
+      margin: 0 !important;
+      gap: 4px;
+      font-size: .82rem;
+      white-space: nowrap;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-rank-icon {
+      width: 25px;
+      height: 25px;
+      font-size: .9rem;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-player-name {
+      font-size: .8rem;
+      line-height: 1.25;
+      white-space: nowrap !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-meta {
+      margin-top: 2px;
+      font-size: .61rem;
+      line-height: 1.2;
+      white-space: nowrap !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-topic-cell,
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-mode-cell,
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-inline-meta {
+      display: none !important;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .leaderboard-pill {
+      margin: 0 !important;
+      padding: 4px 6px;
+      font-size: .65rem;
+      white-space: nowrap;
+    }
+    body > .leaderboard-panel.khtn8-leaderboard-modal .mobile-panel-close {
+      padding: 7px 11px;
+      font-size: .76rem;
+    }
+  }
+</style>
+<script id="khtn8-leaderboard-top5-modal-v2">
+(() => {
+  "use strict";
+
+  let modalPanel = null;
+  let originAnchor = null;
+  let listObserver = null;
+  let sizeFrame = 0;
+
+  const previousGoHome = typeof window.goHome === "function"
+    ? window.goHome.bind(window)
+    : null;
+
+  function getStartLeaderboardPanel() {
+    return modalPanel
+      || document.querySelector("#start-screen .leaderboard-panel")
+      || document.querySelector(".leaderboard-panel");
+  }
+
+  function ensureBackdrop() {
+    let backdrop = document.getElementById("khtn8-leaderboard-backdrop");
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement("div");
+    backdrop.id = "khtn8-leaderboard-backdrop";
+    backdrop.setAttribute("aria-hidden", "true");
+    backdrop.addEventListener("click", closeLeaderboardModal);
+    document.body.appendChild(backdrop);
+    return backdrop;
+  }
+
+  function ensureCloseButton(panel) {
+    let button = panel.querySelector(".mobile-panel-close");
+    if (!button) {
+      button = document.createElement("button");
+      button.type = "button";
+      button.className = "mobile-panel-close";
+      button.textContent = "Đóng";
+      const actions = panel.querySelector(".leaderboard-actions") || panel.querySelector(".leaderboard-head");
+      actions?.appendChild(button);
+    }
+
+    if (!button.dataset.top5CloseBound) {
+      button.dataset.top5CloseBound = "1";
+      button.removeAttribute("onclick");
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        closeLeaderboardModal();
+      }, true);
+    }
+    return button;
+  }
+
+  function getFifthPlayerBottom(list) {
+    const playerRows = Array.from(list.children).filter((child) =>
+      child.classList?.contains("leaderboard-row") && !child.classList.contains("head")
+    );
+
+    if (!playerRows.length) return Math.min(list.scrollHeight, 420);
+    const fifth = playerRows[Math.min(4, playerRows.length - 1)];
+    return Math.ceil(fifth.offsetTop + fifth.offsetHeight + 2);
+  }
+
+  function sizeListForTopFive() {
+    cancelAnimationFrame(sizeFrame);
+    sizeFrame = requestAnimationFrame(() => {
+      const panel = modalPanel;
+      const list = panel?.querySelector(".leaderboard-list");
+      if (!panel || !list || !panel.classList.contains("khtn8-leaderboard-modal")) return;
+
+      const desired = getFifthPlayerBottom(list);
+      const viewportHeight = window.visualViewport?.height || window.innerHeight || 800;
+      const isPhone = (window.visualViewport?.width || window.innerWidth || 390) <= 768;
+      // Chừa không gian ổn định cho tiêu đề/nút đóng; không dựa vào chiều cao panel hiện tại
+      // vì panel đang co theo danh sách sẽ tạo vòng lặp khiến vùng BXH bị quá thấp.
+      const available = Math.max(240, Math.floor(viewportHeight * (isPhone ? 0.68 : 0.72)));
+      const finalHeight = Math.max(120, Math.min(desired, available));
+
+      panel.style.setProperty("--khtn8-top5-height", `${Math.round(finalHeight)}px`);
+      list.scrollTop = 0;
+    });
+  }
+
+  function observeLeaderboardList(panel) {
+    listObserver?.disconnect?.();
+    const list = panel.querySelector(".leaderboard-list");
+    if (!list) return;
+
+    listObserver = new MutationObserver(() => {
+      requestAnimationFrame(() => requestAnimationFrame(sizeListForTopFive));
+    });
+    listObserver.observe(list, { childList: true, subtree: true, characterData: true });
+  }
+
+  function restorePanelToHome() {
+    if (!modalPanel) return;
+    modalPanel.classList.remove("mobile-panel-open", "khtn8-leaderboard-modal");
+    modalPanel.style.removeProperty("--khtn8-top5-height");
+
+    if (originAnchor?.parentNode) {
+      originAnchor.parentNode.insertBefore(modalPanel, originAnchor.nextSibling);
+      originAnchor.remove();
+    }
+    originAnchor = null;
+    modalPanel = null;
+  }
+
+  function closeLeaderboardModal() {
+    listObserver?.disconnect?.();
+    listObserver = null;
+    ensureBackdrop().classList.remove("active");
+    document.body.classList.remove("khtn8-leaderboard-modal-open");
+    restorePanelToHome();
+  }
+
+  window.closeLeaderboardModal = closeLeaderboardModal;
+
+  window.openAdaptiveLeaderboard = function openTopFiveLeaderboard(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
+    const panel = getStartLeaderboardPanel();
+    if (!panel) {
+      console.warn("[BXH] Không tìm thấy bảng xếp hạng.");
+      return false;
+    }
+
+    document.querySelectorAll(".collection-overlay.active")
+      .forEach((overlay) => overlay.classList.remove("active"));
+
+    if (!panel.classList.contains("khtn8-leaderboard-modal")) {
+      originAnchor = document.createComment("khtn8-leaderboard-origin");
+      panel.parentNode?.insertBefore(originAnchor, panel);
+      document.body.appendChild(panel);
+    }
+
+    modalPanel = panel;
+    panel.classList.add("mobile-panel-open", "khtn8-leaderboard-modal");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "true");
+    panel.setAttribute("aria-label", "Bảng xếp hạng người chơi");
+
+    const backdrop = ensureBackdrop();
+    backdrop.classList.add("active");
+    document.body.classList.add("khtn8-leaderboard-modal-open");
+
+    const closeButton = ensureCloseButton(panel);
+    observeLeaderboardList(panel);
+
+    const list = panel.querySelector(".leaderboard-list");
+    if (list) list.scrollTop = 0;
+
+    requestAnimationFrame(() => {
+      sizeListForTopFive();
+      closeButton?.focus?.({ preventScroll: true });
+    });
+
+    try {
+      const result = typeof window.refreshLeaderboard === "function"
+        ? window.refreshLeaderboard()
+        : null;
+      Promise.resolve(result).finally(() => {
+        requestAnimationFrame(() => requestAnimationFrame(sizeListForTopFive));
+      });
+    } catch (error) {
+      console.warn("[BXH] Không thể làm mới bảng xếp hạng:", error);
+      sizeListForTopFive();
+    }
+
+    return false;
+  };
+
+  window.goHome = function goHomeToStartScreen(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    closeLeaderboardModal();
+
+    if (previousGoHome) return previousGoHome(event);
+
+    document.querySelectorAll(".screen").forEach((screen) => {
+      screen.classList.toggle("active", screen.id === "start-screen");
+    });
+    document.body.dataset.screen = "start";
+    try { window.scrollTo({ top: 0, left: 0, behavior: "auto" }); }
+    catch (_) { window.scrollTo(0, 0); }
+    return false;
+  };
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modalPanel) closeLeaderboardModal();
+  });
+
+  window.addEventListener("resize", sizeListForTopFive, { passive: true });
+  window.visualViewport?.addEventListener("resize", sizeListForTopFive, { passive: true });
+})();
+</script>
+<!-- KHTN8_LEADERBOARD_TOP5_MODAL_V2_END -->
+
 </body>
 </html>
