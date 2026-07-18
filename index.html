@@ -4990,7 +4990,10 @@ function getTopicFarmNotice(topicStats) {
 
 function calcQuestionXP(q, streak, mode, topicStats) {
   const baseXP = ({1:5, 2:10, 3:15, 4:20})[Math.max(1, Math.min(4, Number(q?.level) || 1))] || 5;
-  return Math.max(0, Math.round(baseXP * getModeXpMultiplier(mode)));
+  const normalXP = Math.max(0, Math.round(baseXP * getModeXpMultiplier(mode)));
+  if (q?.type !== "equation") return normalXP;
+  // Riêng câu cân bằng phương trình: thưởng thêm 50% XP so với câu thường cùng cấp độ và chế độ.
+  return Math.max(normalXP + 1, Math.round(normalXP * 1.50));
 }
 
 function getModeCompletionBonus(mode, percent, topicStats) {
@@ -5175,7 +5178,7 @@ function renderEquationQuestion(q) {
 
   document.getElementById("options-grid").innerHTML = `
     <div style="grid-column:1/-1;min-width:0;">
-      <div class="equation-play">
+      <div class="equation-play" data-compounds="${q.left.length + q.right.length}">
         <div class="equation-side equation-left">${leftHTML}</div>
         <span class="equation-symbol equation-arrow" aria-label="tạo thành">→</span>
         <div class="equation-side equation-right">${rightHTML}</div>
@@ -6146,7 +6149,7 @@ function handleCorrect() {
   const gainXP = calcQuestionXP(q, gameState.streak, gameState.mode, topicStats);
   gameState.xpEarned += gainXP;
   gameState.answeredLog.push({ id:q.id, correct:true, level:q.level, xp:gainXP, mode:gameState.mode });
-  let note = `🎉 Chính xác! +${gainXP} XP`;
+  let note = `🎉 Chính xác! +${gainXP} XP${q.type === "equation" ? " • Thưởng cân bằng +50%" : ""}`;
   if (getTopicFarmDecayMultiplier(topicStats) < 1) {
     note += ` • Chủ đề này đang bị giảm XP`;
   } else if (gameState.mode === "quick" && getQuickDecayMultiplier(topicStats) < 1) {
@@ -8441,6 +8444,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function questionKey(q){
     const text=String(q?.question ?? q?.text ?? q?.prompt ?? '').toLowerCase().replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+    if(q?.type==='equation'){
+      const left=Array.isArray(q.left)?q.left.map(x=>String(x).trim()).join('+'):'';
+      const right=Array.isArray(q.right)?q.right.map(x=>String(x).trim()).join('+'):'';
+      const coeffs=Array.isArray(q.coeffs)?q.coeffs.join(','):'';
+      return `equation||${left}=>${right}||${coeffs}`;
+    }
     const options=Array.isArray(q?.options)?q.options.map(x=>String(x).toLowerCase().trim()).join('|'):'';
     return text+'||'+options;
   }
@@ -11438,111 +11447,160 @@ button, input, select, textarea { max-width: 100%; }
 </style>
 
 <style id="equation-mobile-portrait-fit">
-/* Cân bằng phương trình: căn gọn theo từng vế và vừa màn hình điện thoại dọc */
+/* Cân bằng phương trình: luôn giữ các chất, dấu cộng và mũi tên trên một đường thẳng. */
 .equation-play {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-width: 0;
-  align-items: center;
-  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .equation-side {
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-flex;
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 6px 8px;
   min-width: 0;
+  gap: 7px;
+  white-space: nowrap;
 }
 .equation-part {
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
-  max-width: 100%;
+  gap: 4px;
   white-space: nowrap;
 }
 .equation-compound {
   display: inline-block;
+  flex: 0 1 auto;
+  min-width: 0;
   white-space: nowrap;
-  line-height: 1.2;
+  line-height: 1.15;
 }
-.equation-arrow { flex: 0 0 auto; }
+.equation-symbol,
+.equation-arrow,
+.equation-plus { flex: 0 0 auto; }
 
 @media (max-width: 768px) and (orientation: portrait) {
   #game-screen .equation-play {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     gap: 3px;
-    padding: 7px 5px;
-    overflow: visible;
-    flex-wrap: initial;
+    padding: 8px 2px;
+    overflow: hidden;
+    font-size: clamp(.66rem, 2.85vw, .86rem);
   }
   #game-screen .equation-side {
-    width: 100%;
-    gap: 4px 5px;
-    padding: 1px 0;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    width: auto;
+    min-width: 0;
+    gap: 3px;
+    padding: 0;
   }
   #game-screen .equation-part {
     display: inline-flex;
     flex: 0 1 auto;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
     min-width: 0;
-    font-size: clamp(.78rem, 3.45vw, .94rem);
-    line-height: 1.2;
+    gap: 2px;
+    font-size: inherit;
+    line-height: 1.1;
   }
   #game-screen .coeff-input,
   #game-screen input.coeff-input[type="text"] {
     box-sizing: border-box;
-    flex: 0 0 26px;
-    width: 26px;
-    min-width: 26px;
-    max-width: 26px;
-    height: 28px;
-    min-height: 28px;
-    padding: 0 2px;
+    flex: 0 0 21px;
+    width: 21px;
+    min-width: 21px;
+    max-width: 21px;
+    height: 24px;
+    min-height: 24px;
+    padding: 0 1px;
     border-width: 1.5px;
-    border-radius: 7px;
-    font-size: .78rem;
-    line-height: 26px;
+    border-radius: 6px;
+    font-size: .68rem;
+    line-height: 22px;
   }
   #game-screen .equation-symbol {
-    font-size: clamp(.82rem, 3.5vw, 1rem);
+    font-size: .78rem;
     line-height: 1;
   }
-  #game-screen .equation-plus {
-    flex: 0 0 auto;
-    margin: 0 -1px;
-  }
+  #game-screen .equation-plus { margin: 0; }
   #game-screen .equation-arrow {
-    justify-self: center;
-    margin: 0;
-    transform: rotate(90deg);
-    font-size: 1.1rem;
+    margin: 0 1px;
+    transform: none;
+    font-size: .9rem;
   }
   #game-screen .equation-compound sub {
-    font-size: .7em;
+    font-size: .68em;
     line-height: 0;
   }
+
+  /* Phương trình 5 chất cần nén thêm để vẫn vừa màn hình 320–375px. */
+  #game-screen .equation-play[data-compounds="5"] {
+    gap: 2px;
+    font-size: clamp(.58rem, 2.55vw, .75rem);
+  }
+  #game-screen .equation-play[data-compounds="5"] .equation-side,
+  #game-screen .equation-play[data-compounds="5"] .equation-part { gap: 1px; }
+  #game-screen .equation-play[data-compounds="5"] .coeff-input,
+  #game-screen .equation-play[data-compounds="5"] input.coeff-input[type="text"] {
+    flex-basis: 18px;
+    width: 18px;
+    min-width: 18px;
+    max-width: 18px;
+    height: 22px;
+    min-height: 22px;
+    border-radius: 5px;
+    font-size: .62rem;
+    line-height: 20px;
+  }
+  #game-screen .equation-play[data-compounds="5"] .equation-symbol { font-size: .68rem; }
+  #game-screen .equation-play[data-compounds="5"] .equation-arrow { font-size: .8rem; }
 }
 
-@media (max-width: 380px) and (orientation: portrait) {
-  #game-screen .equation-play { padding: 6px 3px; gap: 2px; }
-  #game-screen .equation-side { gap: 3px 4px; }
-  #game-screen .equation-part {
+@media (max-width: 360px) and (orientation: portrait) {
+  #game-screen .equation-play {
     gap: 2px;
-    font-size: clamp(.72rem, 3.35vw, .84rem);
+    padding-left: 0;
+    padding-right: 0;
+    font-size: clamp(.6rem, 2.7vw, .76rem);
   }
+  #game-screen .equation-side,
+  #game-screen .equation-part { gap: 1px; }
   #game-screen .coeff-input,
   #game-screen input.coeff-input[type="text"] {
-    flex-basis: 23px;
-    width: 23px;
-    min-width: 23px;
-    max-width: 23px;
-    height: 26px;
-    min-height: 26px;
-    border-radius: 6px;
-    font-size: .72rem;
-    line-height: 24px;
+    flex-basis: 19px;
+    width: 19px;
+    min-width: 19px;
+    max-width: 19px;
+    height: 22px;
+    min-height: 22px;
+    font-size: .62rem;
+    line-height: 20px;
+  }
+  #game-screen .equation-play[data-compounds="5"] {
+    font-size: clamp(.53rem, 2.35vw, .66rem);
+  }
+  #game-screen .equation-play[data-compounds="5"] .coeff-input,
+  #game-screen .equation-play[data-compounds="5"] input.coeff-input[type="text"] {
+    flex-basis: 17px;
+    width: 17px;
+    min-width: 17px;
+    max-width: 17px;
+    height: 21px;
+    min-height: 21px;
   }
 }
 </style>
