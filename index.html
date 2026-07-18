@@ -5178,10 +5178,12 @@ function renderEquationQuestion(q) {
 
   document.getElementById("options-grid").innerHTML = `
     <div style="grid-column:1/-1;min-width:0;">
-      <div class="equation-play" data-compounds="${q.left.length + q.right.length}">
-        <div class="equation-side equation-left">${leftHTML}</div>
-        <span class="equation-symbol equation-arrow" aria-label="tạo thành">→</span>
-        <div class="equation-side equation-right">${rightHTML}</div>
+      <div class="equation-scroll-wrap">
+        <div class="equation-play" data-compounds="${q.left.length + q.right.length}">
+          <div class="equation-side equation-left">${leftHTML}</div>
+          <span class="equation-symbol equation-arrow" aria-label="tạo thành">→</span>
+          <div class="equation-side equation-right">${rightHTML}</div>
+        </div>
       </div>
       <div class="equation-help">📱 Chạm vào từng ô để nhập hệ số trên điện thoại. 💻 Trên máy tính, bấm vào ô rồi gõ số từ bàn phím. Mỗi ô cần nhập hệ số đúng để cân bằng phương trình.</div>
       <div id="equation-success-box"></div>
@@ -11447,72 +11449,92 @@ button, input, select, textarea { max-width: 100%; }
 </style>
 
 <style id="equation-mobile-portrait-fit">
-/* Cân bằng phương trình: luôn giữ các chất, dấu cộng và mũi tên trên một đường thẳng. */
-.equation-play {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
+/* Cân bằng phương trình: luôn giữ toàn bộ phản ứng trên cùng một hàng ngang.
+   Nếu phương trình quá dài trên màn hình nhỏ, cho phép cuộn ngang nhẹ thay vì tự xuống hàng. */
+.equation-scroll-wrap {
   width: 100%;
   min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+.equation-scroll-wrap::-webkit-scrollbar { height: 4px; }
+.equation-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(59,130,246,.25); border-radius: 999px; }
+
+.equation-play,
+#game-screen .equation-play {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: max-content !important;
+  min-width: 100%;
+  max-width: none !important;
   gap: 8px;
-  overflow: hidden;
-  white-space: nowrap;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  margin: 0 auto;
 }
-.equation-side {
-  display: inline-flex;
-  flex: 0 1 auto;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
+.equation-side,
+#game-screen .equation-side {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: auto !important;
+  max-width: none !important;
+  flex: 0 0 auto !important;
   gap: 7px;
-  white-space: nowrap;
+  white-space: nowrap !important;
 }
-.equation-part {
-  display: inline-flex;
-  flex: 0 1 auto;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
+.equation-part,
+#game-screen .equation-part {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  min-width: auto !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 4px;
-  white-space: nowrap;
+  white-space: nowrap !important;
 }
-.equation-compound {
+.equation-compound,
+#game-screen .equation-compound {
   display: inline-block;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   min-width: 0;
-  white-space: nowrap;
+  white-space: nowrap !important;
   line-height: 1.15;
 }
 .equation-symbol,
 .equation-arrow,
-.equation-plus { flex: 0 0 auto; }
+.equation-plus,
+#game-screen .equation-symbol,
+#game-screen .equation-arrow,
+#game-screen .equation-plus {
+  display: inline-block;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
 
-@media (max-width: 768px) and (orientation: portrait) {
+@media (max-width: 768px) {
+  #game-screen .equation-scroll-wrap {
+    padding-left: 0;
+    padding-right: 0;
+  }
   #game-screen .equation-play {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
     gap: 3px;
-    padding: 8px 2px;
-    overflow: hidden;
+    padding: 8px 0;
     font-size: clamp(.66rem, 2.85vw, .86rem);
   }
   #game-screen .equation-side {
-    display: inline-flex;
-    flex-wrap: nowrap;
-    width: auto;
-    min-width: 0;
     gap: 3px;
     padding: 0;
   }
   #game-screen .equation-part {
-    display: inline-flex;
-    flex: 0 1 auto;
-    min-width: 0;
     gap: 2px;
     font-size: inherit;
     line-height: 1.1;
@@ -11520,13 +11542,13 @@ button, input, select, textarea { max-width: 100%; }
   #game-screen .coeff-input,
   #game-screen input.coeff-input[type="text"] {
     box-sizing: border-box;
-    flex: 0 0 21px;
-    width: 21px;
-    min-width: 21px;
-    max-width: 21px;
-    height: 24px;
-    min-height: 24px;
-    padding: 0 1px;
+    flex: 0 0 21px !important;
+    width: 21px !important;
+    min-width: 21px !important;
+    max-width: 21px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    padding: 0 1px !important;
     border-width: 1.5px;
     border-radius: 6px;
     font-size: .68rem;
@@ -11547,7 +11569,7 @@ button, input, select, textarea { max-width: 100%; }
     line-height: 0;
   }
 
-  /* Phương trình 5 chất cần nén thêm để vẫn vừa màn hình 320–375px. */
+  /* Phương trình có 5 chất cần nén thêm để vẫn nằm trên một hàng; nếu vượt quá thì cuộn ngang. */
   #game-screen .equation-play[data-compounds="5"] {
     gap: 2px;
     font-size: clamp(.58rem, 2.55vw, .75rem);
@@ -11556,12 +11578,12 @@ button, input, select, textarea { max-width: 100%; }
   #game-screen .equation-play[data-compounds="5"] .equation-part { gap: 1px; }
   #game-screen .equation-play[data-compounds="5"] .coeff-input,
   #game-screen .equation-play[data-compounds="5"] input.coeff-input[type="text"] {
-    flex-basis: 18px;
-    width: 18px;
-    min-width: 18px;
-    max-width: 18px;
-    height: 22px;
-    min-height: 22px;
+    flex-basis: 18px !important;
+    width: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    height: 22px !important;
+    min-height: 22px !important;
     border-radius: 5px;
     font-size: .62rem;
     line-height: 20px;
@@ -11570,23 +11592,21 @@ button, input, select, textarea { max-width: 100%; }
   #game-screen .equation-play[data-compounds="5"] .equation-arrow { font-size: .8rem; }
 }
 
-@media (max-width: 360px) and (orientation: portrait) {
+@media (max-width: 360px) {
   #game-screen .equation-play {
     gap: 2px;
-    padding-left: 0;
-    padding-right: 0;
     font-size: clamp(.6rem, 2.7vw, .76rem);
   }
   #game-screen .equation-side,
   #game-screen .equation-part { gap: 1px; }
   #game-screen .coeff-input,
   #game-screen input.coeff-input[type="text"] {
-    flex-basis: 19px;
-    width: 19px;
-    min-width: 19px;
-    max-width: 19px;
-    height: 22px;
-    min-height: 22px;
+    flex-basis: 19px !important;
+    width: 19px !important;
+    min-width: 19px !important;
+    max-width: 19px !important;
+    height: 22px !important;
+    min-height: 22px !important;
     font-size: .62rem;
     line-height: 20px;
   }
@@ -11595,12 +11615,12 @@ button, input, select, textarea { max-width: 100%; }
   }
   #game-screen .equation-play[data-compounds="5"] .coeff-input,
   #game-screen .equation-play[data-compounds="5"] input.coeff-input[type="text"] {
-    flex-basis: 17px;
-    width: 17px;
-    min-width: 17px;
-    max-width: 17px;
-    height: 21px;
-    min-height: 21px;
+    flex-basis: 17px !important;
+    width: 17px !important;
+    min-width: 17px !important;
+    max-width: 17px !important;
+    height: 21px !important;
+    min-height: 21px !important;
   }
 }
 </style>
