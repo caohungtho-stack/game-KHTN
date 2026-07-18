@@ -11763,5 +11763,294 @@ button, input, select, textarea { max-width: 100%; }
 })();
 </script>
 
+
+
+<!-- KHTN8_NAVIGATION_FREEZE_FIX_V1_START -->
+<style id="khtn8-navigation-freeze-fix-style">
+  .leaderboard-panel.mobile-panel-open {
+    pointer-events: auto !important;
+    touch-action: pan-y !important;
+    overscroll-behavior: contain;
+  }
+  .leaderboard-panel.mobile-panel-open .leaderboard-list {
+    -webkit-overflow-scrolling: touch;
+  }
+  #adaptive-mobile-bottom-nav button {
+    touch-action: manipulation;
+  }
+</style>
+<script id="khtn8-navigation-freeze-fix-v1">
+(() => {
+  "use strict";
+
+  const originalRefreshLeaderboard = typeof window.refreshLeaderboard === "function"
+    ? window.refreshLeaderboard.bind(window)
+    : null;
+
+  let homeNavigationBusy = false;
+  let leaderboardRefreshToken = 0;
+
+  const byId = (id) => document.getElementById(id);
+
+  function safeCall(name, ...args) {
+    try {
+      const fn = window[name];
+      return typeof fn === "function" ? fn(...args) : undefined;
+    } catch (error) {
+      console.warn(`[Điều hướng] Không thể chạy ${name}:`, error);
+      return undefined;
+    }
+  }
+
+  function stopTimerSafely() {
+    try {
+      if (typeof RealTimeTimer !== "undefined" && typeof RealTimeTimer.stop === "function") {
+        RealTimeTimer.stop(false);
+      }
+    } catch (error) {
+      console.warn("[Điều hướng] Không thể dừng bộ đếm:", error);
+    }
+    try {
+      if (typeof gameState !== "undefined" && gameState?.timer) {
+        clearInterval(gameState.timer);
+        gameState.timer = null;
+      }
+    } catch (_) {}
+  }
+
+  function closeBlockingLayers({ keepLeaderboard = false } = {}) {
+    if (!keepLeaderboard) {
+      document.querySelectorAll(".leaderboard-panel.mobile-panel-open")
+        .forEach((panel) => panel.classList.remove("mobile-panel-open"));
+    }
+
+    document.querySelectorAll(".collection-overlay.active")
+      .forEach((overlay) => overlay.classList.remove("active"));
+
+    const levelup = byId("levelup-overlay");
+    if (levelup) levelup.style.display = "none";
+
+    document.body.classList.remove("modal-open", "no-scroll", "overflow-hidden");
+    document.body.style.removeProperty("overflow");
+    document.documentElement.style.removeProperty("overflow");
+  }
+
+  function activateScreen(screenId) {
+    document.querySelectorAll(".screen").forEach((screen) => {
+      screen.classList.toggle("active", screen.id === screenId);
+    });
+    document.body.dataset.screen = screenId.replace("-screen", "");
+  }
+
+  function scheduleProgressSave(reason) {
+    window.setTimeout(() => {
+      try {
+        if (window.KHTN8StateManager?.saveNow) {
+          window.KHTN8StateManager.saveNow(reason);
+          return;
+        }
+        if (window.KHTN8ProFixed?.saveNow) {
+          window.KHTN8ProFixed.saveNow(reason);
+        }
+      } catch (error) {
+        console.warn("[Điều hướng] Không thể lưu tiến trình:", error);
+      }
+    }, 80);
+  }
+
+  function refreshHomeUIAfterPaint() {
+    requestAnimationFrame(() => {
+      [
+        "renderProfileHeader",
+        "renderDailyMissions",
+        "updateTopicSummary",
+        "renderProfileSummary",
+        "renderModeRoadmap",
+        "renderPetEvolution",
+        "renderPetItemStats"
+      ].forEach((name) => safeCall(name));
+
+      requestAnimationFrame(() => {
+        try { window.scrollTo({ top: 0, left: 0, behavior: "auto" }); }
+        catch (_) { window.scrollTo(0, 0); }
+        homeNavigationBusy = false;
+      });
+    });
+  }
+
+  window.goHome = function goHomeNavigationFixed(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
+    if (homeNavigationBusy) return false;
+    homeNavigationBusy = true;
+
+    // Chuyển giao diện trước để nút phản hồi ngay; các tác vụ nặng chạy sau khi trình duyệt đã vẽ.
+    stopTimerSafely();
+    closeBlockingLayers();
+    activateScreen("start-screen");
+
+    const bossPanel = byId("boss-lives-panel");
+    bossPanel?.classList.remove("active");
+
+    scheduleProgressSave("home-navigation-fixed");
+    refreshHomeUIAfterPaint();
+    return false;
+  };
+
+  function getLocalRowsSafely() {
+    try {
+      return typeof window.getLocalLeaderboard === "function"
+        ? window.getLocalLeaderboard()
+        : [];
+    } catch (error) {
+      console.warn("[BXH] Không đọc được dữ liệu trên máy:", error);
+      return [];
+    }
+  }
+
+  function renderLocalRows(panel, message = "Đang hiển thị dữ liệu trên máy trong khi kiểm tra bảng online...") {
+    const isResultPanel = Boolean(panel?.closest?.("#result-screen"));
+    const targetId = isResultPanel ? "leaderboard-list-result" : "leaderboard-list-start";
+    const rows = getLocalRowsSafely();
+
+    try {
+      if (typeof window.renderLeaderboardList === "function") {
+        window.renderLeaderboardList(targetId, rows);
+      }
+    } catch (error) {
+      console.warn("[BXH] Không thể dựng bảng dự phòng:", error);
+    }
+
+    try {
+      if (typeof window.updateLeaderboardStatus === "function") {
+        window.updateLeaderboardStatus(message);
+      }
+    } catch (_) {}
+
+    return rows;
+  }
+
+  async function refreshLeaderboardWithoutFreezing(panel) {
+    const token = ++leaderboardRefreshToken;
+    const localRows = renderLocalRows(panel);
+    if (!originalRefreshLeaderboard) return localRows;
+
+    let timedOut = false;
+    const timeout = new Promise((resolve) => {
+      window.setTimeout(() => {
+        timedOut = true;
+        resolve("timeout");
+      }, 4500);
+    });
+
+    try {
+      const onlineTask = Promise.resolve().then(() => originalRefreshLeaderboard());
+      const result = await Promise.race([onlineTask, timeout]);
+
+      if (token !== leaderboardRefreshToken) return result;
+      if (timedOut || result === "timeout") {
+        renderLocalRows(panel, "Mạng phản hồi chậm — đang hiển thị bảng xếp hạng lưu trên máy.");
+      }
+      return result;
+    } catch (error) {
+      if (token === leaderboardRefreshToken) {
+        renderLocalRows(panel, "Không tải được bảng online — đang hiển thị dữ liệu trên máy.");
+      }
+      console.warn("[BXH] Làm mới bảng thất bại:", error);
+      return localRows;
+    }
+  }
+
+  window.refreshLeaderboard = function refreshLeaderboardNavigationFixed() {
+    const activeScreen = document.querySelector(".screen.active")?.id || "start-screen";
+    const panel = document.querySelector(
+      activeScreen === "result-screen"
+        ? "#result-screen .leaderboard-panel"
+        : "#start-screen .leaderboard-panel"
+    );
+    return refreshLeaderboardWithoutFreezing(panel);
+  };
+
+  window.openAdaptiveLeaderboard = function openAdaptiveLeaderboardFixed(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
+    closeBlockingLayers();
+
+    let activeScreenId = document.querySelector(".screen.active")?.id || "start-screen";
+
+    // Màn hình chơi không chứa BXH. Chuyển về trang Nhà trước rồi mới mở bảng,
+    // tránh thêm class vào một phần tử nằm trong màn hình display:none.
+    if (activeScreenId === "game-screen") {
+      stopTimerSafely();
+      activateScreen("start-screen");
+      activeScreenId = "start-screen";
+      scheduleProgressSave("open-leaderboard-from-game");
+    }
+
+    const selector = activeScreenId === "result-screen"
+      ? "#result-screen .leaderboard-panel"
+      : "#start-screen .leaderboard-panel";
+    const panel = document.querySelector(selector);
+    if (!panel) {
+      console.warn("[BXH] Không tìm thấy khung bảng xếp hạng.");
+      return false;
+    }
+
+    document.querySelectorAll(".leaderboard-panel.mobile-panel-open")
+      .forEach((item) => item.classList.remove("mobile-panel-open"));
+
+    panel.classList.add("mobile-panel-open");
+    panel.style.pointerEvents = "auto";
+    panel.scrollTop = 0;
+    document.body.dataset.screen = activeScreenId.replace("-screen", "");
+
+    // Dựng dữ liệu cục bộ ngay trong khung đầu tiên, sau đó mới kiểm tra Google Sheets.
+    renderLocalRows(panel);
+    requestAnimationFrame(() => {
+      panel.querySelector(".mobile-panel-close")?.focus?.({ preventScroll: true });
+      refreshLeaderboardWithoutFreezing(panel);
+    });
+    return false;
+  };
+
+  function bindNavigationButtons() {
+    document.querySelectorAll('[onclick*="goHome"]:not([data-nav-freeze-fixed])').forEach((button) => {
+      button.dataset.navFreezeFixed = "home";
+      button.removeAttribute("onclick");
+      button.addEventListener("click", (event) => {
+        event.stopImmediatePropagation();
+        window.goHome(event);
+      });
+    });
+
+    document.querySelectorAll('[onclick*="openAdaptiveLeaderboard"]:not([data-nav-freeze-fixed])').forEach((button) => {
+      button.dataset.navFreezeFixed = "leaderboard";
+      button.removeAttribute("onclick");
+      button.addEventListener("click", (event) => {
+        event.stopImmediatePropagation();
+        window.openAdaptiveLeaderboard(event);
+      });
+    });
+  }
+
+  function initializeNavigationFix() {
+    bindNavigationButtons();
+    // Bắt cả trường hợp thanh điều hướng được tạo muộn sau DOMContentLoaded.
+    const observer = new MutationObserver(() => bindNavigationButtons());
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.setTimeout(bindNavigationButtons, 250);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeNavigationFix, { once: true });
+  } else {
+    initializeNavigationFix();
+  }
+})();
+</script>
+<!-- KHTN8_NAVIGATION_FREEZE_FIX_V1_END -->
+
 </body>
 </html>
