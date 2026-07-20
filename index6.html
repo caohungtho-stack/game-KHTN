@@ -11554,10 +11554,16 @@ window.KHTN6Fix04 = Object.freeze({
     safe = safe.replace(/\bC([nxy])(?=H)/g, "C<sub>$1</sub>");
 
     // Chỉ số sau kí hiệu nguyên tố hoặc sau dấu ngoặc: H2SO4, Al2(SO4)3, (C6H10O5)n...
+    // Chỉ chuyển số sau kí hiệu nguyên tố thành chỉ số dưới.
+    // Không chuyển riêng n/x/y sau kí hiệu nguyên tố vì có thể làm sai các từ
+    // tiếng Việt như "Con" (Co + n) hoặc "Sinh" (Si + n + h).
     safe = safe.replace(
-      /([A-Z][a-z]?|[\)\]])([0-9]+(?:[nxy][0-9]*)?(?:[+\-][0-9nxy]+)?|[nxy](?:[+\-][0-9nxy]+)?)/g,
+      /([A-Z][a-z]?|[\)\]])([0-9]+(?:[nxy][0-9]*)?(?:[+\-][0-9nxy]+)?)/g,
       "$1<sub>$2</sub>"
     );
+
+    // Chỉ số biến sau dấu ngoặc, ví dụ (C6H10O5)n.
+    safe = safe.replace(/([\)\]])([nxy](?:[+\-][0-9nxy]+)?)/g, "$1<sub>$2</sub>");
 
     // Điện tích viết theo dạng ^2-, ^+, ...
     safe = safe.replace(/\^([0-9]*[+\-])/g, "<sup>$1</sup>");
