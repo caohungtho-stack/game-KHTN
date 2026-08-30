@@ -1,0 +1,2711 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b5bd3">
+  <title>Cân Bằng Hóa Học</title>
+  <style>
+    :root {
+      --blue-950: #09235a;
+      --blue-800: #0b3f99;
+      --blue-700: #0b5bd3;
+      --blue-600: #1570ef;
+      --blue-100: #dbeafe;
+      --blue-50: #eff6ff;
+      --ink: #172033;
+      --muted: #65728a;
+      --line: #dbe3ef;
+      --green: #14804a;
+      --green-bg: #e9f9ef;
+      --amber: #a95505;
+      --amber-bg: #fff5dd;
+      --red: #c62f35;
+      --white: #fff;
+      --shadow: 0 12px 34px rgba(17, 47, 92, .12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; height: 100%; }
+
+    body {
+      color: var(--ink);
+      background: #eaf1fb;
+      overflow: hidden;
+    }
+
+    button, input, select { font: inherit; }
+
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .app {
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      flex: 0 0 auto;
+      min-height: 70px;
+      padding: 10px clamp(12px, 2.5vw, 28px);
+      color: #fff;
+      background:
+        radial-gradient(circle at 85% -50%, rgba(89, 184, 255, .75), transparent 45%),
+        linear-gradient(120deg, var(--blue-950), var(--blue-700));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: 0 4px 18px rgba(7, 33, 84, .22);
+      z-index: 10;
+    }
+
+    .brand { min-width: 220px; }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.18rem, 2.4vw, 1.7rem);
+      line-height: 1.08;
+      letter-spacing: -.02em;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: #d9eaff;
+      font-size: .82rem;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .view-controls {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .view-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid rgba(255, 255, 255, .32);
+      border-radius: 12px;
+      padding: 8px 11px;
+      color: #fff;
+      background: rgba(255, 255, 255, .12);
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: .82rem;
+      font-weight: 850;
+      transition: background .2s, border-color .2s, transform .16s;
+    }
+
+    .view-button:hover { background: rgba(255, 255, 255, .2); transform: translateY(-1px); }
+    .view-button:active { transform: translateY(1px); }
+    .view-button:focus-visible { outline: 3px solid rgba(255,255,255,.36); outline-offset: 2px; }
+    .view-button[aria-pressed="true"] {
+      color: #082b5b;
+      border-color: #ffe08a;
+      background: #ffd45f;
+      box-shadow: 0 5px 16px rgba(3, 24, 62, .24);
+    }
+
+    .view-icon { font-size: 1.05rem; line-height: 1; }
+
+    .problem-select {
+      width: min(36vw, 330px);
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, .36);
+      border-radius: 12px;
+      color: #fff;
+      background: rgba(6, 36, 94, .5);
+      padding: 0 34px 0 12px;
+      outline: none;
+    }
+
+    .problem-select option { color: #12203b; background: #fff; }
+
+    .score-chip {
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, .15);
+      border: 1px solid rgba(255, 255, 255, .22);
+      font-weight: 800;
+      font-size: .82rem;
+    }
+
+    .teacher-strip {
+      flex: 0 0 auto;
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 6px clamp(12px, 2.5vw, 28px);
+      color: #0a367b;
+      border-bottom: 1px solid #e6c85c;
+      background: linear-gradient(90deg, #fff7c9, #fffdf1, #fff7c9);
+      box-shadow: 0 3px 10px rgba(57, 73, 105, .1);
+      text-align: center;
+      font-size: clamp(.78rem, 1.25vw, .94rem);
+      font-weight: 850;
+      letter-spacing: .01em;
+      z-index: 9;
+    }
+
+    .teacher-strip .teacher-name { color: #8a3d00; font-weight: 950; }
+    .teacher-strip .teacher-separator { color: #b28d19; }
+    .teacher-strip a { color: inherit; text-decoration: none; white-space: nowrap; }
+
+    .visual-section {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 14px clamp(10px, 2.2vw, 24px) 22px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background:
+        linear-gradient(rgba(255,255,255,.54), rgba(255,255,255,.54)),
+        repeating-linear-gradient(0deg, transparent 0 31px, rgba(32, 93, 173, .06) 31px 32px),
+        var(--blue-50);
+    }
+
+    .visual-inner { width: min(980px, 100%); margin: 0 auto; }
+
+    .lesson-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px;
+      padding: 10px 13px;
+      border: 1px solid #cbdcf5;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .88);
+      box-shadow: 0 6px 18px rgba(25, 69, 130, .07);
+    }
+
+    .lesson-strip strong { color: var(--blue-800); }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: .82rem;
+      white-space: nowrap;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(20, 128, 74, .13);
+    }
+
+    .scale-mode-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 11px;
+      padding: 7px 9px;
+      border: 1px solid #c8d8ee;
+      border-radius: 14px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 5px 16px rgba(25, 69, 130, .06);
+    }
+
+    .scale-mode-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 11px;
+      background: #e8eef7;
+    }
+
+    .scale-mode-button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 9px;
+      padding: 6px 11px;
+      color: #52627a;
+      background: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: .79rem;
+      font-weight: 850;
+      transition: color .18s, background .18s, box-shadow .18s;
+    }
+
+    .scale-mode-button[aria-pressed="true"] {
+      color: #fff;
+      background: var(--blue-700);
+      box-shadow: 0 4px 10px rgba(11,91,211,.23);
+    }
+
+    .auto-navigator {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .auto-navigator[hidden] { display: none; }
+
+    .scale-nav-button {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #b7cae4;
+      border-radius: 9px;
+      color: var(--blue-800);
+      background: #f5f9ff;
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .scale-nav-button:disabled { opacity: .35; cursor: not-allowed; }
+
+    .auto-scale-position {
+      min-width: 0;
+      color: var(--blue-950);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .8rem;
+      font-weight: 850;
+    }
+
+    .scale-display-shell {
+      display: block;
+    }
+
+    .manual-vertical-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin-left: auto;
+    }
+
+    .manual-vertical-nav[hidden] { display: none; }
+
+    .manual-nav-button {
+      min-width: 108px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 2px solid #adc5e4;
+      border-radius: 11px;
+      padding: 6px 10px;
+      color: var(--blue-800);
+      background: linear-gradient(180deg, #fff, #eaf3ff);
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(21, 68, 127, .12);
+      font-size: .78rem;
+      font-weight: 900;
+      transition: transform .16s, background .16s, opacity .16s;
+    }
+
+    .manual-nav-button:hover:not(:disabled) { transform: translateY(-1px); background: #dcecff; }
+    .manual-nav-button:active:not(:disabled) { transform: translateY(1px); }
+    .manual-nav-button:disabled { opacity: .34; cursor: not-allowed; box-shadow: none; }
+
+    .manual-nav-icon { font-size: 1.08rem; line-height: 1; }
+
+    .manual-scale-position {
+      min-width: 80px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--blue-800);
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    .element-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 0 0 11px;
+      padding: 8px 10px;
+      border: 1px solid #cfdaea;
+      border-radius: 14px;
+      background: rgba(255,255,255,.9);
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .progress-chip {
+      --chip-color: #62748d;
+      position: relative;
+      flex: 0 0 auto;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 2px solid #c8d3e2;
+      border-radius: 999px;
+      padding: 5px 11px 5px 6px;
+      color: #52627a;
+      background: #f8fafc;
+      cursor: pointer;
+      font-weight: 850;
+      transition: transform .18s, border-color .18s, background .18s, opacity .18s;
+    }
+
+    .progress-chip::after {
+      content: "→";
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      margin-left: 6px;
+      color: #9aacc2;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .progress-chip:last-child::after { display: none; }
+
+    .progress-chip-symbol {
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--chip-color);
+      font-size: .72rem;
+      font-weight: 950;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,.13);
+    }
+
+    .progress-chip-icon { min-width: 15px; text-align: center; }
+    .progress-chip.is-active { border-color: var(--chip-color); background: #eef6ff; transform: translateY(-1px); }
+    .progress-chip.is-done { color: var(--green); border-color: #7fd2a4; background: var(--green-bg); }
+    .progress-chip.is-warning { color: #9b3e13; border-color: #efa26b; background: #fff1e7; }
+
+    .progress-chip.is-pending { opacity: .72; }
+
+    .announcement-slot { position: relative; height: 0; z-index: 7; }
+
+    .balance-announcement {
+      position: absolute;
+      left: 50%;
+      top: 1px;
+      max-width: min(92vw, 580px);
+      padding: 11px 18px;
+      border: 2px solid #79d49f;
+      border-radius: 999px;
+      color: #075d34;
+      background: #eafff1;
+      box-shadow: 0 12px 28px rgba(7, 74, 42, .22);
+      opacity: 0;
+      transform: translate(-50%, -18px) scale(.94);
+      transition: opacity .23s, transform .23s;
+      pointer-events: none;
+      white-space: nowrap;
+      text-align: center;
+      font-size: clamp(.88rem, 2vw, 1.05rem);
+      font-weight: 900;
+    }
+
+    .balance-announcement.show {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+    }
+
+    .scales-list { display: grid; gap: 12px; }
+
+    body.scale-focus-mode .scales-list { min-height: 188px; }
+
+    .scale-card.auto-focus.slide-right { animation: scale-in-right .42s cubic-bezier(.2,.8,.2,1); }
+    .scale-card.auto-focus.slide-left { animation: scale-in-left .42s cubic-bezier(.2,.8,.2,1); }
+
+    @keyframes scale-in-right {
+      from { opacity: 0; transform: translateX(48px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes scale-in-left {
+      from { opacity: 0; transform: translateX(-48px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .scale-card {
+      --tilt: 0deg;
+      --counter-tilt: 0deg;
+      border: 1px solid #d5dfec;
+      border-radius: 19px;
+      background: rgba(255,255,255,.95);
+      overflow: hidden;
+      box-shadow: 0 8px 22px rgba(24, 60, 113, .08);
+      transition: border-color .25s, box-shadow .25s, background .25s;
+    }
+
+    .scale-card[hidden] { display: none !important; }
+
+    .scale-card.is-inspected {
+      border-color: var(--atom-color, #4768d7);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--atom-color, #4768d7) 20%, transparent), 0 10px 28px rgba(24, 60, 113, .12);
+    }
+
+    body.scale-focus-mode .scale-card { cursor: default; }
+
+    .scale-card.is-balanced {
+      border-color: #83d7a8;
+      background: linear-gradient(180deg, #fff, #f1fff6);
+      box-shadow: 0 8px 24px rgba(20, 128, 74, .1);
+    }
+
+    .scale-heading {
+      min-height: 43px;
+      padding: 8px 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid #e8edf4;
+    }
+
+    .scale-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .element-tile {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--atom-color, #4768d7);
+      font-size: .9rem;
+      font-weight: 900;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,.14);
+    }
+
+    .scale-title-text strong { display: block; line-height: 1.08; }
+    .scale-title-text small { display: block; margin-top: 3px; color: var(--muted); }
+
+    .scale-state {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: var(--amber);
+      background: var(--amber-bg);
+      font-size: .76rem;
+      font-weight: 800;
+    }
+
+    .is-balanced .scale-state { color: var(--green); background: var(--green-bg); }
+
+    .balance-stage {
+      position: relative;
+      height: 160px;
+      overflow: hidden;
+    }
+
+    .side-caption {
+      position: absolute;
+      top: 8px;
+      z-index: 4;
+      min-width: 88px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .side-caption.left { left: 8%; }
+    .side-caption.right { right: 8%; }
+
+    .side-caption b {
+      display: block;
+      font-size: 1rem;
+      color: var(--blue-950);
+    }
+
+    .side-caption span { color: var(--muted); font-size: .72rem; }
+
+    .beam {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 103px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(#5184c8, #16457f);
+      box-shadow: 0 4px 0 #0c315f, 0 6px 10px rgba(8, 38, 79, .22);
+      transform: rotate(var(--tilt));
+      transform-origin: center;
+      transition: transform .55s cubic-bezier(.2,.8,.2,1);
+      z-index: 2;
+    }
+
+    .beam::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 17px;
+      height: 17px;
+      border: 4px solid #f7c84b;
+      border-radius: 50%;
+      background: #123867;
+      transform: translate(-50%, -50%);
+    }
+
+    .hanger {
+      position: absolute;
+      bottom: 4px;
+      width: 38%;
+      height: 95px;
+    }
+
+    .hanger.left { left: -8%; }
+    .hanger.right { right: -8%; }
+
+    .hanger-upright {
+      position: absolute;
+      inset: 0;
+      transform: rotate(var(--counter-tilt));
+      transform-origin: 50% 100%;
+      transition: transform .55s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .chain {
+      position: absolute;
+      left: 13%;
+      right: 13%;
+      bottom: 8px;
+      height: 42px;
+      border-left: 2px solid #8090a6;
+      border-right: 2px solid #8090a6;
+      clip-path: polygon(0 0, 100% 0, 87% 100%, 13% 100%);
+    }
+
+    .tray {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: 0;
+      height: 9px;
+      border-radius: 0 0 70% 70%;
+      background: linear-gradient(180deg, #a8b8ca, #63778f);
+      box-shadow: 0 4px 6px rgba(25, 49, 75, .2);
+    }
+
+    .atom-stack {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      bottom: 13px;
+      min-height: 62px;
+      display: flex;
+      flex-wrap: wrap-reverse;
+      align-content: flex-start;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 2px;
+      z-index: 3;
+    }
+
+    .atom {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(255,255,255,.88);
+      border-radius: 50%;
+      color: #fff;
+      background: var(--atom-color, #4768d7);
+      font-size: .66rem;
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,.14), 0 2px 4px rgba(20, 42, 76, .22);
+    }
+
+    .atom.more {
+      width: auto;
+      min-width: 34px;
+      padding: 0 5px;
+      border-radius: 999px;
+    }
+
+    .molecule-stack {
+      position: absolute;
+      left: 2%;
+      right: 2%;
+      bottom: 13px;
+      min-height: 68px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+      z-index: 3;
+    }
+
+    .molecule-group {
+      position: relative;
+      min-width: 52px;
+      max-width: 86px;
+      padding: 3px 4px 2px;
+      border: 1px solid #cad7e7;
+      border-radius: 10px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 3px 7px rgba(19, 47, 82, .13);
+      text-align: center;
+    }
+
+    .molecule-cloud {
+      min-height: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .molecule-cloud .atom {
+      width: 18px;
+      height: 18px;
+      margin: -1px;
+      border-width: 1px;
+      font-size: .48rem;
+    }
+
+    .molecule-cloud .atom.context-atom {
+      opacity: .27;
+      filter: saturate(.55);
+      box-shadow: none;
+    }
+
+    .molecule-cloud .atom.target-atom {
+      position: relative;
+      z-index: 2;
+      transform: scale(1.06);
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,.14), 0 0 0 2px rgba(255,255,255,.95), 0 2px 6px rgba(20,42,76,.28);
+    }
+
+    .scale-card.is-balanced .molecule-cloud .atom.target-atom { animation: atom-balanced-pop .55s ease-out; }
+
+    @keyframes atom-balanced-pop {
+      0% { transform: scale(.82); }
+      55% { transform: scale(1.2); }
+      100% { transform: scale(1.06); }
+    }
+
+    .molecule-overflow {
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      color: #5e6c80;
+      background: #e6ebf2;
+      font-size: .55rem;
+      font-weight: 900;
+    }
+
+    .molecule-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 3px;
+      color: #24344d;
+      white-space: nowrap;
+      font-size: .64rem;
+      font-weight: 900;
+    }
+
+    .molecule-formula { font-family: "Cambria Math", Cambria, Georgia, serif; }
+    .molecule-formula sub { font-size: .65em; line-height: 0; }
+
+    .molecule-multiplier {
+      padding: 1px 4px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--atom-color, #4768d7);
+      font-size: .58rem;
+    }
+
+    .molecule-contribution {
+      margin-top: 1px;
+      color: var(--atom-color, #4768d7);
+      font-size: .56rem;
+      font-weight: 900;
+    }
+
+    .fulcrum {
+      position: absolute;
+      left: 50%;
+      top: 108px;
+      width: 58px;
+      height: 48px;
+      background: linear-gradient(135deg, #2e68ad, #0e376b);
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .fulcrum-base {
+      position: absolute;
+      left: 50%;
+      bottom: 3px;
+      width: 94px;
+      height: 8px;
+      border-radius: 999px;
+      background: #0a2d58;
+      transform: translateX(-50%);
+    }
+
+    .balance-analysis {
+      padding: 8px 13px 10px;
+      border-top: 1px solid #e5ebf3;
+      background: #f8fbff;
+    }
+
+    .analysis-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #364963;
+      font-size: .76rem;
+      font-weight: 800;
+    }
+
+    .analysis-difference { color: var(--amber); text-align: center; }
+    .is-balanced .analysis-difference { color: var(--green); }
+
+    .balance-meter {
+      position: relative;
+      height: 18px;
+      margin: 5px 2px 3px;
+    }
+
+    .meter-track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 7px;
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e37a50, #f0c55b 34%, #54bd7f 50%, #f0c55b 66%, #e37a50);
+    }
+
+    .meter-track::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      width: 2px;
+      height: 13px;
+      background: #173a66;
+      transform: translateX(-50%);
+    }
+
+    .meter-marker {
+      position: absolute;
+      left: calc(50% + var(--meter-offset, 0%));
+      top: 1px;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 2px 7px rgba(30,52,80,.28);
+      transform: translateX(-50%);
+      transition: left .55s cubic-bezier(.2,.8,.2,1), background .25s;
+    }
+
+    .is-balanced .meter-marker { background: var(--green); }
+
+    .analysis-guidance {
+      min-height: 16px;
+      color: var(--blue-800);
+      text-align: center;
+      font-size: .7rem;
+      font-weight: 800;
+    }
+
+    .science-note {
+      margin-top: 3px;
+      color: #7a8799;
+      text-align: center;
+      font-size: .6rem;
+    }
+
+    .empty-state {
+      padding: 32px 18px;
+      border: 1px dashed #9bb7dc;
+      border-radius: 18px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255,255,255,.72);
+    }
+
+    .equation-section {
+      flex: 0 0 auto;
+      position: relative;
+      max-height: 46vh;
+      max-height: 46dvh;
+      overflow-y: auto;
+      padding: 13px clamp(12px, 3vw, 30px) calc(13px + env(safe-area-inset-bottom));
+      border-top: 1px solid #d4dfec;
+      background: rgba(255, 255, 255, .98);
+      box-shadow: 0 -10px 32px rgba(24, 55, 99, .12);
+      z-index: 8;
+    }
+
+    .equation-inner { width: min(1080px, 100%); margin: 0 auto; }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .status-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-weight: 800;
+      color: var(--blue-800);
+    }
+
+    .status-icon {
+      flex: 0 0 auto;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue-600);
+    }
+
+    .status-message.success { color: var(--green); }
+    .status-message.success .status-icon { background: var(--green); }
+    .status-message.warning { color: var(--amber); }
+    .status-message.warning .status-icon { background: #e88919; }
+
+    .problem-badge {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .equation-editor-wrap {
+      position: relative;
+      padding: 12px 10px;
+      border: 1px solid #d8e2f0;
+      border-radius: 16px;
+      background: #f8fbff;
+    }
+
+    .equation-editor {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 3px 2px 7px;
+      scrollbar-width: thin;
+    }
+
+    .term {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: opacity .22s, filter .22s;
+    }
+
+    .term.is-related .coefficient {
+      border-color: var(--focus-color, var(--blue-600));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus-color, var(--blue-600)) 18%, transparent);
+    }
+
+    .term.is-related .formula {
+      color: var(--focus-color, var(--blue-800));
+      text-decoration: underline;
+      text-decoration-color: color-mix(in srgb, var(--focus-color, var(--blue-600)) 55%, transparent);
+      text-decoration-thickness: 3px;
+      text-underline-offset: 6px;
+    }
+
+    body.guided-mode .term.is-unrelated,
+    body.scale-focus-mode.guided-mode .term.is-unrelated { opacity: .28; filter: grayscale(.6); }
+
+    body.scale-focus-mode:not(.guided-mode) .term.is-unrelated { opacity: .62; }
+
+    .coefficient {
+      width: 52px;
+      height: 50px;
+      border: 2px solid #9db2cf;
+      border-radius: 12px;
+      outline: none;
+      text-align: center;
+      color: var(--blue-950);
+      background: #fff;
+      font-size: 1.24rem;
+      font-weight: 900;
+      box-shadow: inset 0 1px 2px rgba(25,50,85,.06);
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+      appearance: textfield;
+    }
+
+    .coefficient::-webkit-outer-spin-button,
+    .coefficient::-webkit-inner-spin-button { appearance: none; margin: 0; }
+
+    .coefficient:focus {
+      border-color: var(--blue-600);
+      box-shadow: 0 0 0 4px rgba(21, 112, 239, .15);
+      transform: translateY(-1px);
+    }
+
+    .formula {
+      white-space: nowrap;
+      color: #17243a;
+      font-family: "Cambria Math", Cambria, Georgia, serif;
+      font-size: clamp(1.25rem, 3vw, 1.62rem);
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .formula sub { font-size: .64em; line-height: 0; }
+
+    .operator {
+      flex: 0 0 auto;
+      color: #687890;
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .operator.arrow { color: var(--blue-700); font-size: 1.85rem; padding: 0 2px; }
+
+    .helper-line {
+      margin: 7px 4px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: .76rem;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      min-height: 42px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .16s, filter .16s, background .16s;
+    }
+
+    .btn:hover { filter: brightness(.98); transform: translateY(-1px); }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible { outline: 3px solid rgba(21,112,239,.25); outline-offset: 2px; }
+    .btn.primary { color: #fff; background: var(--blue-700); box-shadow: 0 6px 15px rgba(11,91,211,.22); }
+    .btn.secondary { color: var(--blue-800); border-color: #bcd0eb; background: #eef5ff; }
+    .btn.ghost { color: #41526d; border-color: #d8e1ec; background: #fff; }
+    .btn.success { color: #fff; background: var(--green); }
+    .btn.guide-mode { color: #684100; border-color: #e6c26f; background: #fff8df; }
+    .btn.guide-mode[aria-pressed="true"] { color: #fff; border-color: #9a5d05; background: #b66b07; box-shadow: 0 6px 15px rgba(159,91,5,.2); }
+    .btn[hidden] { display: none; }
+
+    .custom-panel {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid #bed1eb;
+      border-radius: 15px;
+      background: #f2f7ff;
+    }
+
+    .custom-panel[hidden] { display: none; }
+
+    .custom-panel label { display: block; margin-bottom: 7px; font-weight: 850; color: var(--blue-950); }
+
+    .custom-row { display: flex; gap: 8px; }
+
+    .custom-input {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 44px;
+      border: 1px solid #9db3d0;
+      border-radius: 11px;
+      padding: 0 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    .custom-input:focus { border-color: var(--blue-600); box-shadow: 0 0 0 3px rgba(21,112,239,.13); }
+    .custom-note { margin: 7px 2px 0; color: var(--muted); font-size: .75rem; }
+    .custom-error { margin: 7px 2px 0; color: var(--red); font-size: .79rem; font-weight: 750; }
+    .custom-error:empty { display: none; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 40;
+      max-width: min(92vw, 470px);
+      padding: 11px 15px;
+      border-radius: 12px;
+      color: #fff;
+      background: #17263f;
+      box-shadow: 0 12px 32px rgba(0,0,0,.25);
+      transform: translate(-50%, 150%);
+      opacity: 0;
+      transition: transform .28s, opacity .28s;
+      pointer-events: none;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    dialog.success-dialog {
+      width: min(92vw, 470px);
+      border: 0;
+      border-radius: 22px;
+      padding: 0;
+      color: var(--ink);
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(7,33,84,.32);
+    }
+
+    dialog::backdrop { background: rgba(9, 25, 51, .58); backdrop-filter: blur(3px); }
+
+    .dialog-body { padding: 28px 24px 22px; text-align: center; }
+
+    .success-mark {
+      width: 70px;
+      height: 70px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 13px;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, #23b16f, #0a7a42);
+      box-shadow: 0 10px 25px rgba(20,128,74,.25);
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    .dialog-body h2 { margin: 0; color: #0b6238; font-size: 1.5rem; }
+    .dialog-body p { margin: 9px 0 18px; color: var(--muted); line-height: 1.5; }
+    .dialog-actions { display: flex; justify-content: center; gap: 8px; }
+
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      z-index: 60;
+      width: 9px;
+      height: 15px;
+      border-radius: 2px;
+      pointer-events: none;
+      animation: fall var(--duration) linear forwards;
+    }
+
+    @keyframes fall {
+      to { transform: translate3d(var(--drift), 110vh, 0) rotate(720deg); opacity: .85; }
+    }
+
+    /* Chế độ trình chiếu: ưu tiên độ tương phản, chữ lớn và khung hình 16:9. */
+    body.tv-mode { background: #07162d; }
+
+    body.tv-mode .topbar {
+      min-height: 64px;
+      padding-block: 8px;
+      background:
+        radial-gradient(circle at 84% -70%, rgba(89, 184, 255, .8), transparent 42%),
+        linear-gradient(110deg, #061a43, #0b5bd3);
+    }
+
+    body.tv-mode .brand h1 { font-size: 1.68rem; }
+    body.tv-mode .problem-select { height: 48px; font-size: 1.02rem; }
+    body.tv-mode .view-button { min-height: 48px; font-size: .96rem; }
+
+    body.tv-mode .teacher-strip {
+      min-height: 38px;
+      color: #fff;
+      border-bottom-color: rgba(255, 222, 114, .62);
+      background: linear-gradient(90deg, #082b62, #0d4c9d, #082b62);
+      font-size: 1.02rem;
+      box-shadow: none;
+    }
+
+    body.tv-mode .teacher-strip .teacher-name { color: #ffe17e; }
+    body.tv-mode .teacher-strip .teacher-separator { color: #8cc4ff; }
+
+    body.tv-mode .brand p,
+    body.tv-mode .lesson-strip { display: none; }
+
+    body.tv-mode .scale-mode-bar {
+      margin-bottom: 8px;
+      padding: 5px 7px;
+      border-color: rgba(157, 195, 244, .5);
+      background: rgba(9, 39, 83, .9);
+      box-shadow: none;
+    }
+
+    body.tv-mode .scale-mode-switch { background: rgba(255,255,255,.14); }
+    body.tv-mode .scale-mode-button { min-height: 40px; color: #dcecff; font-size: .96rem; }
+    body.tv-mode .scale-mode-button[aria-pressed="true"] { color: #082b5b; background: #ffd45f; }
+    body.tv-mode .auto-scale-position { color: #fff; font-size: 1.05rem; }
+    body.tv-mode .scale-nav-button { width: 40px; height: 40px; color: #fff; border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.12); }
+    body.tv-mode .manual-vertical-nav { gap: 9px; }
+    body.tv-mode .manual-nav-button { min-width: 132px; min-height: 40px; border-color: #79a9e6; font-size: .96rem; }
+    body.tv-mode .manual-nav-icon { font-size: 1.22rem; }
+    body.tv-mode .manual-scale-position { min-width: 102px; padding-block: 9px; font-size: 1.02rem; background: #0b5bd3; }
+
+    body.tv-mode .element-progress {
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      border-color: rgba(157, 195, 244, .5);
+      background: rgba(9, 39, 83, .86);
+    }
+
+    body.tv-mode .progress-chip { min-height: 43px; color: #e8f2ff; border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); font-size: 1rem; }
+    body.tv-mode .progress-chip.is-active { border-color: var(--chip-color); background: rgba(255,255,255,.2); }
+    body.tv-mode .progress-chip.is-done { color: #caffdc; border-color: #69d596; background: rgba(20,128,74,.35); }
+    body.tv-mode .progress-chip.is-warning { color: #ffe2ce; border-color: #f39c61; background: rgba(154,57,12,.4); }
+    body.tv-mode .progress-chip-symbol { width: 31px; height: 31px; font-size: .82rem; }
+
+    body.tv-mode .visual-section {
+      padding: 8px clamp(18px, 3vw, 44px) 10px;
+      background:
+        radial-gradient(circle at 50% -30%, rgba(35, 107, 205, .34), transparent 58%),
+        #071a35;
+    }
+
+    body.tv-mode .visual-inner { width: min(1500px, 100%); }
+    body.tv-mode .scales-list { gap: 8px; }
+    body.tv-mode.scale-focus-mode .scales-list { min-height: 0; }
+
+    body.tv-mode .scale-card {
+      border-color: rgba(183, 210, 246, .65);
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .2);
+    }
+
+    body.tv-mode .element-tile { width: 42px; height: 42px; font-size: 1.08rem; }
+    body.tv-mode .scale-title-text strong { font-size: 1.25rem; }
+    body.tv-mode .scale-title-text small { font-size: 1rem; }
+    body.tv-mode .scale-state { font-size: 1rem; }
+    body.tv-mode .side-caption b { font-size: 1.38rem; }
+    body.tv-mode .side-caption span { font-size: .95rem; }
+    body.tv-mode .balance-announcement { padding: 13px 22px; font-size: 1.22rem; }
+    body.tv-mode .analysis-summary { font-size: 1rem; }
+    body.tv-mode .analysis-guidance { font-size: .92rem; }
+    body.tv-mode .science-note { font-size: .72rem; }
+
+    body.tv-mode .equation-section {
+      max-height: 40vh;
+      max-height: 40dvh;
+      padding-top: 12px;
+      border-top: 4px solid #4f94ef;
+    }
+
+    body.tv-mode .equation-inner { width: min(1700px, 100%); }
+    body.tv-mode .status-message { font-size: 1.25rem; }
+    body.tv-mode .status-icon { width: 36px; height: 36px; }
+    body.tv-mode .problem-badge { font-size: 1rem; }
+    body.tv-mode .equation-editor-wrap { padding: 13px 16px; }
+    body.tv-mode .equation-editor { min-height: 82px; gap: 12px; justify-content: safe center; }
+    body.tv-mode .formula { font-size: clamp(2.2rem, 2.8vw, 3.25rem); line-height: 1.1; }
+    body.tv-mode .coefficient { width: 78px; height: 68px; font-size: 2.15rem; border-width: 3px; }
+    body.tv-mode .operator { font-size: 2.2rem; }
+    body.tv-mode .operator.arrow { font-size: 2.8rem; padding-inline: 5px; }
+    body.tv-mode .equation-editor[data-density="medium"] .formula { font-size: clamp(2.05rem, 2.4vw, 2.85rem); }
+    body.tv-mode .equation-editor[data-density="medium"] .coefficient { width: 72px; height: 66px; font-size: 2rem; }
+    body.tv-mode .equation-editor[data-density="long"] { gap: 8px; justify-content: flex-start; }
+    body.tv-mode .equation-editor[data-density="long"] .formula { font-size: clamp(1.95rem, 2vw, 2.45rem); }
+    body.tv-mode .equation-editor[data-density="long"] .coefficient { width: 66px; height: 62px; font-size: 1.78rem; }
+    body.tv-mode .equation-editor[data-density="long"] .operator { font-size: 1.9rem; }
+    body.tv-mode .equation-editor[data-density="long"] .operator.arrow { font-size: 2.4rem; }
+    body.tv-mode .helper-line { display: none; }
+    body.tv-mode .actions { margin-top: 8px; }
+    body.tv-mode .actions .btn { min-height: 46px; font-size: 1rem; }
+
+    @media (min-width: 900px) {
+      body.tv-mode .scale-card {
+        display: grid;
+        grid-template-columns: minmax(230px, 275px) 1fr;
+      }
+
+      body.tv-mode .scale-heading {
+        grid-row: 1 / span 2;
+        min-height: 0;
+        height: auto;
+        padding: 9px 13px;
+        border-right: 1px solid #d7e3f0;
+        border-bottom: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+      }
+
+      body.tv-mode .scale-title { width: 100%; }
+      body.tv-mode .scale-state { margin-top: 7px; }
+      body.tv-mode .balance-stage { grid-column: 2; grid-row: 1; height: clamp(112px, 13.2vh, 150px); }
+      body.tv-mode .balance-analysis { grid-column: 2; grid-row: 2; padding: 7px 14px 8px; }
+      body.tv-mode .beam { top: 64%; }
+      body.tv-mode .hanger { height: 74px; }
+      body.tv-mode .molecule-stack { min-height: 60px; }
+      body.tv-mode .molecule-group { min-width: 62px; max-width: 102px; }
+      body.tv-mode .molecule-cloud .atom { width: 22px; height: 22px; font-size: .6rem; }
+      body.tv-mode .molecule-label { font-size: .78rem; }
+      body.tv-mode .molecule-contribution { font-size: .7rem; }
+      body.tv-mode .fulcrum { top: calc(64% + 5px); height: 34px; }
+      body.tv-mode .side-caption { top: 4px; }
+
+      body.tv-mode.scale-focus-mode .scale-card { grid-template-columns: minmax(270px, 330px) 1fr; }
+      body.tv-mode.scale-focus-mode .balance-stage { height: clamp(235px, 35vh, 380px); }
+      body.tv-mode.scale-focus-mode .scale-heading { padding: 18px 22px; }
+      body.tv-mode.scale-focus-mode .element-tile { width: 54px; height: 54px; font-size: 1.4rem; }
+      body.tv-mode.scale-focus-mode .scale-title-text strong { font-size: 1.65rem; }
+      body.tv-mode.scale-focus-mode .scale-title-text small { font-size: 1.18rem; }
+      body.tv-mode.scale-focus-mode .scale-state { font-size: 1.18rem; padding: 9px 13px; }
+      body.tv-mode.scale-focus-mode .side-caption b { font-size: 1.85rem; }
+      body.tv-mode.scale-focus-mode .side-caption span { font-size: 1.08rem; }
+      body.tv-mode.scale-focus-mode .hanger { height: 112px; }
+      body.tv-mode.scale-focus-mode .molecule-stack { min-height: 95px; gap: 8px; }
+      body.tv-mode.scale-focus-mode .molecule-group { min-width: 86px; max-width: 132px; padding: 6px; }
+      body.tv-mode.scale-focus-mode .molecule-cloud { min-height: 61px; }
+      body.tv-mode.scale-focus-mode .molecule-cloud .atom { width: 31px; height: 31px; font-size: .82rem; }
+      body.tv-mode.scale-focus-mode .molecule-label { font-size: 1rem; }
+      body.tv-mode.scale-focus-mode .molecule-multiplier { font-size: .85rem; }
+      body.tv-mode.scale-focus-mode .molecule-contribution { font-size: .88rem; }
+      body.tv-mode.scale-focus-mode .balance-analysis { padding: 11px 22px 13px; }
+      body.tv-mode.scale-focus-mode .analysis-summary { font-size: 1.2rem; }
+      body.tv-mode.scale-focus-mode .analysis-guidance { font-size: 1.08rem; }
+      body.tv-mode.scale-focus-mode .science-note { font-size: .82rem; }
+      body.tv-mode.scale-focus-mode .fulcrum { height: 54px; }
+    }
+
+    :fullscreen .app,
+    :-webkit-full-screen .app { height: 100vh; }
+
+    @media (max-width: 1100px) {
+      .view-button { width: 42px; padding-inline: 8px; }
+      .view-button .view-label { display: none; }
+      .score-chip { display: none; }
+      .problem-select { width: min(34vw, 285px); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar { min-height: 62px; padding-block: 8px; gap: 8px; }
+      .brand { min-width: 0; }
+      .brand p { display: none; }
+      .brand h1 { max-width: 94px; font-size: .98rem; }
+      .score-chip { display: none; }
+      .top-controls { flex: 1 1 auto; gap: 5px; }
+      .problem-select { flex: 1 1 auto; width: auto; min-width: 0; height: 40px; font-size: .8rem; }
+      .view-controls { gap: 4px; }
+      .view-button { width: 38px; min-height: 40px; padding: 7px; }
+      .teacher-strip { min-height: 30px; gap: 5px; padding-block: 5px; font-size: .68rem; }
+      .visual-section { padding-top: 9px; }
+      .lesson-strip { align-items: flex-start; padding: 8px 10px; font-size: .79rem; }
+      .legend { white-space: normal; font-size: .72rem; }
+      .scale-mode-bar { flex-wrap: wrap; padding: 6px; }
+      .scale-mode-switch { width: 100%; }
+      .scale-mode-button { flex: 1 1 50%; padding-inline: 7px; font-size: .74rem; }
+      .auto-navigator { width: 100%; justify-content: center; }
+      .auto-scale-position { flex: 1 1 auto; text-align: center; }
+      .balance-announcement { max-width: 94vw; padding: 9px 13px; }
+      .manual-vertical-nav { width: 100%; justify-content: center; margin-left: 0; gap: 5px; }
+      .manual-nav-button { min-width: 0; min-height: 38px; padding: 5px 9px; font-size: .7rem; }
+      .manual-nav-icon { font-size: 1rem; }
+      .manual-scale-position { min-width: 72px; padding: 7px 5px; font-size: .72rem; }
+      .scale-heading { min-height: 40px; padding-block: 6px; }
+      .element-tile { width: 31px; height: 31px; }
+      .balance-stage { height: 151px; }
+      .beam { left: 15%; right: 15%; top: 98px; }
+      .fulcrum { top: 103px; }
+      .side-caption.left { left: 2%; }
+      .side-caption.right { right: 2%; }
+      .atom { width: 23px; height: 23px; font-size: .62rem; }
+      .equation-section { max-height: 49dvh; padding-top: 10px; }
+      .status-row { margin-bottom: 8px; }
+      .problem-badge { display: none; }
+      .status-message { font-size: .86rem; }
+      .equation-editor-wrap { padding: 8px 6px; }
+      .equation-editor { justify-content: flex-start; min-height: 58px; }
+      .coefficient { width: 45px; height: 46px; font-size: 1.08rem; }
+      .formula { font-size: 1.22rem; }
+      .actions { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 2px; }
+      .btn { flex: 0 0 auto; min-height: 40px; padding: 8px 11px; font-size: .82rem; }
+      .custom-row { align-items: stretch; }
+      .custom-row .btn { padding-inline: 10px; }
+      body.tv-mode .equation-section { max-height: 49dvh; }
+    }
+
+    @media (max-width: 430px) {
+      .lesson-strip { display: block; }
+      .legend { margin-top: 5px; }
+      .scale-title-text small { display: none; }
+      .scale-state { font-size: .7rem; }
+      .side-caption { min-width: 74px; }
+      .side-caption b { font-size: .9rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>⚖️ Cân Bằng Hóa Học</h1>
+        <p>Nhìn số nguyên tử – điều chỉnh hệ số – đưa mọi cân về thăng bằng</p>
+      </div>
+      <div class="top-controls">
+        <select id="problemSelect" class="problem-select" aria-label="Chọn bài tập"></select>
+        <div id="scoreChip" class="score-chip">Đã giải 0/12</div>
+        <div class="view-controls" aria-label="Điều khiển trình chiếu">
+          <button id="tvModeButton" class="view-button" type="button" aria-pressed="false" title="Bật chế độ trình chiếu TV (phím T)">
+            <span class="view-icon" aria-hidden="true">📺</span>
+            <span id="tvModeLabel" class="view-label">Trình chiếu TV</span>
+          </button>
+          <button id="fullscreenButton" class="view-button" type="button" aria-pressed="false" title="Bật toàn màn hình (phím F)">
+            <span id="fullscreenIcon" class="view-icon" aria-hidden="true">⛶</span>
+            <span id="fullscreenLabel" class="view-label">Toàn màn hình</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="teacher-strip" aria-label="Thông tin giáo viên phụ trách">
+      <span aria-hidden="true">👨‍🏫</span>
+      <span class="teacher-name">Thầy Cao Hùng Thọ</span>
+      <span class="teacher-separator" aria-hidden="true">•</span>
+      <span>Trường THCS Kim Phú</span>
+      <span class="teacher-separator" aria-hidden="true">•</span>
+      <a href="tel:0888777395" aria-label="Số điện thoại 0888777395">☎ 0888777395</a>
+    </div>
+
+    <main class="visual-section" aria-label="Minh họa các cân nguyên tử">
+      <div class="visual-inner">
+        <div class="lesson-strip">
+          <div><strong>Mô hình đếm:</strong> mỗi khung là một chất; nguyên tố đang cân được tô sáng.</div>
+          <div class="legend"><span class="legend-dot"></span> Đĩa thấp hơn có nhiều nguyên tử mục tiêu hơn</div>
+        </div>
+        <div class="scale-mode-bar">
+          <div class="scale-mode-switch" role="group" aria-label="Chọn chế độ xem các cân">
+            <button id="scrollModeButton" class="scale-mode-button" type="button" aria-pressed="true">↕ Cuộn xem lại</button>
+            <button id="autoModeButton" class="scale-mode-button" type="button" aria-pressed="false">▶ Tự chuyển cân</button>
+          </div>
+          <div id="manualNavigator" class="manual-vertical-nav" aria-label="Điều khiển chuyển cân thủ công">
+            <button id="manualPreviousButton" class="manual-nav-button" type="button" aria-label="Xem cân phía trên">
+              <span class="manual-nav-icon" aria-hidden="true">▲</span>
+              <span>Cân trước</span>
+            </button>
+            <div id="manualScalePosition" class="manual-scale-position">Cân 1/4</div>
+            <button id="manualNextButton" class="manual-nav-button" type="button" aria-label="Xem cân phía dưới">
+              <span class="manual-nav-icon" aria-hidden="true">▼</span>
+              <span>Cân sau</span>
+            </button>
+          </div>
+          <div id="autoNavigator" class="auto-navigator" hidden>
+            <button id="previousScaleButton" class="scale-nav-button" type="button" aria-label="Xem cân trước">‹</button>
+            <span id="autoScalePosition" class="auto-scale-position">Cân 1/4</span>
+            <button id="nextScaleButton" class="scale-nav-button" type="button" aria-label="Xem cân tiếp theo">›</button>
+          </div>
+        </div>
+        <div id="elementProgress" class="element-progress" role="list" aria-label="Tiến trình cân bằng các nguyên tố"></div>
+        <div class="announcement-slot">
+          <div id="balanceAnnouncement" class="balance-announcement" role="status" aria-live="assertive"></div>
+        </div>
+        <div class="scale-display-shell">
+          <div id="scalesList" class="scales-list" aria-live="polite"></div>
+        </div>
+      </div>
+    </main>
+
+    <section class="equation-section" aria-label="Nhập hệ số phương trình">
+      <div class="equation-inner">
+        <div class="status-row">
+          <div id="statusMessage" class="status-message">
+            <span class="status-icon">↔</span>
+            <span>Hãy điều chỉnh các hệ số để mọi cân cùng thăng bằng.</span>
+          </div>
+          <div id="problemBadge" class="problem-badge"></div>
+        </div>
+
+        <div class="equation-editor-wrap">
+          <div id="equationEditor" class="equation-editor" aria-label="Phương trình cần cân bằng"></div>
+          <div class="helper-line">Ô trống được tính là hệ số 1 · Chỉ nhập số nguyên dương</div>
+        </div>
+
+        <div class="actions">
+          <button id="guideModeButton" class="btn guide-mode" type="button" aria-pressed="false">🧭 Tự khám phá</button>
+          <button id="hintButton" class="btn secondary" type="button">💡 Gợi ý 1 hệ số</button>
+          <button id="resetButton" class="btn ghost" type="button">↺ Làm lại</button>
+          <button id="simplifyButton" class="btn success" type="button" hidden>÷ Rút gọn hệ số</button>
+          <button id="nextButton" class="btn primary" type="button">Bài tiếp theo →</button>
+          <button id="customToggle" class="btn ghost" type="button" aria-expanded="false">✎ Tự nhập phương trình</button>
+        </div>
+
+        <div id="customPanel" class="custom-panel" hidden>
+          <label for="customEquation">Nhập phương trình chưa cân bằng</label>
+          <div class="custom-row">
+            <input id="customEquation" class="custom-input" value="Ca(OH)2 + HCl -> CaCl2 + H2O" spellcheck="false" autocomplete="off">
+            <button id="createCustomButton" class="btn primary" type="button">Tạo các cân</button>
+          </div>
+          <p class="custom-note">Hỗ trợ ký hiệu →, -&gt; hoặc = và công thức có ngoặc. Ví dụ: Al2(SO4)3 + Ca(OH)2 -&gt; Al(OH)3 + CaSO4</p>
+          <p id="customError" class="custom-error" role="alert"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <dialog id="successDialog" class="success-dialog">
+    <div class="dialog-body">
+      <div class="success-mark">✓</div>
+      <h2>Tất cả các cân đã thăng bằng!</h2>
+      <p id="successText">Bạn đã cân bằng đúng phương trình với bộ hệ số tối giản.</p>
+      <div class="dialog-actions">
+        <button id="closeDialogButton" class="btn ghost" type="button">Xem lại</button>
+        <button id="dialogNextButton" class="btn primary" type="button">Bài tiếp theo →</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    "use strict";
+
+    const PROBLEMS = [
+      { id: "fe2o3-hcl", level: "Mẫu", title: "Sắt(III) oxit + axit clohiđric", equation: "Fe2O3 + HCl -> FeCl3 + H2O", solution: [1, 6, 2, 3] },
+      { id: "h2-o2", level: "Dễ", title: "Hiđro cháy trong oxi", equation: "H2 + O2 -> H2O", solution: [2, 1, 2] },
+      { id: "al-o2", level: "Dễ", title: "Nhôm tác dụng với oxi", equation: "Al + O2 -> Al2O3", solution: [4, 3, 2] },
+      { id: "mg-hcl", level: "Dễ", title: "Magiê + axit clohiđric", equation: "Mg + HCl -> MgCl2 + H2", solution: [1, 2, 1, 1] },
+      { id: "al-hcl", level: "Vừa", title: "Nhôm + axit clohiđric", equation: "Al + HCl -> AlCl3 + H2", solution: [2, 6, 2, 3] },
+      { id: "na-h2o", level: "Vừa", title: "Natri + nước", equation: "Na + H2O -> NaOH + H2", solution: [2, 2, 2, 1] },
+      { id: "kclo3", level: "Vừa", title: "Nhiệt phân kali clorat", equation: "KClO3 -> KCl + O2", solution: [2, 2, 3] },
+      { id: "fe-o2", level: "Vừa", title: "Sắt cháy tạo oxit sắt từ", equation: "Fe + O2 -> Fe3O4", solution: [3, 2, 1] },
+      { id: "na2co3-hcl", level: "Khá", title: "Natri cacbonat + axit", equation: "Na2CO3 + HCl -> NaCl + H2O + CO2", solution: [1, 2, 2, 1, 1] },
+      { id: "cu-hno3", level: "Khá", title: "Đồng + axit nitric đặc", equation: "Cu + HNO3 -> Cu(NO3)2 + NO2 + H2O", solution: [1, 4, 1, 2, 2] },
+      { id: "al2so4-caoh", level: "Khó", title: "Nhôm sunfat + canxi hiđroxit", equation: "Al2(SO4)3 + Ca(OH)2 -> Al(OH)3 + CaSO4", solution: [1, 3, 2, 3] },
+      { id: "kmno4", level: "Khó", title: "Nhiệt phân kali pemanganat", equation: "KMnO4 -> K2MnO4 + MnO2 + O2", solution: [2, 1, 1, 1] }
+    ];
+
+    const ELEMENT_NAMES = {
+      H: "Hiđro", O: "Oxi", Fe: "Sắt", Cl: "Clo", Al: "Nhôm", Na: "Natri",
+      Ca: "Canxi", C: "Cacbon", K: "Kali", Cu: "Đồng", N: "Nitơ", S: "Lưu huỳnh",
+      Mn: "Mangan", Mg: "Magiê", P: "Photpho", F: "Flo", Br: "Brom", I: "Iốt",
+      Zn: "Kẽm", Ag: "Bạc", Ba: "Bari", Li: "Liti", Pb: "Chì", Hg: "Thủy ngân",
+      Cr: "Crom", Si: "Silic", B: "Bo"
+    };
+
+    const METALS = new Set([
+      "Li","Be","Na","Mg","Al","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn",
+      "Ga","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Cs","Ba",
+      "La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta",
+      "W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Fr","Ra","Ac","Th","Pa","U"
+    ]);
+
+    const VALID_ELEMENTS = new Set([
+      "H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar",
+      "K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr",
+      "Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe",
+      "Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu",
+      "Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra",
+      "Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db",
+      "Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
+    ]);
+
+    const COLOR_OVERRIDES = {
+      H: "#2d79db", O: "#dc3c45", Fe: "#a54c31", Cl: "#18a165", Al: "#75859b",
+      Na: "#7556c7", Ca: "#cf7831", C: "#323e51", K: "#9b4cc1", Cu: "#bf6a28",
+      N: "#4a54c6", S: "#d59809", Mn: "#9b587c", P: "#e66b31"
+    };
+
+    const state = {
+      currentProblem: null,
+      parsed: null,
+      coefficients: [],
+      solution: null,
+      wasSolved: false,
+      tvMode: false,
+      guidedMode: false,
+      scaleViewMode: "scroll",
+      activeScaleIndex: 0,
+      slideDirection: "right",
+      animateScaleEntry: false,
+      balanceSnapshot: [],
+      autoAdvanceTimer: null,
+      pendingAutoSuccess: false,
+      everBalanced: new Set(),
+      toastTimer: null,
+      solvedIds: loadSolvedIds()
+    };
+
+    const els = {
+      problemSelect: document.getElementById("problemSelect"),
+      scoreChip: document.getElementById("scoreChip"),
+      tvModeButton: document.getElementById("tvModeButton"),
+      tvModeLabel: document.getElementById("tvModeLabel"),
+      fullscreenButton: document.getElementById("fullscreenButton"),
+      fullscreenIcon: document.getElementById("fullscreenIcon"),
+      fullscreenLabel: document.getElementById("fullscreenLabel"),
+      scrollModeButton: document.getElementById("scrollModeButton"),
+      autoModeButton: document.getElementById("autoModeButton"),
+      autoNavigator: document.getElementById("autoNavigator"),
+      previousScaleButton: document.getElementById("previousScaleButton"),
+      nextScaleButton: document.getElementById("nextScaleButton"),
+      autoScalePosition: document.getElementById("autoScalePosition"),
+      manualNavigator: document.getElementById("manualNavigator"),
+      manualPreviousButton: document.getElementById("manualPreviousButton"),
+      manualNextButton: document.getElementById("manualNextButton"),
+      manualScalePosition: document.getElementById("manualScalePosition"),
+      balanceAnnouncement: document.getElementById("balanceAnnouncement"),
+      elementProgress: document.getElementById("elementProgress"),
+      scalesList: document.getElementById("scalesList"),
+      equationEditor: document.getElementById("equationEditor"),
+      statusMessage: document.getElementById("statusMessage"),
+      problemBadge: document.getElementById("problemBadge"),
+      guideModeButton: document.getElementById("guideModeButton"),
+      hintButton: document.getElementById("hintButton"),
+      resetButton: document.getElementById("resetButton"),
+      simplifyButton: document.getElementById("simplifyButton"),
+      nextButton: document.getElementById("nextButton"),
+      customToggle: document.getElementById("customToggle"),
+      customPanel: document.getElementById("customPanel"),
+      customEquation: document.getElementById("customEquation"),
+      createCustomButton: document.getElementById("createCustomButton"),
+      customError: document.getElementById("customError"),
+      toast: document.getElementById("toast"),
+      successDialog: document.getElementById("successDialog"),
+      successText: document.getElementById("successText"),
+      closeDialogButton: document.getElementById("closeDialogButton"),
+      dialogNextButton: document.getElementById("dialogNextButton")
+    };
+
+    function loadSolvedIds() {
+      try {
+        const value = JSON.parse(localStorage.getItem("chemBalanceSolved") || "[]");
+        return new Set(Array.isArray(value) ? value : []);
+      } catch (_) {
+        return new Set();
+      }
+    }
+
+    function saveSolvedIds() {
+      try { localStorage.setItem("chemBalanceSolved", JSON.stringify([...state.solvedIds])); } catch (_) {}
+    }
+
+    function normalizeFormulaText(text) {
+      const subscriptMap = { "₀":"0", "₁":"1", "₂":"2", "₃":"3", "₄":"4", "₅":"5", "₆":"6", "₇":"7", "₈":"8", "₉":"9" };
+      return String(text).replace(/[₀-₉]/g, character => subscriptMap[character]);
+    }
+
+    function parseFormula(rawFormula) {
+      let formula = normalizeFormulaText(rawFormula).replace(/\s+/g, "");
+      formula = formula.replace(/\((aq|s|l|g)\)$/i, "");
+      if (!formula) throw new Error("Công thức hóa học đang để trống.");
+
+      let index = 0;
+      const matching = { "(": ")", "[": "]", "{": "}" };
+
+      function readNumber() {
+        const start = index;
+        while (index < formula.length && /[0-9]/.test(formula[index])) index++;
+        if (start === index) return 1;
+        const value = Number(formula.slice(start, index));
+        if (!Number.isSafeInteger(value) || value < 1) throw new Error(`Chỉ số không hợp lệ trong ${rawFormula}.`);
+        return value;
+      }
+
+      function addCounts(target, source, multiplier = 1) {
+        Object.entries(source).forEach(([symbol, count]) => {
+          target[symbol] = (target[symbol] || 0) + count * multiplier;
+        });
+      }
+
+      function readGroup(expectedClose = null) {
+        const result = {};
+        while (index < formula.length) {
+          const character = formula[index];
+          if (expectedClose && character === expectedClose) {
+            index++;
+            return result;
+          }
+          if (matching[character]) {
+            index++;
+            const inner = readGroup(matching[character]);
+            addCounts(result, inner, readNumber());
+            continue;
+          }
+          if (/[A-Z]/.test(character)) {
+            let symbol = formula[index++];
+            while (index < formula.length && /[a-z]/.test(formula[index])) symbol += formula[index++];
+            if (!VALID_ELEMENTS.has(symbol)) throw new Error(`Không nhận ra nguyên tố “${symbol}”.`);
+            result[symbol] = (result[symbol] || 0) + readNumber();
+            continue;
+          }
+          if ([")", "]", "}"].includes(character)) {
+            throw new Error(`Dấu ngoặc trong ${rawFormula} chưa khớp.`);
+          }
+          throw new Error(`Ký tự “${character}” trong ${rawFormula} chưa được hỗ trợ.`);
+        }
+        if (expectedClose) throw new Error(`Thiếu dấu “${expectedClose}” trong ${rawFormula}.`);
+        return result;
+      }
+
+      const counts = readGroup();
+      if (!Object.keys(counts).length) throw new Error(`Không tìm thấy nguyên tố trong ${rawFormula}.`);
+      return counts;
+    }
+
+    function parseTerm(rawTerm) {
+      const normalized = normalizeFormulaText(rawTerm).trim();
+      const coefficientMatch = normalized.match(/^(\d+)\s*(.+)$/);
+      const initialCoefficient = coefficientMatch ? Number(coefficientMatch[1]) : 1;
+      const formula = (coefficientMatch ? coefficientMatch[2] : normalized).trim();
+      if (!formula) throw new Error("Có một chất đang để trống.");
+      return { formula, atoms: parseFormula(formula), initialCoefficient };
+    }
+
+    function parseEquation(rawEquation) {
+      const equation = normalizeFormulaText(rawEquation).trim();
+      const arrowMatch = equation.match(/(->|→|=|⟶)/);
+      if (!arrowMatch) throw new Error("Cần có mũi tên →, -> hoặc dấu = giữa hai vế.");
+      const arrowIndex = arrowMatch.index;
+      const leftText = equation.slice(0, arrowIndex).trim();
+      const rightText = equation.slice(arrowIndex + arrowMatch[0].length).trim();
+      if (!leftText || !rightText) throw new Error("Hai vế của phương trình đều phải có chất hóa học.");
+      const splitSide = side => side.split("+").map(part => part.trim()).filter(Boolean).map(parseTerm);
+      const left = splitSide(leftText);
+      const right = splitSide(rightText);
+      if (!left.length || !right.length) throw new Error("Không tìm thấy đủ chất ở hai vế.");
+
+      const occurrence = [];
+      [...left, ...right].forEach(term => {
+        Object.keys(term.atoms).forEach(symbol => { if (!occurrence.includes(symbol)) occurrence.push(symbol); });
+      });
+
+      const leftElements = new Set(left.flatMap(term => Object.keys(term.atoms)));
+      const rightElements = new Set(right.flatMap(term => Object.keys(term.atoms)));
+      const missing = occurrence.filter(symbol => !leftElements.has(symbol) || !rightElements.has(symbol));
+      if (missing.length) throw new Error(`Nguyên tố ${missing.join(", ")} chưa xuất hiện ở cả hai vế.`);
+
+      const rank = symbol => symbol === "O" ? 2 : symbol === "H" ? 3 : METALS.has(symbol) ? 0 : 1;
+      const elements = occurrence.slice().sort((a, b) => rank(a) - rank(b) || occurrence.indexOf(a) - occurrence.indexOf(b));
+      return { left, right, elements };
+    }
+
+    function createFormulaNode(formulaText) {
+      const span = document.createElement("span");
+      span.className = "formula";
+      const formula = normalizeFormulaText(formulaText);
+      let index = 0;
+      while (index < formula.length) {
+        const character = formula[index];
+        if (/[0-9]/.test(character)) {
+          let number = "";
+          while (index < formula.length && /[0-9]/.test(formula[index])) number += formula[index++];
+          const sub = document.createElement("sub");
+          sub.textContent = number;
+          span.appendChild(sub);
+        } else {
+          span.appendChild(document.createTextNode(character));
+          index++;
+        }
+      }
+      return span;
+    }
+
+    function categoryLabel(symbol) {
+      if (symbol === "O") return "Oxi";
+      if (symbol === "H") return "Hiđro";
+      return METALS.has(symbol) ? "Kim loại" : "Phi kim";
+    }
+
+    function colorForElement(symbol) {
+      if (COLOR_OVERRIDES[symbol]) return COLOR_OVERRIDES[symbol];
+      let hash = 0;
+      for (const character of symbol) hash = character.charCodeAt(0) + ((hash << 5) - hash);
+      return `hsl(${Math.abs(hash) % 360} 56% 47%)`;
+    }
+
+    function sideAtomCount(symbol, side, coefficients = state.coefficients) {
+      const offset = side === "left" ? 0 : state.parsed.left.length;
+      return state.parsed[side].reduce((sum, term, index) => {
+        return sum + (term.atoms[symbol] || 0) * coefficients[offset + index];
+      }, 0);
+    }
+
+    function createMoleculeAtom(symbol, targetSymbol) {
+      const atom = document.createElement("span");
+      atom.className = `atom ${symbol === targetSymbol ? "target-atom" : "context-atom"}`;
+      atom.style.setProperty("--atom-color", colorForElement(symbol));
+      atom.textContent = symbol;
+      atom.title = symbol === targetSymbol ? `${symbol}: nguyên tố đang cân` : `${symbol}: nguyên tố cùng chất`;
+      return atom;
+    }
+
+    function buildMoleculeGroup(term, targetSymbol, multiplier = 1) {
+      const group = document.createElement("div");
+      group.className = "molecule-group";
+      group.style.setProperty("--atom-color", colorForElement(targetSymbol));
+      group.title = `Mô hình đếm của ${term.formula}; không biểu diễn hình học hay liên kết phân tử.`;
+
+      const cloud = document.createElement("div");
+      cloud.className = "molecule-cloud";
+      const entries = Object.entries(term.atoms).sort(([a], [b]) => (a === targetSymbol ? -1 : b === targetSymbol ? 1 : 0));
+      const displayLimit = state.tvMode ? 10 : 8;
+      let displayed = 0;
+      let omitted = 0;
+      entries.forEach(([atomSymbol, atomCount]) => {
+        const available = Math.max(0, displayLimit - displayed);
+        const visible = Math.min(atomCount, available);
+        for (let index = 0; index < visible; index++) cloud.appendChild(createMoleculeAtom(atomSymbol, targetSymbol));
+        displayed += visible;
+        omitted += atomCount - visible;
+      });
+      if (omitted > 0) {
+        const overflow = document.createElement("span");
+        overflow.className = "molecule-overflow";
+        overflow.textContent = `+${omitted}`;
+        overflow.title = `Còn ${omitted} nguyên tử khác; xem công thức hóa học bên dưới.`;
+        cloud.appendChild(overflow);
+      }
+
+      const label = document.createElement("div");
+      label.className = "molecule-label";
+      const formula = createFormulaNode(term.formula);
+      formula.className = "molecule-formula";
+      label.appendChild(formula);
+      if (multiplier > 1) {
+        const multiplierNode = document.createElement("span");
+        multiplierNode.className = "molecule-multiplier";
+        multiplierNode.textContent = `×${multiplier}`;
+        label.appendChild(multiplierNode);
+      }
+
+      const contribution = document.createElement("div");
+      contribution.className = "molecule-contribution";
+      contribution.textContent = `${(term.atoms[targetSymbol] || 0) * multiplier} ${targetSymbol}`;
+      group.append(cloud, label, contribution);
+      return group;
+    }
+
+    function buildMoleculeStack(side, targetSymbol) {
+      const stack = document.createElement("div");
+      stack.className = "molecule-stack";
+      const offset = side === "left" ? 0 : state.parsed.left.length;
+      const relevant = state.parsed[side]
+        .map((term, index) => ({ term, coefficient: state.coefficients[offset + index] }))
+        .filter(item => item.term.atoms[targetSymbol]);
+      const canDuplicate = relevant.reduce((sum, item) => sum + item.coefficient, 0) <= 2
+        && relevant.every(item => item.coefficient <= 2);
+      relevant.forEach(({ term, coefficient }) => {
+        if (canDuplicate) {
+          for (let index = 0; index < coefficient; index++) stack.appendChild(buildMoleculeGroup(term, targetSymbol));
+        } else {
+          stack.appendChild(buildMoleculeGroup(term, targetSymbol, coefficient));
+        }
+      });
+      return stack;
+    }
+
+    function makeHanger(side, symbol) {
+      const hanger = document.createElement("div");
+      hanger.className = `hanger ${side}`;
+      const upright = document.createElement("div");
+      upright.className = "hanger-upright";
+      upright.appendChild(buildMoleculeStack(side, symbol));
+      const chain = document.createElement("div");
+      chain.className = "chain";
+      const tray = document.createElement("div");
+      tray.className = "tray";
+      upright.append(chain, tray);
+      hanger.appendChild(upright);
+      return hanger;
+    }
+
+    function buildBalanceAnalysis(symbol, left, right) {
+      const analysis = document.createElement("div");
+      analysis.className = "balance-analysis";
+      const difference = right - left;
+      const absoluteDifference = Math.abs(difference);
+      const maximum = Math.max(left, right, 1);
+      const meterOffset = Math.max(-45, Math.min(45, difference / maximum * 45));
+      analysis.style.setProperty("--meter-offset", `${meterOffset.toFixed(2)}%`);
+
+      const summary = document.createElement("div");
+      summary.className = "analysis-summary";
+      const leftText = document.createElement("span");
+      leftText.textContent = `Trái: ${left} ${symbol}`;
+      const differenceText = document.createElement("span");
+      differenceText.className = "analysis-difference";
+      if (left === right) differenceText.textContent = `Cân bằng ${left} = ${right}`;
+      else if (state.guidedMode) differenceText.textContent = `Chênh ${absoluteDifference} ${symbol}`;
+      else differenceText.textContent = left > right ? "Lệch về vế trái" : "Lệch về vế phải";
+      const rightText = document.createElement("span");
+      rightText.textContent = `Phải: ${right} ${symbol}`;
+      summary.append(leftText, differenceText, rightText);
+
+      const meter = document.createElement("div");
+      meter.className = "balance-meter";
+      const track = document.createElement("div");
+      track.className = "meter-track";
+      const marker = document.createElement("div");
+      marker.className = "meter-marker";
+      meter.append(track, marker);
+
+      const guidance = document.createElement("div");
+      guidance.className = "analysis-guidance";
+      const elementName = ELEMENT_NAMES[symbol] || symbol;
+      if (left === right) {
+        guidance.textContent = `✓ Nguyên tố ${elementName} đã có số nguyên tử bằng nhau.`;
+      } else if (state.guidedMode) {
+        const lackingSide = left > right ? "vế phải" : "vế trái";
+        guidance.textContent = `${lackingSide} đang thiếu ${absoluteDifference} ${symbol} · điều chỉnh các ô hệ số được tô màu.`;
+      } else {
+        guidance.textContent = "Quan sát đĩa thấp hơn và thử điều chỉnh hệ số phù hợp.";
+      }
+
+      const note = document.createElement("div");
+      note.className = "science-note";
+      note.textContent = "Mô hình dùng để đếm nguyên tử, không biểu diễn cấu trúc hay liên kết hóa học.";
+      analysis.append(summary, meter, guidance, note);
+      return analysis;
+    }
+
+    function renderScales() {
+      els.scalesList.replaceChildren();
+      state.parsed.elements.forEach((symbol, index) => {
+        const left = sideAtomCount(symbol, "left");
+        const right = sideAtomCount(symbol, "right");
+        const balanced = left === right;
+        const maxCount = Math.max(left, right, 1);
+        const difference = right - left;
+        const magnitude = balanced ? 0 : Math.min(11, 3 + 8 * Math.abs(difference) / maxCount);
+        const tilt = difference === 0 ? 0 : Math.sign(difference) * magnitude;
+
+        const card = document.createElement("article");
+        card.className = `scale-card${balanced ? " is-balanced" : ""}`;
+        if (index === state.activeScaleIndex) card.classList.add("is-inspected");
+        card.dataset.scaleIndex = String(index);
+        card.setAttribute("aria-label", `Cân nguyên tố ${ELEMENT_NAMES[symbol] || symbol}`);
+        if (index !== state.activeScaleIndex) {
+          card.hidden = true;
+        } else {
+          card.classList.add("auto-focus");
+          if (state.animateScaleEntry) card.classList.add(state.slideDirection === "left" ? "slide-left" : "slide-right");
+        }
+        card.style.setProperty("--tilt", `${tilt.toFixed(2)}deg`);
+        card.style.setProperty("--counter-tilt", `${(-tilt).toFixed(2)}deg`);
+        card.style.setProperty("--atom-color", colorForElement(symbol));
+
+        const heading = document.createElement("div");
+        heading.className = "scale-heading";
+        const title = document.createElement("div");
+        title.className = "scale-title";
+        const tile = document.createElement("span");
+        tile.className = "element-tile";
+        tile.textContent = symbol;
+        const titleText = document.createElement("div");
+        titleText.className = "scale-title-text";
+        const strong = document.createElement("strong");
+        strong.textContent = `Cân ${index + 1} · ${categoryLabel(symbol)}`;
+        const small = document.createElement("small");
+        small.textContent = ELEMENT_NAMES[symbol] || `Nguyên tố ${symbol}`;
+        titleText.append(strong, small);
+        title.append(tile, titleText);
+
+        const stateLabel = document.createElement("span");
+        stateLabel.className = "scale-state";
+        if (balanced) stateLabel.textContent = `Cân bằng: ${left} = ${right}`;
+        else if (left > right) stateLabel.textContent = `Trái nhiều hơn ${left - right}`;
+        else stateLabel.textContent = `Phải nhiều hơn ${right - left}`;
+        heading.append(title, stateLabel);
+
+        const stage = document.createElement("div");
+        stage.className = "balance-stage";
+        const leftCaption = document.createElement("div");
+        leftCaption.className = "side-caption left";
+        leftCaption.innerHTML = `<b>${left} ${symbol}</b><span>Vế trái</span>`;
+        const rightCaption = document.createElement("div");
+        rightCaption.className = "side-caption right";
+        rightCaption.innerHTML = `<b>${right} ${symbol}</b><span>Vế phải</span>`;
+        const beam = document.createElement("div");
+        beam.className = "beam";
+        beam.append(makeHanger("left", symbol), makeHanger("right", symbol));
+        const fulcrum = document.createElement("div");
+        fulcrum.className = "fulcrum";
+        const base = document.createElement("div");
+        base.className = "fulcrum-base";
+        stage.append(leftCaption, rightCaption, beam, fulcrum, base);
+        card.append(heading, stage, buildBalanceAnalysis(symbol, left, right));
+        els.scalesList.appendChild(card);
+      });
+      state.animateScaleEntry = false;
+    }
+
+    function renderEquationEditor() {
+      els.equationEditor.replaceChildren();
+      const allTerms = [...state.parsed.left, ...state.parsed.right];
+      const formulaLength = allTerms.reduce((total, term) => total + term.formula.length, 0);
+      els.equationEditor.dataset.density = allTerms.length >= 5 || formulaLength > 26
+        ? "long"
+        : allTerms.length === 4 || formulaLength > 18 ? "medium" : "short";
+      allTerms.forEach((term, globalIndex) => {
+        if (globalIndex > 0) {
+          const operator = document.createElement("span");
+          const isArrow = globalIndex === state.parsed.left.length;
+          operator.className = `operator${isArrow ? " arrow" : ""}`;
+          operator.textContent = isArrow ? "→" : "+";
+          els.equationEditor.appendChild(operator);
+        }
+
+        const termNode = document.createElement("span");
+        termNode.className = "term";
+        termNode.dataset.termIndex = String(globalIndex);
+        const input = document.createElement("input");
+        input.className = "coefficient";
+        input.type = "number";
+        input.inputMode = "numeric";
+        input.min = "1";
+        input.max = "99";
+        input.step = "1";
+        input.value = state.coefficients[globalIndex] === 1 ? "" : String(state.coefficients[globalIndex]);
+        input.dataset.index = String(globalIndex);
+        input.setAttribute("aria-label", `Hệ số trước ${term.formula}`);
+        input.addEventListener("input", handleCoefficientInput);
+        input.addEventListener("blur", handleCoefficientBlur);
+        input.addEventListener("keydown", handleCoefficientKeydown);
+        termNode.append(input, createFormulaNode(term.formula));
+        els.equationEditor.appendChild(termNode);
+      });
+      updateEquationFocus();
+    }
+
+    function handleCoefficientInput(event) {
+      const index = Number(event.currentTarget.dataset.index);
+      const raw = event.currentTarget.value.trim();
+      let value = raw === "" ? 1 : Number(raw);
+      if (!Number.isFinite(value)) value = 1;
+      value = Math.max(1, Math.min(99, Math.floor(value)));
+      state.coefficients[index] = value;
+      state.wasSolved = false;
+      updateVisualization();
+    }
+
+    function handleCoefficientBlur(event) {
+      const index = Number(event.currentTarget.dataset.index);
+      const raw = event.currentTarget.value.trim();
+      if (raw === "" || Number(raw) === 1) {
+        event.currentTarget.value = "";
+        state.coefficients[index] = 1;
+      } else {
+        const value = Math.max(1, Math.min(99, Math.floor(Number(raw) || 1)));
+        event.currentTarget.value = String(value);
+        state.coefficients[index] = value;
+      }
+      updateVisualization();
+    }
+
+    function handleCoefficientKeydown(event) {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      const inputs = [...els.equationEditor.querySelectorAll(".coefficient")];
+      const index = inputs.indexOf(event.currentTarget);
+      inputs[(index + 1) % inputs.length].focus();
+      inputs[(index + 1) % inputs.length].select();
+    }
+
+    function gcdNumber(a, b) {
+      a = Math.abs(a); b = Math.abs(b);
+      while (b) [a, b] = [b, a % b];
+      return a;
+    }
+
+    function coefficientsGcd(values) {
+      return values.reduce((result, value) => gcdNumber(result, value), 0);
+    }
+
+    function getBalanceSummary() {
+      const details = state.parsed.elements.map(symbol => {
+        const left = sideAtomCount(symbol, "left");
+        const right = sideAtomCount(symbol, "right");
+        return { symbol, left, right, balanced: left === right };
+      });
+      return { details, balancedCount: details.filter(item => item.balanced).length, allBalanced: details.every(item => item.balanced) };
+    }
+
+    function setStatus(type, icon, text) {
+      els.statusMessage.className = `status-message${type ? ` ${type}` : ""}`;
+      els.statusMessage.replaceChildren();
+      const iconNode = document.createElement("span");
+      iconNode.className = "status-icon";
+      iconNode.textContent = icon;
+      const textNode = document.createElement("span");
+      textNode.textContent = text;
+      els.statusMessage.append(iconNode, textNode);
+    }
+
+    function currentInspectionSymbol() {
+      if (!state.parsed || !state.parsed.elements.length) return null;
+      return state.parsed.elements[Math.max(0, Math.min(state.activeScaleIndex, state.parsed.elements.length - 1))];
+    }
+
+    function updateEquationFocus() {
+      if (!state.parsed) return;
+      const symbol = currentInspectionSymbol();
+      const terms = [...state.parsed.left, ...state.parsed.right];
+      const focusColor = symbol ? colorForElement(symbol) : "#1570ef";
+      els.equationEditor.querySelectorAll(".term").forEach((termNode, index) => {
+        const related = Boolean(symbol && terms[index] && terms[index].atoms[symbol]);
+        termNode.classList.toggle("is-related", related);
+        termNode.classList.toggle("is-unrelated", !related);
+        termNode.style.setProperty("--focus-color", focusColor);
+      });
+    }
+
+    function renderElementProgress(summary = getBalanceSummary()) {
+      if (!state.parsed) return;
+      summary.details.forEach(item => { if (item.balanced) state.everBalanced.add(item.symbol); });
+      els.elementProgress.replaceChildren();
+      summary.details.forEach((item, index) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "progress-chip";
+        chip.setAttribute("role", "listitem");
+        chip.style.setProperty("--chip-color", colorForElement(item.symbol));
+        if (item.balanced) chip.classList.add("is-done");
+        else if (state.everBalanced.has(item.symbol)) chip.classList.add("is-warning");
+        else chip.classList.add("is-pending");
+        if (index === state.activeScaleIndex) chip.classList.add("is-active");
+
+        const symbol = document.createElement("span");
+        symbol.className = "progress-chip-symbol";
+        symbol.textContent = item.symbol;
+        const name = document.createElement("span");
+        name.textContent = ELEMENT_NAMES[item.symbol] || item.symbol;
+        const icon = document.createElement("span");
+        icon.className = "progress-chip-icon";
+        icon.textContent = item.balanced ? "✓" : state.everBalanced.has(item.symbol) ? "!" : index === state.activeScaleIndex ? "●" : "○";
+        chip.append(symbol, name, icon);
+        chip.setAttribute("aria-label", `${ELEMENT_NAMES[item.symbol] || item.symbol}: ${item.balanced ? "đã cân bằng" : "chưa cân bằng"}`);
+        chip.addEventListener("click", () => moveToScale(index));
+        els.elementProgress.appendChild(chip);
+      });
+    }
+
+    function selectScaleForInspection(index) {
+      if (!state.parsed || state.scaleViewMode !== "scroll") return;
+      moveToScale(index);
+    }
+
+    function setGuidedMode(enabled) {
+      state.guidedMode = Boolean(enabled);
+      document.body.classList.toggle("guided-mode", state.guidedMode);
+      els.guideModeButton.setAttribute("aria-pressed", String(state.guidedMode));
+      els.guideModeButton.textContent = state.guidedMode ? "🧑‍🏫 Đang hướng dẫn" : "🧭 Tự khám phá";
+      els.guideModeButton.title = state.guidedMode
+        ? "Tắt số chênh lệch và gợi ý ô hệ số"
+        : "Hiện số chênh lệch và các ô hệ số liên quan";
+      if (state.parsed) {
+        renderScales();
+        updateEquationFocus();
+      }
+      showToast(state.guidedMode
+        ? "Đã bật hướng dẫn: các ô liên quan được làm nổi và hiện số nguyên tử còn thiếu."
+        : "Đã trở về chế độ tự khám phá.");
+    }
+
+    function updateScaleModeControls() {
+      const autoMode = state.scaleViewMode === "auto";
+      document.body.classList.add("scale-focus-mode");
+      document.body.classList.toggle("scale-auto-mode", autoMode);
+      els.scrollModeButton.setAttribute("aria-pressed", String(!autoMode));
+      els.autoModeButton.setAttribute("aria-pressed", String(autoMode));
+      els.autoNavigator.hidden = !autoMode;
+      els.manualNavigator.hidden = autoMode;
+      if (!state.parsed || !state.parsed.elements.length) return;
+      const total = state.parsed.elements.length;
+      state.activeScaleIndex = Math.max(0, Math.min(state.activeScaleIndex, total - 1));
+      const symbol = state.parsed.elements[state.activeScaleIndex];
+      const name = ELEMENT_NAMES[symbol] || `Nguyên tố ${symbol}`;
+      els.autoScalePosition.textContent = `Cân ${state.activeScaleIndex + 1}/${total} · ${name} (${symbol})`;
+      els.manualScalePosition.textContent = `${state.activeScaleIndex + 1}/${total} · ${symbol}`;
+      els.previousScaleButton.disabled = state.activeScaleIndex === 0;
+      els.nextScaleButton.disabled = state.activeScaleIndex === total - 1;
+      els.manualPreviousButton.disabled = state.activeScaleIndex === 0;
+      els.manualNextButton.disabled = state.activeScaleIndex === total - 1;
+    }
+
+    function cancelAutoAdvance(hideAnnouncement = true) {
+      if (state.autoAdvanceTimer) clearTimeout(state.autoAdvanceTimer);
+      state.autoAdvanceTimer = null;
+      if (hideAnnouncement) els.balanceAnnouncement.classList.remove("show");
+    }
+
+    function showBalanceAnnouncement(detail) {
+      const name = ELEMENT_NAMES[detail.symbol] || `Nguyên tố ${detail.symbol}`;
+      els.balanceAnnouncement.textContent = `✓ Nguyên tố ${name} (${detail.symbol}) đã cân bằng`;
+      els.balanceAnnouncement.classList.add("show");
+    }
+
+    function scheduleAutoAdvance(detail) {
+      if (state.scaleViewMode !== "auto" || !detail || !detail.balanced) return;
+      cancelAutoAdvance(false);
+      showBalanceAnnouncement(detail);
+      state.autoAdvanceTimer = setTimeout(() => {
+        state.autoAdvanceTimer = null;
+        els.balanceAnnouncement.classList.remove("show");
+        if (state.scaleViewMode !== "auto") return;
+        const latest = getBalanceSummary();
+        const activeDetail = latest.details[state.activeScaleIndex];
+        if (!activeDetail || !activeDetail.balanced) return;
+        if (state.activeScaleIndex < latest.details.length - 1) {
+          moveToScale(state.activeScaleIndex + 1, true);
+        } else if (state.pendingAutoSuccess) {
+          showSuccessCelebration();
+        }
+      }, 1350);
+    }
+
+    function moveToScale(targetIndex, automatic = false) {
+      if (!state.parsed) return;
+      const lastIndex = state.parsed.elements.length - 1;
+      const nextIndex = Math.max(0, Math.min(targetIndex, lastIndex));
+      cancelAutoAdvance();
+      state.slideDirection = nextIndex < state.activeScaleIndex ? "left" : "right";
+      state.activeScaleIndex = nextIndex;
+      state.animateScaleEntry = true;
+      renderScales();
+      updateScaleModeControls();
+      document.querySelector(".visual-section").scrollTo({ top: 0, behavior: automatic ? "smooth" : "auto" });
+      const summary = getBalanceSummary();
+      state.balanceSnapshot = summary.details.map(item => item.balanced);
+      renderElementProgress(summary);
+      updateEquationFocus();
+      const activeDetail = summary.details[state.activeScaleIndex];
+      if (state.scaleViewMode === "auto" && activeDetail && activeDetail.balanced) scheduleAutoAdvance(activeDetail);
+    }
+
+    function setScaleViewMode(mode) {
+      if (mode !== "scroll" && mode !== "auto") return;
+      if (state.scaleViewMode === mode) return;
+      cancelAutoAdvance();
+      state.scaleViewMode = mode;
+      state.activeScaleIndex = 0;
+      state.slideDirection = "right";
+      state.animateScaleEntry = true;
+      updateScaleModeControls();
+      renderScales();
+      document.querySelector(".visual-section").scrollTo({ top: 0, behavior: "smooth" });
+      const summary = getBalanceSummary();
+      state.balanceSnapshot = summary.details.map(item => item.balanced);
+      renderElementProgress(summary);
+      updateEquationFocus();
+      if (mode === "auto") {
+        const activeDetail = summary.details[0];
+        if (activeDetail && activeDetail.balanced) scheduleAutoAdvance(activeDetail);
+        showToast("Đã bật tự chuyển: cân bằng xong sẽ tự sang nguyên tố tiếp theo.");
+      } else {
+        if (state.pendingAutoSuccess) showSuccessCelebration();
+        showToast("Đã bật cuộn xem lại · dùng nút ▲ và ▼ để chuyển từng cân.");
+      }
+    }
+
+    function syncAutoMode(summary, forceAnnouncement = false) {
+      updateScaleModeControls();
+      renderElementProgress(summary);
+      updateEquationFocus();
+      const currentSnapshot = summary.details.map(item => item.balanced);
+      if (state.scaleViewMode === "auto") {
+        const index = state.activeScaleIndex;
+        const activeDetail = summary.details[index];
+        const wasBalanced = state.balanceSnapshot[index] === true;
+        if (!activeDetail || !activeDetail.balanced) {
+          cancelAutoAdvance();
+        } else if ((forceAnnouncement || !wasBalanced) && !state.autoAdvanceTimer) {
+          scheduleAutoAdvance(activeDetail);
+        }
+      }
+      state.balanceSnapshot = currentSnapshot;
+    }
+
+    function updateVisualization() {
+      renderScales();
+      const summary = getBalanceSummary();
+      const gcd = coefficientsGcd(state.coefficients);
+      els.simplifyButton.hidden = !(summary.allBalanced && gcd > 1);
+
+      if (summary.allBalanced && gcd > 1) {
+        setStatus("warning", "÷", `Các cân đã bằng, nhưng hãy chia mọi hệ số cho ${gcd} để được tối giản.`);
+        state.wasSolved = false;
+        state.pendingAutoSuccess = false;
+        syncAutoMode(summary);
+        return;
+      }
+
+      if (summary.allBalanced) {
+        setStatus("success", "✓", "Hoàn thành! Mọi nguyên tố đã cân bằng với hệ số tối giản.");
+        const newlySolved = !state.wasSolved;
+        if (newlySolved) handleSolved();
+        syncAutoMode(summary, newlySolved);
+        return;
+      }
+
+      setStatus("", "↔", `${summary.balancedCount}/${summary.details.length} cân đang thăng bằng. Hãy quan sát đĩa thấp hơn.`);
+      state.wasSolved = false;
+      state.pendingAutoSuccess = false;
+      syncAutoMode(summary);
+    }
+
+    function handleSolved() {
+      state.wasSolved = true;
+      if (state.currentProblem.id !== "custom") {
+        state.solvedIds.add(state.currentProblem.id);
+        saveSolvedIds();
+        updateScore();
+      }
+      const equationText = formattedEquationText();
+      els.successText.textContent = `${equationText} — bộ hệ số đã tối giản.`;
+      if (state.scaleViewMode === "auto") {
+        state.pendingAutoSuccess = true;
+        return;
+      }
+      showSuccessCelebration();
+    }
+
+    function showSuccessCelebration() {
+      state.pendingAutoSuccess = false;
+      launchConfetti();
+      if (typeof els.successDialog.showModal === "function" && !els.successDialog.open) {
+        setTimeout(() => els.successDialog.showModal(), 180);
+      } else {
+        showToast("Chính xác! Tất cả các cân đã thăng bằng.");
+      }
+    }
+
+    function formattedEquationText() {
+      const terms = [...state.parsed.left, ...state.parsed.right];
+      return terms.map((term, index) => {
+        const coefficient = state.coefficients[index] === 1 ? "" : state.coefficients[index];
+        const separator = index === 0 ? "" : index === state.parsed.left.length ? " → " : " + ";
+        return `${separator}${coefficient}${term.formula}`;
+      }).join("");
+    }
+
+    function resetScaleSequence() {
+      cancelAutoAdvance();
+      state.activeScaleIndex = 0;
+      state.slideDirection = "right";
+      state.animateScaleEntry = true;
+      state.balanceSnapshot = [];
+      state.pendingAutoSuccess = false;
+      state.everBalanced = new Set();
+    }
+
+    function resetCoefficients() {
+      resetScaleSequence();
+      state.coefficients = [...state.parsed.left, ...state.parsed.right].map(term => term.initialCoefficient || 1);
+      state.wasSolved = false;
+      renderEquationEditor();
+      updateVisualization();
+      showToast("Đã đưa các hệ số về 1.");
+    }
+
+    function simplifyCoefficients() {
+      const gcd = coefficientsGcd(state.coefficients);
+      if (gcd <= 1) return;
+      state.coefficients = state.coefficients.map(value => value / gcd);
+      renderEquationEditor();
+      updateVisualization();
+    }
+
+    function giveHint() {
+      if (!state.solution) {
+        showToast("Phương trình này chưa tìm được bộ hệ số gợi ý duy nhất.");
+        return;
+      }
+      const rightStart = state.parsed.left.length;
+      const order = [];
+      for (let index = rightStart; index < state.coefficients.length; index++) order.push(index);
+      for (let index = 0; index < rightStart; index++) order.push(index);
+      const targetIndex = order.find(index => state.coefficients[index] !== state.solution[index]);
+      if (targetIndex === undefined) {
+        showToast("Các hệ số đã đúng; hãy kiểm tra xem chúng có cùng một ước chung không.");
+        return;
+      }
+      state.coefficients[targetIndex] = state.solution[targetIndex];
+      const inputs = els.equationEditor.querySelectorAll(".coefficient");
+      inputs[targetIndex].value = state.solution[targetIndex] === 1 ? "" : String(state.solution[targetIndex]);
+      inputs[targetIndex].animate(
+        [{ transform: "scale(1)" }, { transform: "scale(1.14)", background: "#fff2b8" }, { transform: "scale(1)" }],
+        { duration: 600, easing: "ease-out" }
+      );
+      updateVisualization();
+      showToast(`Gợi ý: hệ số trước ${[...state.parsed.left, ...state.parsed.right][targetIndex].formula} là ${state.solution[targetIndex]}.`);
+    }
+
+    function populateProblemSelect() {
+      els.problemSelect.replaceChildren();
+      const levels = [...new Set(PROBLEMS.map(problem => problem.level))];
+      levels.forEach(level => {
+        const group = document.createElement("optgroup");
+        group.label = level;
+        PROBLEMS.filter(problem => problem.level === level).forEach(problem => {
+          const option = document.createElement("option");
+          option.value = problem.id;
+          option.textContent = `${state.solvedIds.has(problem.id) ? "✓ " : ""}${problem.title}`;
+          group.appendChild(option);
+        });
+        els.problemSelect.appendChild(group);
+      });
+      const custom = document.createElement("option");
+      custom.value = "custom";
+      custom.textContent = "✎ Phương trình tự nhập";
+      custom.disabled = !state.currentProblem || state.currentProblem.id !== "custom";
+      if (state.currentProblem && state.currentProblem.id === "custom") custom.selected = true;
+      els.problemSelect.appendChild(custom);
+    }
+
+    function updateScore() {
+      els.scoreChip.textContent = `Đã giải ${state.solvedIds.size}/${PROBLEMS.length}`;
+      const selected = state.currentProblem?.id;
+      populateProblemSelect();
+      if (selected) els.problemSelect.value = selected;
+    }
+
+    function loadProblem(problem) {
+      try {
+        const parsed = parseEquation(problem.equation);
+        resetScaleSequence();
+        state.currentProblem = problem;
+        state.parsed = parsed;
+        state.coefficients = [...parsed.left, ...parsed.right].map(term => term.initialCoefficient || 1);
+        state.solution = problem.solution ? problem.solution.slice() : solveEquation(parsed);
+        state.wasSolved = false;
+        renderEquationEditor();
+        updateVisualization();
+        els.problemBadge.textContent = problem.id === "custom" ? "Chế độ tự nhập" : `${problem.level} · ${problem.title}`;
+        updateScore();
+      } catch (error) {
+        els.customError.textContent = error.message;
+        throw error;
+      }
+    }
+
+    function loadNextProblem() {
+      if (els.successDialog.open) els.successDialog.close();
+      const currentIndex = PROBLEMS.findIndex(problem => problem.id === state.currentProblem.id);
+      const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % PROBLEMS.length;
+      loadProblem(PROBLEMS[nextIndex]);
+      document.querySelector(".visual-section").scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function loadPreviousProblem() {
+      if (els.successDialog.open) els.successDialog.close();
+      const currentIndex = PROBLEMS.findIndex(problem => problem.id === state.currentProblem.id);
+      const previousIndex = currentIndex <= 0 ? PROBLEMS.length - 1 : currentIndex - 1;
+      loadProblem(PROBLEMS[previousIndex]);
+      document.querySelector(".visual-section").scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function setTvMode(enabled, announce = true) {
+      state.tvMode = Boolean(enabled);
+      document.body.classList.toggle("tv-mode", state.tvMode);
+      els.tvModeButton.setAttribute("aria-pressed", String(state.tvMode));
+      els.tvModeLabel.textContent = state.tvMode ? "Thoát trình chiếu" : "Trình chiếu TV";
+      els.tvModeButton.title = state.tvMode
+        ? "Thoát chế độ trình chiếu TV (phím T)"
+        : "Bật chế độ trình chiếu TV (phím T)";
+      if (state.parsed) renderScales();
+      if (announce) {
+        showToast(state.tvMode
+          ? "Đã bật trình chiếu TV · F: toàn màn hình · T: đổi giao diện"
+          : "Đã trở về chế độ hiển thị thông thường.");
+      }
+    }
+
+    function fullscreenElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    async function toggleFullscreen() {
+      try {
+        if (!fullscreenElement()) {
+          const target = document.documentElement;
+          if (typeof target.requestFullscreen === "function") {
+            await target.requestFullscreen({ navigationUI: "hide" });
+          } else if (typeof target.webkitRequestFullscreen === "function") {
+            await target.webkitRequestFullscreen();
+          } else {
+            throw new Error("Trình duyệt không hỗ trợ toàn màn hình");
+          }
+        } else if (typeof document.exitFullscreen === "function") {
+          await document.exitFullscreen();
+        } else if (typeof document.webkitExitFullscreen === "function") {
+          await document.webkitExitFullscreen();
+        }
+      } catch (_) {
+        showToast("Không thể bật toàn màn hình. Hãy cho phép trình duyệt hoặc nhấn F11.");
+      }
+    }
+
+    function updateFullscreenButton() {
+      const active = Boolean(fullscreenElement());
+      els.fullscreenButton.setAttribute("aria-pressed", String(active));
+      els.fullscreenIcon.textContent = active ? "🗗" : "⛶";
+      els.fullscreenLabel.textContent = active ? "Thoát toàn màn hình" : "Toàn màn hình";
+      els.fullscreenButton.title = active
+        ? "Thoát toàn màn hình (Esc hoặc phím F)"
+        : "Bật toàn màn hình (phím F)";
+    }
+
+    function handlePresentationKeydown(event) {
+      const target = event.target;
+      if (target && target.closest && target.closest("input, select, textarea, button")) return;
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      const key = event.key.toLowerCase();
+      if (key === "f") {
+        event.preventDefault();
+        toggleFullscreen();
+        return;
+      }
+      if (key === "t") {
+        event.preventDefault();
+        setTvMode(!state.tvMode);
+        return;
+      }
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        moveToScale(state.activeScaleIndex + 1);
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        moveToScale(state.activeScaleIndex - 1);
+        return;
+      }
+      if (!state.tvMode || els.successDialog.open) return;
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        if (state.scaleViewMode === "auto") moveToScale(state.activeScaleIndex + 1);
+        else loadNextProblem();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        if (state.scaleViewMode === "auto") moveToScale(state.activeScaleIndex - 1);
+        else loadPreviousProblem();
+      }
+    }
+
+    function createCustomProblem() {
+      els.customError.textContent = "";
+      try {
+        const equation = els.customEquation.value.trim();
+        const parsed = parseEquation(equation);
+        const solution = solveEquation(parsed);
+        const problem = { id: "custom", level: "Tự nhập", title: "Phương trình tự nhập", equation, solution };
+        loadProblem(problem);
+        els.customPanel.hidden = true;
+        els.customToggle.setAttribute("aria-expanded", "false");
+        showToast(solution ? "Đã tạo các cân và tìm được bộ hệ số gợi ý." : "Đã tạo các cân. Bạn có thể tự cân bằng phương trình này.");
+      } catch (error) {
+        els.customError.textContent = error.message;
+      }
+    }
+
+    function gcdBigInt(a, b) {
+      a = a < 0n ? -a : a;
+      b = b < 0n ? -b : b;
+      while (b !== 0n) [a, b] = [b, a % b];
+      return a;
+    }
+
+    function lcmBigInt(a, b) {
+      if (a === 0n || b === 0n) return 0n;
+      return (a / gcdBigInt(a, b)) * b;
+    }
+
+    function fraction(numerator, denominator = 1n) {
+      if (denominator === 0n) throw new Error("Không thể chia cho 0.");
+      if (denominator < 0n) { numerator = -numerator; denominator = -denominator; }
+      const divisor = gcdBigInt(numerator, denominator);
+      return { n: numerator / divisor, d: denominator / divisor };
+    }
+
+    const F = {
+      zero: () => fraction(0n),
+      one: () => fraction(1n),
+      add: (a, b) => fraction(a.n * b.d + b.n * a.d, a.d * b.d),
+      sub: (a, b) => fraction(a.n * b.d - b.n * a.d, a.d * b.d),
+      mul: (a, b) => fraction(a.n * b.n, a.d * b.d),
+      div: (a, b) => fraction(a.n * b.d, a.d * b.n),
+      neg: a => fraction(-a.n, a.d),
+      isZero: a => a.n === 0n
+    };
+
+    function solveEquation(parsed) {
+      try {
+        const terms = [...parsed.left, ...parsed.right];
+        const matrix = parsed.elements.map(symbol => terms.map((term, index) => {
+          const sign = index < parsed.left.length ? 1n : -1n;
+          return fraction(BigInt(term.atoms[symbol] || 0) * sign);
+        }));
+
+        const rows = matrix.length;
+        const columns = terms.length;
+        const pivotColumns = [];
+        let pivotRow = 0;
+
+        for (let column = 0; column < columns && pivotRow < rows; column++) {
+          let selectedRow = pivotRow;
+          while (selectedRow < rows && F.isZero(matrix[selectedRow][column])) selectedRow++;
+          if (selectedRow === rows) continue;
+          [matrix[pivotRow], matrix[selectedRow]] = [matrix[selectedRow], matrix[pivotRow]];
+          const pivot = matrix[pivotRow][column];
+          matrix[pivotRow] = matrix[pivotRow].map(value => F.div(value, pivot));
+          for (let row = 0; row < rows; row++) {
+            if (row === pivotRow || F.isZero(matrix[row][column])) continue;
+            const factor = matrix[row][column];
+            matrix[row] = matrix[row].map((value, index) => F.sub(value, F.mul(factor, matrix[pivotRow][index])));
+          }
+          pivotColumns.push(column);
+          pivotRow++;
+        }
+
+        const freeColumns = [...Array(columns).keys()].filter(column => !pivotColumns.includes(column));
+        if (freeColumns.length !== 1) return null;
+        const solution = Array.from({ length: columns }, () => F.zero());
+        solution[freeColumns[0]] = F.one();
+        for (let row = pivotColumns.length - 1; row >= 0; row--) {
+          const pivotColumn = pivotColumns[row];
+          let sum = F.zero();
+          for (let column = pivotColumn + 1; column < columns; column++) {
+            sum = F.add(sum, F.mul(matrix[row][column], solution[column]));
+          }
+          solution[pivotColumn] = F.neg(sum);
+        }
+
+        let commonDenominator = 1n;
+        solution.forEach(value => { commonDenominator = lcmBigInt(commonDenominator, value.d); });
+        let integers = solution.map(value => value.n * (commonDenominator / value.d));
+        if (integers.every(value => value < 0n)) integers = integers.map(value => -value);
+        if (integers.some(value => value <= 0n)) return null;
+        const commonDivisor = integers.reduce((result, value) => gcdBigInt(result, value), 0n);
+        integers = integers.map(value => value / commonDivisor);
+        if (integers.some(value => value > 99n)) return null;
+        return integers.map(Number);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function showToast(message) {
+      clearTimeout(state.toastTimer);
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      state.toastTimer = setTimeout(() => els.toast.classList.remove("show"), 2600);
+    }
+
+    function launchConfetti() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const colors = ["#1570ef", "#20ad69", "#f4be32", "#ed5c67", "#8b5cf6"];
+      for (let index = 0; index < 42; index++) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.background = colors[index % colors.length];
+        piece.style.setProperty("--drift", `${(Math.random() - .5) * 240}px`);
+        piece.style.setProperty("--duration", `${2.2 + Math.random() * 1.7}s`);
+        piece.style.animationDelay = `${Math.random() * .35}s`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4400);
+      }
+    }
+
+    els.problemSelect.addEventListener("change", event => {
+      if (event.target.value === "custom") return;
+      const problem = PROBLEMS.find(item => item.id === event.target.value);
+      if (problem) loadProblem(problem);
+    });
+
+    els.tvModeButton.addEventListener("click", () => setTvMode(!state.tvMode));
+    els.fullscreenButton.addEventListener("click", toggleFullscreen);
+    els.scrollModeButton.addEventListener("click", () => setScaleViewMode("scroll"));
+    els.autoModeButton.addEventListener("click", () => setScaleViewMode("auto"));
+    els.previousScaleButton.addEventListener("click", () => moveToScale(state.activeScaleIndex - 1));
+    els.nextScaleButton.addEventListener("click", () => moveToScale(state.activeScaleIndex + 1));
+    els.manualPreviousButton.addEventListener("click", () => moveToScale(state.activeScaleIndex - 1));
+    els.manualNextButton.addEventListener("click", () => moveToScale(state.activeScaleIndex + 1));
+    els.guideModeButton.addEventListener("click", () => setGuidedMode(!state.guidedMode));
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+    document.addEventListener("keydown", handlePresentationKeydown);
+    els.hintButton.addEventListener("click", giveHint);
+    els.resetButton.addEventListener("click", resetCoefficients);
+    els.simplifyButton.addEventListener("click", simplifyCoefficients);
+    els.nextButton.addEventListener("click", loadNextProblem);
+    els.dialogNextButton.addEventListener("click", loadNextProblem);
+    els.closeDialogButton.addEventListener("click", () => els.successDialog.close());
+    els.customToggle.addEventListener("click", () => {
+      const willOpen = els.customPanel.hidden;
+      els.customPanel.hidden = !willOpen;
+      els.customToggle.setAttribute("aria-expanded", String(willOpen));
+      if (willOpen) setTimeout(() => els.customEquation.focus(), 0);
+    });
+    els.createCustomButton.addEventListener("click", createCustomProblem);
+    els.customEquation.addEventListener("keydown", event => {
+      if (event.key === "Enter") createCustomProblem();
+    });
+
+    populateProblemSelect();
+    updateScore();
+    updateFullscreenButton();
+    loadProblem(PROBLEMS[0]);
+  </script>
+</body>
+</html>
