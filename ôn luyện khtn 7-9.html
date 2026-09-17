@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Phòng luyện KHTN 7–8–9</title>
+<style>
+  :root{
+    --bg:#f4f7fb; --card:#ffffff; --text:#16233a; --muted:#667085; --line:#e5eaf2;
+    --primary:#4f46e5; --primary2:#7c3aed; --good:#159957; --bad:#d92d20; --warn:#b54708;
+    --shadow:0 14px 40px rgba(20,32,70,.08); --radius:22px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#eef2ff 0,#f8fafc 28%,#f4f7fb 100%);color:var(--text)}
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+  button:disabled{cursor:not-allowed;opacity:.58;transform:none!important}
+  .app{min-height:100vh}
+  .topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .topbar-in{max-width:1200px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+  .brand{display:flex;gap:10px;align-items:center;font-weight:900}
+  .brand-badge{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-size:22px;box-shadow:0 10px 25px rgba(79,70,229,.25)}
+  .brand small{display:block;color:var(--muted);font-weight:700;font-size:12px;margin-top:2px}
+  .top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .pill{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:999px;font-weight:800;color:#344054}
+  .pill.primary{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
+  main{max-width:1200px;margin:auto;padding:22px 18px 48px}
+  .hero{background:linear-gradient(135deg,#312e81,#4f46e5 55%,#7c3aed);color:#fff;border-radius:30px;padding:30px;box-shadow:0 25px 55px rgba(49,46,129,.2);display:grid;grid-template-columns:1.3fr .7fr;gap:24px;overflow:hidden;position:relative}
+  .hero:after{content:"";position:absolute;width:330px;height:330px;border-radius:50%;right:-80px;top:-120px;background:rgba(255,255,255,.12)}
+  .hero h1{font-size:clamp(28px,4vw,48px);line-height:1.03;margin:0 0 10px;letter-spacing:-1px}
+  .hero p{margin:0;color:#e0e7ff;font-size:17px;line-height:1.6;max-width:720px}
+  .hero-note{margin-top:18px;padding:12px 14px;border:1px solid rgba(255,255,255,.2);border-radius:16px;background:rgba(255,255,255,.1);font-size:14px;line-height:1.5}
+  .hero-side{display:flex;flex-direction:column;justify-content:center;gap:12px;z-index:2}
+  .hero-stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:16px}
+  .hero-stat b{font-size:26px;display:block}
+  .grid{display:grid;gap:16px}
+  .grade-grid{grid-template-columns:repeat(3,1fr);margin-top:20px}
+  .grade-card{border:1px solid var(--line);background:var(--card);border-radius:24px;padding:20px;box-shadow:var(--shadow);transition:.2s;position:relative;overflow:hidden}
+  .grade-card:hover{transform:translateY(-3px);box-shadow:0 22px 45px rgba(20,32,70,.13)}
+  .grade-card .num{font-size:42px;font-weight:950;line-height:1;background:linear-gradient(135deg,var(--primary),var(--primary2));-webkit-background-clip:text;color:transparent}
+  .grade-card h3{margin:8px 0 6px;font-size:20px}
+  .grade-card p{margin:0 0 14px;color:var(--muted);line-height:1.55}
+  .progress{height:9px;background:#eef2f7;border-radius:99px;overflow:hidden}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:99px;width:0}
+  .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .btn{border:0;border-radius:14px;padding:11px 15px;font-weight:850;background:#eef2ff;color:#3730a3;transition:.15s}
+  .btn:hover{filter:brightness(.98);transform:translateY(-1px)}
+  .btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff}
+  .btn.good{background:#ecfdf3;color:#067647}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:#344054}
+  .btn.bad{background:#fef3f2;color:#b42318}
+  .section-title{margin:28px 0 12px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+  .section-title h2{margin:0;font-size:24px}
+  .section-title p{margin:4px 0 0;color:var(--muted)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  .mode-grid{grid-template-columns:repeat(5,1fr);margin-top:14px}
+  .mode-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:17px;box-shadow:var(--shadow)}
+  .mode-card b{display:block;margin:7px 0 4px}
+  .mode-card span{color:var(--muted);font-size:14px;line-height:1.45;display:block;min-height:40px}
+  .mode-ico{font-size:28px}
+  .station-grid{grid-template-columns:repeat(2,1fr)}
+  .station{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:17px;box-shadow:var(--shadow)}
+  .station-top{display:flex;gap:12px;align-items:flex-start}
+  .station-icon{width:46px;height:46px;border-radius:14px;background:#eef2ff;display:grid;place-items:center;font-size:23px;flex:0 0 auto}
+  .station h3{margin:0 0 5px;font-size:18px}
+  .station p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+  .tag{font-size:12px;font-weight:800;background:#f2f4f7;color:#475467;border-radius:999px;padding:6px 9px}
+  .workspace{display:none;margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);overflow:hidden}
+  .workspace.active{display:block}
+  .work-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:space-between;background:#fbfcff}
+  .crumb{font-size:13px;color:var(--muted);font-weight:700}
+  .work-body{padding:20px}
+  .lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .lesson-box{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fcfdff}
+  .lesson-box h4{margin:0 0 9px;font-size:15px}
+  .lesson-box ul{margin:0;padding-left:20px;line-height:1.65;color:#344054}
+  .steps{counter-reset:step;display:grid;gap:8px}
+  .step{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;background:#f8fafc}
+  .step:before{counter-increment:step;content:counter(step);width:27px;height:27px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:#e0e7ff;color:#3730a3;font-weight:900}
+  .example{margin-top:14px;padding:16px;border:1px dashed #a5b4fc;background:#f7f7ff;border-radius:18px;line-height:1.6}
+  .mistakes{margin-top:14px;padding:14px 16px;border-radius:18px;background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12}
+  .quiz-wrap{margin-top:18px}
+  .quiz-card{border:1px solid var(--line);border-radius:20px;padding:18px;background:#fff}
+  .qmeta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px;font-weight:750}
+  .qtext{font-size:20px;font-weight:900;line-height:1.45;margin:14px 0}
+  .answers{display:grid;gap:10px}
+  .ans{width:100%;text-align:left;border:1.5px solid #e4e7ec;background:#fff;border-radius:15px;padding:13px 14px;color:#1d2939;font-weight:700}
+  .ans:hover{border-color:#a5b4fc;background:#f8f9ff}
+  .ans.selected{border-color:#6366f1;background:#eef2ff}
+  .ans.correct{border-color:#12b76a;background:#ecfdf3;color:#067647}
+  .ans.wrong{border-color:#f04438;background:#fef3f2;color:#b42318}
+  .feedback{display:none;margin-top:13px;padding:13px 14px;border-radius:15px;line-height:1.55}
+  .feedback.show{display:block}
+  .feedback.good{background:#ecfdf3;color:#05603a;border:1px solid #abefc6}
+  .feedback.bad{background:#fef3f2;color:#912018;border:1px solid #fecdca}
+  .hint{display:none;margin-top:10px;padding:12px 14px;border-radius:14px;background:#fffaeb;border:1px solid #fedf89;color:#7a2e0e;line-height:1.5}
+  .hint.show{display:block}
+  .quiz-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .score-card{padding:24px;border-radius:22px;background:linear-gradient(135deg,#eff6ff,#eef2ff);border:1px solid #c7d2fe;text-align:center}
+  .score-big{font-size:54px;font-weight:950;color:#3730a3}
+  .mini{font-size:13px;color:var(--muted)}
+  .empty{padding:24px;text-align:center;color:var(--muted)}
+  .written-input{width:100%;min-height:150px;resize:vertical;border:1.5px solid #d0d5dd;border-radius:16px;padding:14px;line-height:1.55;color:#1d2939;background:#fff;outline:none}
+  .written-input:focus{border-color:#818cf8;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+  .written-answer{display:none;margin-top:12px;padding:14px 16px;border-radius:16px;background:#eff6ff;border:1px solid #bfdbfe;line-height:1.6;color:#1e3a8a}
+  .written-answer.show{display:block}
+  .review-list{display:grid;gap:10px;margin-top:16px;text-align:left}
+  .review-item{padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:#fff}
+  .review-item.ok{border-color:#abefc6;background:#f6fef9}.review-item.bad{border-color:#fecdca;background:#fffafa}
+  .neutral-note{margin-top:12px;padding:11px 13px;border-radius:14px;background:#f8fafc;border:1px solid var(--line);color:#475467}
+  .footer-note{margin-top:28px;padding:16px 18px;border-radius:18px;background:#f8fafc;border:1px solid var(--line);color:#667085;font-size:13px;line-height:1.55}
+  .modal{position:fixed;inset:0;background:rgba(17,24,39,.5);display:none;place-items:center;padding:18px;z-index:60}
+  .modal.show{display:grid}
+  .modal-card{width:min(720px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}
+  .modal-head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:2}
+  .modal-body{padding:20px}
+  .summary-list{display:grid;gap:10px}
+  .summary-item{border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+  .summary-item b{display:block;margin-bottom:4px}
+  .toast{position:fixed;right:18px;bottom:18px;background:#101828;color:white;padding:12px 14px;border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.18);opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s;z-index:90;max-width:340px}
+  .toast.show{opacity:1;transform:translateY(0)}
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr}.grade-grid,.mode-grid{grid-template-columns:1fr 1fr}.station-grid,.lesson-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){
+    main{padding:14px 12px 36px}.topbar-in{padding:10px 12px}.hero{padding:22px;border-radius:24px}.grade-grid,.mode-grid{grid-template-columns:1fr}.top-actions .pill:nth-child(2){display:none}.qtext{font-size:18px}.work-head{align-items:flex-start;flex-direction:column}.row{align-items:flex-start}.station-grid{grid-template-columns:1fr}
+  }
+
+  /* Professional dark navy theme */
+  :root{
+    --bg:#050b14; --card:#0b1625; --text:#ffffff; --muted:#b7c6d9; --line:#203149;
+    --primary:#2f7cf6; --primary2:#164ea6; --good:#22c55e; --bad:#fb7185; --warn:#f59e0b;
+    --shadow:0 18px 50px rgba(0,0,0,.28); --radius:22px;
+  }
+  html{background:#050b14}
+  body{background:radial-gradient(circle at 10% 0%,#102743 0,#07111d 32%,#050b14 72%);color:#fff}
+  .topbar{background:rgba(5,11,20,.9);border-bottom:1px solid #203149;box-shadow:0 8px 28px rgba(0,0,0,.22)}
+  .brand,.brand small,.section-title h2,.section-title p,.grade-card h3,.grade-card p,.station h3,.station p,.mode-card b,.mode-card span,.crumb,.mini,.qmeta,.lesson-box ul,.footer-note{color:#fff}
+  .brand small,.section-title p,.grade-card p,.station p,.mode-card span,.crumb,.mini,.qmeta{color:#b7c6d9}
+  .brand-badge{background:linear-gradient(135deg,#2f7cf6,#164ea6);box-shadow:0 10px 28px rgba(47,124,246,.28)}
+  .pill,.pill.primary{background:#0b1625;color:#fff;border-color:#2a3b55}
+  .pill.primary{background:#102b4d;color:#dcecff;border-color:#295a91}
+  .hero{background:linear-gradient(135deg,#08111e,#0d2238 55%,#12355b);border:1px solid #244160;box-shadow:0 28px 70px rgba(0,0,0,.38)}
+  .hero p{color:#d7e4f4}.hero-stat{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+  .hero-stat small{color:#c5d6ea}
+  .grade-card,.mode-card,.station,.workspace,.quiz-card,.lesson-box,.review-item,.modal-card{background:#0b1625;border-color:#203149;color:#fff}
+  .grade-card:hover{box-shadow:0 24px 60px rgba(0,0,0,.42);border-color:#315178}
+  .grade-card .num{background:linear-gradient(135deg,#7ab8ff,#2f7cf6);-webkit-background-clip:text;color:transparent}
+  .progress{background:#17263a}.progress>i{background:linear-gradient(90deg,#2f7cf6,#69a8ff)}
+  .btn{background:#14243a;color:#fff;border:1px solid #28405f}
+  .btn.primary{background:linear-gradient(135deg,#2f7cf6,#164ea6);border-color:#3a84e9;color:#fff}
+  .btn.good{background:#103824;color:#dcfce7;border-color:#1f6b41}.btn.bad{background:#42151d;color:#ffe4e6;border-color:#7f1d2d}.btn.ghost{background:#0b1625;color:#fff;border-color:#2a3b55}
+  .station-icon{background:#102b4d}.tag{background:#132237;color:#d8e5f4}.work-head{background:#091321;border-color:#203149}
+  .lesson-box{background:#0d1928}.step{background:#101d2d}.step:before{background:#173b66;color:#fff}
+  .example{background:#0f2035;border-color:#315d8f}.mistakes{background:#342313;border-color:#76501e;color:#ffe8b0}
+  .qtext,.ans,.written-input{color:#fff}.ans{background:#0d1928;border-color:#2a3b55}.ans:hover{background:#13243a;border-color:#4b78ac}.ans.selected{background:#16345b;border-color:#5a9df0}.ans.correct{background:#123b28;border-color:#22c55e;color:#e7fff0}.ans.wrong{background:#431820;border-color:#fb7185;color:#fff0f3}
+  .feedback.good{background:#123b28;color:#e7fff0;border-color:#2a7b4d}.feedback.bad{background:#431820;color:#fff0f3;border-color:#9f3146}.hint{background:#3a2a0d;border-color:#8b6518;color:#fff1b8}
+  .score-card{background:linear-gradient(135deg,#0e2238,#102b4d);border-color:#2b527a;color:#fff}.score-big{color:#8fc1ff}
+  .written-input{background:#08121f;border-color:#2a3b55}.written-input::placeholder{color:#8fa1b7}.written-input:focus{border-color:#5798e8;box-shadow:0 0 0 3px rgba(47,124,246,.18)}
+  .written-answer{background:#0f2b4c;border-color:#2f659b;color:#e6f2ff}.review-item.ok{background:#0e2c20;border-color:#245d3f}.review-item.bad{background:#35161c;border-color:#74303b}.neutral-note{background:#0d1928;border-color:#203149;color:#d8e5f4}
+  .modal{background:rgba(0,0,0,.72)}.modal-head{background:#0b1625;border-color:#203149;color:#fff}
+  .toast{background:#e6f2ff;color:#07111d}
+  select,input{background:#0b1625;color:#fff;border-color:#2a3b55}
+  @media(max-width:900px){.hero{grid-template-columns:1fr}.mode-grid{grid-template-columns:repeat(2,1fr)}.grade-grid{grid-template-columns:1fr}.station-grid,.lesson-grid{grid-template-columns:1fr}}
+  @media(max-width:560px){main{padding:14px 12px 34px}.topbar-in{padding:10px 12px}.top-actions{gap:5px}.pill{padding:8px 9px;font-size:12px}.hero{padding:22px 18px;border-radius:22px}.mode-grid{grid-template-columns:1fr}.section-title{align-items:flex-start}.qtext{font-size:18px}.work-body{padding:14px}.work-head{padding:14px}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar-in">
+      <div class="brand"><div class="brand-badge">🧪</div><div>PHÒNG LUYỆN KHTN<small>KHTN 7 • KHTN 8 • KHTN 9</small></div></div>
+      <div class="top-actions">
+        <button class="pill primary" id="xpPill">⭐ 0 XP</button>
+        <button class="pill" id="progressBtn">📊 Tiến độ</button>
+        <button class="pill" id="resetBtn">↻ Đặt lại</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Học từng bước.<br>Làm được từng dạng.</h1>
+        <p>Ôn tập theo chủ đề • Luyện tập theo từng bước • Theo dõi tiến độ học tập.</p>
+      </div>
+      <div class="hero-side">
+        <div class="hero-stat"><span>🎯 Lộ trình</span><b>Nhớ → Hiểu → Làm</b><small>Không ép học sinh vào thi thử ngay.</small></div>
+        <div class="hero-stat"><span>💡 Khi làm sai</span><b>Gợi ý từng nấc</b><small>Sai lần 1: gợi mở • Lần 2: nhắc quy tắc • Lần 3: xem lời giải.</small></div>
+      </div>
+    </section>
+
+    <div class="section-title"><div><h2>1. Chọn khối lớp</h2><p>Mỗi khối có lộ trình riêng, bám đúng các nhóm kiến thức cần ôn.</p></div></div>
+    <section class="grid grade-grid" id="gradeGrid"></section>
+
+    <section id="gradeArea" style="display:none">
+      <div class="section-title"><div><h2 id="gradeTitle">2. Chọn cách luyện</h2><p id="gradeDesc"></p></div><div class="toolbar"><button class="btn ghost" id="backGrades">← Đổi lớp</button></div></div>
+      <div class="grid mode-grid" id="modeGrid"></div>
+
+      <div class="section-title"><div><h2>3. Các trạm kiến thức</h2><p>Ưu tiên học lần lượt từ trạm 1 đến trạm cuối.</p></div></div>
+      <div class="grid station-grid" id="stationGrid"></div>
+    </section>
+
+    <section class="workspace" id="workspace"></section>
+
+  </main>
+</div>
+
+<div class="modal" id="progressModal">
+  <div class="modal-card">
+    <div class="modal-head"><b>📊 Tiến độ học tập</b><button class="btn ghost" onclick="closeModal()">Đóng</button></div>
+    <div class="modal-body" id="progressBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = {
+  7:{
+    title:'KHTN 7', subtitle:'Sinh vật • vật liệu – nhiên liệu • năng lượng', icon:'🌿',
+    stations:[
+      S('7-1','🌱','Sinh vật và đặc điểm','Nhận biết thực vật, nấm, động vật có xương sống.',
+        ['Thực vật thường có khả năng quang hợp.','Nấm không tự quang hợp; hấp thụ chất hữu cơ có sẵn.','Động vật gồm nhóm có xương sống và không xương sống.'],
+        ['Xác định nhóm sinh vật.','Nhớ đặc điểm đặc trưng nhất của nhóm.','Loại các phương án trái với đặc điểm đó.'],
+        'Ví dụ: Cá rô thuộc động vật có xương sống vì có cột sống; giun đất và châu chấu là động vật không xương sống.',
+        'Hay nhầm nấm với thực vật. Đừng dựa vào màu sắc; hãy dựa vào cách dinh dưỡng.',
+        [Q('Đặc điểm phù hợp nhất với nấm là gì?',['Tự quang hợp','Hấp thụ chất hữu cơ có sẵn','Chỉ sống dưới nước','Luôn di chuyển'],1,'Nấm không tự quang hợp mà hấp thụ chất hữu cơ có sẵn.','Hãy nhớ: nấm không tự tạo chất hữu cơ nhờ ánh sáng.'),Q('Sinh vật nào sau đây là động vật có xương sống?',['Ốc sên','Giun đất','Cá rô','Châu chấu'],2,'Cá rô có cột sống nên thuộc nhóm động vật có xương sống.','Tìm con vật có cột sống.'),Q('Vai trò có lợi của thực vật là',['Cung cấp oxygen','Làm tăng xói mòn đất','Làm mất toàn bộ nước đất','Làm tăng ô nhiễm'],0,'Thực vật góp phần cung cấp oxygen và nhiều nguồn lợi cho con người.','Nghĩ đến quang hợp và vai trò của cây xanh.')]),
+      S('7-2','🍞','Nấm mốc và bảo quản','Hiểu điều kiện phát triển của nấm mốc và cách hạn chế.',
+        ['Nấm mốc thường phát triển tốt ở môi trường ẩm.','Giữ khô, thoáng, phơi khô hoặc bảo quản lạnh có thể hạn chế nấm mốc.'],
+        ['Xác định điều kiện đang thuận lợi cho nấm.','Chọn biện pháp làm giảm độ ẩm hoặc điều kiện thuận lợi.','Giải thích ngắn gọn tác dụng.'],
+        'Ví dụ: Gạo để nơi khô ráo sẽ khó mốc hơn vì môi trường ít ẩm không thuận lợi cho nấm mốc phát triển.',
+        'Đừng chỉ nêu “để nơi thoáng”; cần nói thêm vì sao biện pháp đó hạn chế nấm.',
+        [Q('Cách nào phù hợp nhất để hạn chế nấm mốc trên thực phẩm khô?',['Để nơi ẩm','Giữ nơi khô ráo','Ngâm nước','Đậy khi còn nóng ẩm'],1,'Môi trường khô làm nấm mốc khó phát triển.','Nấm mốc thích môi trường ẩm.'),Q('Vì sao quần áo ẩm dễ mốc?',['Vì quá khô','Vì độ ẩm tạo điều kiện cho nấm mốc','Vì có nhiều ánh sáng','Vì không có không khí'],1,'Độ ẩm cao là điều kiện thuận lợi cho nấm mốc.','Tập trung vào yếu tố độ ẩm.'),Q('Biện pháp phù hợp sau nhiều ngày mưa là',['Cất quần áo khi còn ướt','Phơi hoặc sấy khô trước khi cất','Ngâm lâu hơn','Đóng kín túi khi còn ẩm'],1,'Phơi/sấy giúp giảm độ ẩm, hạn chế nấm mốc.','Mục tiêu là làm quần áo khô.')]),
+      S('7-3','🌳','Bảo vệ rừng','Giải thích xói mòn và đề xuất biện pháp bảo vệ rừng.',
+        ['Mất cây che phủ → đất dễ bị nước mưa cuốn trôi → xói mòn.','Có thể trồng rừng, hạn chế chặt phá, khai thác hợp lí, phòng cháy rừng.'],
+        ['Nêu nguyên nhân.','Nêu thay đổi xảy ra với đất/môi trường.','Kết luận hậu quả hoặc biện pháp.'],
+        'Ví dụ: Trồng cây trên đất dốc giúp rễ giữ đất và tán cây giảm tác động trực tiếp của mưa, từ đó hạn chế xói mòn.',
+        'Trả lời “vì không có cây” là chưa đủ; cần có chuỗi nguyên nhân → hậu quả.',
+        [Q('Rừng bị mất nhiều cây thì nguy cơ nào tăng?',['Xói mòn đất','Đất luôn màu mỡ hơn','Tăng đa dạng sinh học','Giảm dòng chảy mặt'],0,'Mất lớp che phủ khiến đất dễ bị nước mưa cuốn trôi.','Nghĩ đến vai trò giữ đất của rễ và tán cây.'),Q('Biện pháp bảo vệ rừng phù hợp là',['Chặt hết cây già','Trồng và chăm sóc rừng','Đốt thực bì tùy ý','Khai thác không giới hạn'],1,'Trồng và chăm sóc rừng giúp duy trì và phục hồi độ che phủ.','Chọn phương án giúp phục hồi rừng.'),Q('Rễ cây giúp hạn chế xói mòn chủ yếu vì',['Giữ đất','Làm đất nóng hơn','Làm mưa nhiều hơn','Tạo đá mới'],0,'Hệ rễ giúp liên kết và giữ các hạt đất.','Nghĩ đến chức năng cơ học của rễ.')]),
+      S('7-4','🧱','Vật liệu – nhiên liệu','Phân biệt vật liệu, nhiên liệu và ứng dụng cách điện.',
+        ['Vật liệu dùng để tạo ra sản phẩm.','Nhiên liệu được sử dụng để cung cấp năng lượng, thường qua quá trình cháy.','Lương thực cung cấp nguồn thức ăn cho con người.','Nhựa thường cách điện.','Ở vùng nắng nóng nên ưu tiên vật liệu mái cách nhiệt tốt, màu sáng, ít hấp thụ nhiệt.'],
+        ['Xem vật đó được dùng với mục đích gì.','Nếu dùng để tạo đồ vật → vật liệu.','Nếu đốt để lấy năng lượng → nhiên liệu.'],
+        'Ví dụ: Than dùng để đốt cung cấp nhiệt → nhiên liệu; gỗ dùng để làm bàn → vật liệu.',
+        'Một chất có thể được dùng trong nhiều tình huống; hãy nhìn vào mục đích sử dụng trong câu hỏi.',
+        [Q('Xăng thường được xếp vào nhóm',['Lương thực','Nhiên liệu','Kim loại','Dược phẩm'],1,'Xăng được dùng chủ yếu làm nhiên liệu cung cấp năng lượng.','Hỏi: có dùng để đốt/làm động cơ hoạt động không?'),Q('Nhựa dùng bọc dây điện vì',['Dẫn điện rất tốt','Cách điện tương đối tốt','Tạo dòng điện','Luôn chịu nhiệt vô hạn'],1,'Nhựa là chất cách điện, giúp hạn chế nguy cơ điện giật.','Nhớ: lõi kim loại dẫn điện, vỏ nhựa cách điện.'),Q('Gỗ dùng để làm bàn ghế, khi đó gỗ là',['Nhiên liệu','Vật liệu','Lương thực','Nguồn điện'],1,'Trong trường hợp này gỗ được dùng để tạo sản phẩm nên là vật liệu.','Xem mục đích: làm ra sản phẩm gì?'),Q('Ngô hạt dùng làm thức ăn thường được xếp vào nhóm',['Lương thực','Nhiên liệu','Vật liệu','Kim loại'],0,'Ngô là một loại lương thực dùng làm thực phẩm.','Tìm nhóm gắn với nguồn thức ăn.'),Q('Mái nhà ở vùng nắng nóng nên ưu tiên vật liệu',['Màu sẫm, hấp thụ nhiệt mạnh','Cách nhiệt tốt, màu sáng','Dẫn nhiệt thật tốt','Luôn bằng kim loại trần'],1,'Vật liệu cách nhiệt tốt và màu sáng giúp hạn chế hấp thụ/truyền nhiệt vào nhà.','Mục tiêu là giảm lượng nhiệt truyền vào nhà.')]),
+      S('7-5','⚡','Năng lượng và chuyển hóa','Nhận biết dạng năng lượng và sự chuyển hóa.',
+        ['Năng lượng là khả năng thực hiện công.','Năng lượng có thể chuyển hóa từ dạng này sang dạng khác.','Bóng đèn: điện năng → quang năng + nhiệt năng.','Năng lượng mặt trời là nguồn năng lượng tái tạo vì được tự nhiên bổ sung liên tục.'],
+        ['Xác định thiết bị/vật ban đầu nhận năng lượng gì.','Xem nó tạo ra chuyển động, ánh sáng hay nhiệt.','Viết theo dạng: ... năng → ... năng.'],
+        'Ví dụ: Quạt điện nhận điện năng; khi hoạt động tạo cơ năng của cánh quạt và một phần nhiệt, âm.',
+        'Không nói “năng lượng mất đi”; hãy nói năng lượng chuyển hóa sang dạng khác.',
+        [Q('Bếp điện biến đổi điện năng chủ yếu thành',['Hóa năng','Nhiệt năng','Thế năng','Năng lượng hạt nhân'],1,'Bếp điện tạo nhiệt để đun nấu.','Bếp dùng để làm nóng.'),Q('Khi bóng đèn sáng, điện năng chuyển hóa thành',['Chỉ cơ năng','Quang năng và một phần nhiệt năng','Chỉ hóa năng','Không chuyển hóa'],1,'Bóng đèn phát sáng và nóng lên.','Quan sát hai tác dụng: sáng và nóng.'),Q('Một vật chậm dần do ma sát, cơ năng',['Biến mất hoàn toàn','Chuyển chủ yếu thành nhiệt năng','Tự tăng lên','Không đổi dạng'],1,'Ma sát làm cơ năng chuyển thành nhiệt và các dạng khác.','Nhớ định luật bảo toàn năng lượng.'),Q('Năng lượng mặt trời được coi là nguồn tái tạo chủ yếu vì',['Được tự nhiên bổ sung liên tục','Chỉ dùng được một lần','Luôn miễn phí hoàn toàn','Không phụ thuộc tự nhiên'],0,'Nguồn năng lượng mặt trời được bổ sung liên tục từ tự nhiên.','Từ khóa: được bổ sung liên tục.')]),
+      S('7-6','💡','Tiết kiệm năng lượng','Vận dụng để lựa chọn hành vi tiết kiệm năng lượng.',
+        ['Tắt thiết bị khi không dùng.','Tận dụng ánh sáng tự nhiên.','Dùng thiết bị tiết kiệm điện và nguồn năng lượng tái tạo phù hợp.'],
+        ['Nhìn tình huống.','Tìm phần năng lượng đang bị lãng phí.','Đề xuất hành động cụ thể, an toàn, dễ thực hiện.'],
+        'Ví dụ: Phòng học đủ sáng tự nhiên thì có thể tắt bớt đèn để giảm điện năng tiêu thụ.',
+        'Không chọn giải pháp làm ảnh hưởng an toàn hoặc nhu cầu học tập thiết yếu.',
+        [Q('Khi ra khỏi phòng lâu, việc phù hợp là',['Bật toàn bộ thiết bị','Tắt thiết bị không cần thiết','Mở điều hòa thấp hơn','Bật thêm đèn'],1,'Tắt thiết bị không cần thiết giúp giảm lãng phí điện.','Tìm hành động làm giảm tiêu thụ điện.'),Q('Ban ngày phòng học đã đủ sáng, nên',['Bật thêm đèn','Tận dụng ánh sáng tự nhiên','Che kín cửa rồi bật đèn','Bật máy sưởi'],1,'Tận dụng ánh sáng tự nhiên là một cách tiết kiệm điện.','Ưu tiên nguồn sáng sẵn có.'),Q('Tiết kiệm nhiên liệu giúp',['Tăng ô nhiễm','Giảm chi phí và giảm khai thác tài nguyên','Nhiên liệu nhanh hết hơn','Tăng lãng phí'],1,'Tiết kiệm giúp giảm chi phí và giảm áp lực lên tài nguyên, môi trường.','Nghĩ đến lợi ích kinh tế và môi trường.')])
+    ]
+  },
+  8:{
+    title:'KHTN 8', subtitle:'Hóa học cơ bản • Vật lí • Sinh học thực vật', icon:'🔬',
+    stations:[
+      S('8-1','⚛️','Cấu tạo nguyên tử','Proton – electron – neutron và nguyên tử trung hòa.',
+        ['Proton: điện tích dương.','Electron: điện tích âm.','Neutron: không mang điện.','Nguyên tử trung hòa có số proton bằng số electron.'],
+        ['Xác định hạt được hỏi.','Nhớ dấu điện tích.','Nếu hỏi trung hòa: p = e.'],
+        'Ví dụ: Một nguyên tử có 12 proton và trung hòa điện thì có 12 electron.',
+        'Hay nhầm dấu điện tích của proton và electron. Mẹo: proton → positive → dương.',
+        [Q('Hạt mang điện tích âm là',['Proton','Electron','Neutron','Hạt nhân'],1,'Electron mang điện tích âm.','Nhớ cặp: proton dương, electron âm.'),Q('Nguyên tử trung hòa có 9 proton thì có',['9 electron','18 electron','0 electron','1 electron'],0,'Trung hòa điện nên số proton bằng số electron.','Dùng p = e.'),Q('Hạt không mang điện là',['Electron','Proton','Neutron','Ion dương'],2,'Neutron không mang điện.','Tên neutron gợi “neutral” – trung hòa.')]),
+      S('8-2','🧪','Đơn chất – hợp chất','Phân loại dựa vào số nguyên tố tạo nên chất.',
+        ['Đơn chất: tạo từ một nguyên tố hóa học.','Hợp chất: tạo từ hai hay nhiều nguyên tố hóa học.'],
+        ['Nhìn công thức hóa học.','Đếm số loại kí hiệu nguyên tố khác nhau.','1 loại → đơn chất; từ 2 loại → hợp chất.'],
+        'Ví dụ: O₂ có hai nguyên tử nhưng chỉ một nguyên tố O nên là đơn chất; H₂O có H và O nên là hợp chất.',
+        'Đừng đếm số nguyên tử; hãy đếm số loại nguyên tố.',
+        [Q('Chất nào là đơn chất?',['CO₂','H₂O','O₂','NaCl'],2,'O₂ chỉ gồm nguyên tố oxygen.','Đếm số loại nguyên tố trong công thức.'),Q('H₂O là',['Đơn chất','Hợp chất','Nguyên tố','Hỗn hợp bắt buộc'],1,'H₂O gồm H và O, tức hai nguyên tố.','Có mấy loại kí hiệu nguyên tố?'),Q('Fe được xếp là',['Đơn chất','Hợp chất','Muối','Acid'],0,'Fe chỉ gồm một nguyên tố sắt.','Một kí hiệu nguyên tố → đơn chất.')]),
+      S('8-3','🧷','Hóa trị và công thức hóa học','Lập công thức hóa học theo quy tắc hóa trị.',
+        ['Với AₓBᵧ: hóa trị A × x = hóa trị B × y.','Chỉ số 1 không viết.','Cần rút gọn tỉ lệ chỉ số nếu có thể.'],
+        ['Viết dạng AₓBᵧ.','Lập đẳng thức hóa trị × chỉ số.','Tìm tỉ lệ x:y nhỏ nhất.','Viết công thức và kiểm tra lại.'],
+        'Ví dụ: Mg(II) và Cl(I): II×x = I×y → x:y = 1:2 → MgCl₂.',
+        'Không “chéo hóa trị” máy móc mà quên rút gọn và kiểm tra.',
+        [Q('CTHH của hợp chất giữa Na(I) và O(II) là',['NaO','Na₂O','NaO₂','Na₂O₂'],1,'I×2 = II×1 nên công thức là Na₂O.','Cần hai Na hóa trị I cân với một O hóa trị II.'),Q('CTHH phù hợp giữa Ca(II) và Cl(I) là',['CaCl','CaCl₂','Ca₂Cl','Ca₂Cl₂'],1,'II×1 = I×2 nên CaCl₂.','Một Ca(II) cần hai Cl(I).'),Q('Hợp chất giữa Al(III) và Cl(I) có công thức',['AlCl','Al₂Cl₃','AlCl₃','Al₃Cl'],2,'III×1 = I×3 nên AlCl₃.','Một Al hóa trị III cần ba Cl hóa trị I.')]),
+      S('8-4','🚴','Tốc độ','Tính tốc độ bằng quãng đường chia thời gian.',
+        ['Công thức: v = s/t.','Đơn vị thường gặp: m/s hoặc km/h.'],
+        ['Xác định s và t.','Kiểm tra đơn vị.','Tính v = s/t.','Ghi đơn vị.'],
+        'Ví dụ: Đi 400 m trong 100 s → v = 400/100 = 4 m/s.',
+        'Hay tính ngược t/s. Mẹo: tốc độ = đường chia thời gian.',
+        [Q('Một bạn đi 300 m trong 75 s. Tốc độ là',['3 m/s','4 m/s','5 m/s','6 m/s'],1,'v = 300/75 = 4 m/s.','Dùng v = s/t.'),Q('Một xe đi 500 m trong 100 s. Tốc độ là',['2 m/s','4 m/s','5 m/s','50 m/s'],2,'v = 500/100 = 5 m/s.','Lấy quãng đường chia thời gian.'),Q('Công thức tính tốc độ là',['v=t/s','v=s×t','v=s/t','v=s+t'],2,'Tốc độ bằng quãng đường chia thời gian.','Nhớ: đường / thời gian.')]),
+      S('8-5','🔊','Âm','Phân biệt độ cao và độ to của âm.',
+        ['Độ cao phụ thuộc tần số dao động.','Độ to liên quan biên độ dao động.'],
+        ['Hỏi cao/thấp → nghĩ tần số.','Hỏi to/nhỏ → nghĩ biên độ.'],
+        'Ví dụ: Gõ trống mạnh hơn làm biên độ dao động tăng nên âm nghe to hơn.',
+        'Đừng nhầm tần số với biên độ.',
+        [Q('Âm cao hơn thường có',['Tần số lớn hơn','Biên độ luôn nhỏ hơn','Tốc độ truyền lớn hơn','Khoảng cách xa hơn'],0,'Độ cao phụ thuộc tần số dao động.','Tập trung vào “cao/thấp”.'),Q('Gảy dây đàn mạnh hơn chủ yếu làm âm',['Cao hơn','To hơn','Truyền nhanh hơn','Không đổi gì'],1,'Gảy mạnh làm biên độ dao động tăng nên âm to hơn.','Tập trung vào lực gảy và biên độ.'),Q('Độ to của âm liên quan nhiều đến',['Tần số','Biên độ dao động','Thời gian','Màu sắc vật'],1,'Biên độ dao động lớn thường tạo âm to hơn.','Nhớ cặp biên độ → to nhỏ.')]),
+      S('8-6','🪞','Phản xạ ánh sáng – gương phẳng','Nhận biết phản xạ và tính khoảng cách vật – ảnh.',
+        ['Khi tia sáng gặp mặt chắn rồi hắt trở lại môi trường cũ, đó là phản xạ ánh sáng.','Ảnh qua gương phẳng là ảnh ảo, không hứng được trên màn.','Ảnh cách gương một khoảng bằng vật cách gương.','Khoảng cách vật – ảnh = 2 × khoảng cách vật – gương.'],
+        ['Tính khoảng cách vật đến gương sau cùng.','Suy ra ảnh cách gương bằng đúng khoảng đó.','Cộng hai khoảng để ra vật – ảnh.'],
+        'Ví dụ: Người cách gương 0,8 m → ảnh cách gương 0,8 m → người cách ảnh 1,6 m.',
+        'Hay quên nhân đôi khi hỏi khoảng cách từ vật đến ảnh.',
+        [Q('Một vật cách gương phẳng 1,5 m. Ảnh cách gương',['0,75 m','1,0 m','1,5 m','3,0 m'],2,'Ảnh cách gương bằng vật cách gương.','Gương phẳng: d ảnh = d vật.'),Q('Một người cách gương 1 m. Khoảng cách người – ảnh là',['0,5 m','1 m','2 m','4 m'],2,'Người – ảnh = 2×1 = 2 m.','Hai khoảng bằng nhau ở hai phía gương.'),Q('Người cách gương 1,4 m rồi tiến gần 0,4 m. Khoảng cách người – ảnh lúc sau là',['1,0 m','1,4 m','2,0 m','2,8 m'],2,'Sau khi tiến: 1,0 m; người – ảnh = 2,0 m.','Tính khoảng cách mới đến gương trước.'),Q('Hiện tượng ánh sáng gặp gương rồi hắt trở lại môi trường cũ gọi là',['Phản xạ ánh sáng','Hấp thụ hoàn toàn','Phát sáng','Bay hơi'],0,'Đó là hiện tượng phản xạ ánh sáng.','Từ khóa: hắt trở lại.'),Q('Ảnh tạo bởi gương phẳng là',['Ảnh ảo, không hứng được trên màn','Ảnh thật, luôn hứng được','Ảnh thật, không hứng được','Ảnh ảo, hứng được trên màn'],0,'Gương phẳng tạo ảnh ảo và không thể hứng ảnh đó trên màn.','Nhớ: gương phẳng → ảnh ảo.')]),
+      S('8-7','🧲','Nam châm','Vật bị hút và định hướng của nam châm.',
+        ['Sắt thường bị nam châm hút.','Trái Đất có từ trường.','Nam châm treo tự do có xu hướng định hướng gần Bắc – Nam.'],
+        ['Nhận biết vật liệu của vật.','Nếu hỏi định hướng, liên hệ từ trường Trái Đất.'],
+        'Ví dụ: Kim la bàn định hướng vì là kim nam châm chịu tác dụng của từ trường Trái Đất.',
+        'Không kết luận mọi kim loại đều bị nam châm hút mạnh.',
+        [Q('Vật nào dễ bị nam châm hút?',['Đinh sắt','Thước nhựa','Cốc thủy tinh','Mẩu gỗ'],0,'Đinh sắt chứa sắt nên dễ bị nam châm hút.','Tìm vật bằng sắt.'),Q('Nam châm treo tự do định hướng gần Bắc – Nam vì',['Gió thổi','Từ trường Trái Đất','Ánh sáng','Trọng lực biến mất'],1,'Từ trường Trái Đất tác dụng lên nam châm.','Liên hệ la bàn.'),Q('Kim la bàn thực chất là',['Kim nhựa','Kim nam châm','Dây đồng','Thanh gỗ'],1,'Kim la bàn là một nam châm nhỏ.','Nó phải tương tác với từ trường Trái Đất.')]),
+      S('8-8','☀️','Quang hợp và hô hấp thực vật','Ánh sáng, chất hữu cơ và nhu cầu oxygen của rễ.',
+        ['Quang hợp cần ánh sáng và giúp tạo chất hữu cơ.','Rễ cần oxygen để hô hấp.','Đất ngập úng lâu dễ thiếu không khí.','Phân bón cần dùng đúng loại và lượng phù hợp; bón quá nhiều có thể gây hại cho rễ và môi trường.'],
+        ['Xác định yếu tố bị thiếu/thừa.','Liên hệ quá trình quang hợp hoặc hô hấp.','Nêu hậu quả và cách khắc phục.'],
+        'Ví dụ: Đất úng nước → khoảng trống chứa khí bị nước lấp → rễ thiếu oxygen hô hấp → cây sinh trưởng kém.',
+        'Không trả lời đơn giản “cây thiếu nước/thiếu phân” khi tình huống nói rõ thiếu sáng hoặc úng.',
+        [Q('Cây ưa sáng đặt lâu nơi tối sinh trưởng kém chủ yếu vì',['Quang hợp giảm','Rễ dài quá','Không có tế bào sống','Luôn thiếu khoáng'],0,'Thiếu ánh sáng làm quang hợp giảm, tạo ít chất hữu cơ.','Tập trung vào ánh sáng.'),Q('Chậu cây bị úng lâu ngày, nên',['Đổ thêm nước','Khơi thoát nước','Che kín đất','Bón thật nhiều phân'],1,'Thoát nước giúp đất thông thoáng và rễ có oxygen hô hấp.','Mục tiêu là đưa không khí trở lại đất.'),Q('Làm đất tơi xốp có lợi vì',['Giúp đất thông khí','Làm mất hết nước','Ngăn mọi vi sinh vật','Làm rễ ngừng hô hấp'],0,'Đất tơi xốp có nhiều khoảng khí hơn, thuận lợi cho rễ hô hấp.','Nghĩ đến oxygen cho rễ.'),Q('Cách bón phân phù hợp cho cây là',['Bón càng nhiều càng tốt','Bón đúng loại, đúng lượng theo nhu cầu','Chỉ bón khi đất đang ngập nước','Bón liên tục mỗi ngày'],1,'Bón phân cần đúng loại và lượng; quá nhiều có thể làm tổn thương rễ và gây ô nhiễm.','Không phải nhiều hơn luôn tốt hơn.')]),
+      S('8-9','🌼','Cảm ứng – sinh trưởng – phát triển – sinh sản','Phân biệt các quá trình sống qua dấu hiệu.',
+        ['Cảm ứng: phản ứng của sinh vật trước kích thích từ môi trường.','Sinh trưởng: tăng kích thước, khối lượng.','Phát triển: biến đổi, hoàn thiện, chuyển giai đoạn.','Sinh sản: tạo cá thể mới.','Thụ tinh là sự kết hợp giữa giao tử đực và giao tử cái.','Sinh sản vô tính không có sự kết hợp giao tử đực và giao tử cái.'],
+        ['Tìm dấu hiệu chính của tình huống.','Tăng số đo cơ thể → sinh trưởng.','Ra hoa/trưởng thành → phát triển.','Tạo cá thể mới → sinh sản.'],
+        'Ví dụ: Cây cao thêm 10 cm là sinh trưởng; cây bắt đầu ra hoa là phát triển.',
+        'Hay nhầm “ra hoa” là sinh trưởng. Ra hoa là chuyển giai đoạn phát triển.',
+        [Q('Cây cao thêm 6 cm là biểu hiện của',['Sinh trưởng','Sinh sản','Bài tiết','Cảm ứng'],0,'Tăng kích thước là sinh trưởng.','Tìm dấu hiệu “tăng kích thước”.'),Q('Cây bắt đầu ra hoa là biểu hiện của',['Sinh trưởng đơn thuần','Phát triển','Hô hấp','Thoát hơi nước'],1,'Ra hoa cho thấy cây chuyển sang giai đoạn sinh sản, là phát triển.','Đó là chuyển giai đoạn.'),Q('Cây mới mọc từ một phần thân cây mẹ là biểu hiện của',['Sinh sản','Chỉ sinh trưởng','Chỉ hô hấp','Cảm ứng'],0,'Có cá thể mới được hình thành nên là sinh sản.','Có “cây mới” → sinh sản.'),Q('Cây non nghiêng về phía có ánh sáng là một biểu hiện của',['Cảm ứng','Chỉ sinh trưởng','Thụ tinh','Bài tiết'],0,'Sinh vật phản ứng với kích thích ánh sáng nên đây là cảm ứng.','Tìm kích thích từ môi trường và phản ứng của cây.'),Q('Sự kết hợp giữa giao tử đực và giao tử cái gọi là',['Thụ tinh','Nảy chồi','Sinh trưởng','Thoát hơi nước'],0,'Sự kết hợp hai giao tử được gọi là thụ tinh.','Từ khóa: giao tử đực + giao tử cái.'),Q('Một cành cây giâm xuống đất rồi mọc thành cây mới là',['Sinh sản vô tính','Sinh sản hữu tính bắt buộc','Chỉ phát triển','Chỉ cảm ứng'],0,'Cây mới hình thành từ một phần cơ thể mẹ, không có sự kết hợp giao tử nên là sinh sản vô tính.','Có cây mới từ bộ phận cơ thể mẹ.')])
+    ]
+  },
+  9:{
+    title:'KHTN 9', subtitle:'Hóa học • điện – nhiệt • sinh thái – cơ thể người', icon:'⚗️',
+    stations:[
+      S('9-1','🧫','Acid – base – oxide – muối','Nhận diện bốn nhóm hợp chất cơ bản.',
+        ['Acid thường có H đứng đầu công thức.','Base thường gồm kim loại và OH.','Oxide gồm oxygen và một nguyên tố khác.','Muối thường gồm ion kim loại và gốc acid.'],
+        ['Nhìn công thức.','Tìm nhóm đặc trưng H đầu, OH, hoặc chỉ O + một nguyên tố.','Loại trừ để nhận ra muối.'],
+        'Ví dụ: HCl → acid; NaOH → base; MgO → oxide; NaCl → muối.',
+        'Có O chưa chắc là oxide; Ca(OH)₂ là base.',
+        [Q('Chất nào là acid?',['NaOH','HCl','MgO','KCl'],1,'HCl là acid.','Acid thường có H đứng đầu.'),Q('Chất nào là base?',['Ca(OH)₂','CO₂','H₂SO₄','NaCl'],0,'Ca(OH)₂ gồm kim loại Ca và nhóm OH.','Tìm nhóm OH.'),Q('Chất nào là oxide?',['K₂O','KOH','HCl','Na₂SO₄'],0,'K₂O gồm K và O, là oxide.','Oxide gồm oxygen và một nguyên tố khác.'),Q('Chất nào là muối?',['Na₂SO₄','H₂SO₄','Ca(OH)₂','CO₂'],0,'Na₂SO₄ gồm ion kim loại và gốc acid nên là muối.','Loại acid, base và oxide trước.')]),
+      S('9-2','🟣','Quỳ tím và base','Nhớ dấu hiệu nhận biết dung dịch base.',
+        ['Dung dịch base làm quỳ tím chuyển xanh.'],
+        ['Nhận ra chất là base.','Nhớ quỳ tím → xanh.'],
+        'Ví dụ: Dung dịch KOH làm quỳ tím chuyển sang màu xanh.',
+        'Đừng nhầm với acid: acid thường làm quỳ tím chuyển đỏ.',
+        [Q('Dung dịch NaOH làm quỳ tím chuyển',['Xanh','Đỏ','Vàng','Không xác định'],0,'NaOH là base nên làm quỳ tím chuyển xanh.','Base → xanh.'),Q('Quỳ tím chuyển xanh gợi ý dung dịch có tính',['Base','Acid','Trung tính chắc chắn','Kim loại'],0,'Đây là dấu hiệu điển hình của môi trường base.','Nhớ câu: base làm quỳ tím hóa xanh.'),Q('KOH thuộc nhóm',['Acid','Base','Oxide','Muối'],1,'KOH gồm kim loại K và OH nên là base.','Tìm nhóm OH.')]),
+      S('9-3','🧮','Tính theo PTHH','Quy trình 4 bước: PTHH → mol → tỉ lệ → khối lượng.',
+        ['n = m/M.','Dựa tỉ lệ hệ số trong PTHH để suy ra số mol.','m = n×M.'],
+        ['Viết và cân bằng PTHH.','Đổi đại lượng đã cho về mol.','Dùng tỉ lệ hệ số để tìm mol chất cần.','Đổi sang đại lượng đề hỏi.'],
+        'Ví dụ: Mg + 2HCl → MgCl₂ + H₂. Với 2,4 g Mg: n=2,4/24=0,1 mol → nMgCl₂=0,1 mol → m=0,1×95=9,5 g.',
+        'Không dùng tỉ lệ khối lượng trực tiếp nếu chưa có cơ sở; hãy đi qua số mol.',
+        [Q('Công thức tính số mol từ khối lượng là',['n=m/M','n=M/m','m=n/M','M=m×n'],0,'Số mol bằng khối lượng chia khối lượng mol.','Nhớ n = m/M.'),Q('Nếu PTHH có tỉ lệ A:B = 1:1, nA=0,2 mol thì nB là',['0,1 mol','0,2 mol','0,4 mol','2 mol'],1,'Tỉ lệ 1:1 nên số mol bằng nhau.','Hệ số bằng nhau → mol bằng nhau.'),Q('Với 4,8 g Mg, M(Mg)=24 g/mol, số mol Mg là',['0,1','0,2','0,4','2,0'],1,'n=4,8/24=0,2 mol.','Lấy m chia M.'),Q('Cho 2,4 g Mg phản ứng hết với HCl theo Mg + 2HCl → MgCl₂ + H₂. Biết M(MgCl₂)=95 g/mol. Khối lượng MgCl₂ tạo thành là',['4,75 g','9,5 g','19 g','2,4 g'],1,'nMg=2,4/24=0,1 mol; tỉ lệ 1:1 nên nMgCl₂=0,1 mol; m=0,1×95=9,5 g.','Đi theo 3 bước: mol Mg → mol MgCl₂ → khối lượng.')]),
+      S('9-4','⚡','Nhiễm điện – dẫn điện – cách điện','Hiểu hiện tượng cọ xát và vật liệu điện.',
+        ['Vật sau cọ xát có thể bị nhiễm điện và hút vật nhẹ.','Kim loại thường dẫn điện tốt.','Nhựa thường cách điện.'],
+        ['Xem vật có được cọ xát không.','Xem vật liệu dẫn điện hay cách điện.','Liên hệ ứng dụng an toàn điện.'],
+        'Ví dụ: Lược nhựa cọ xát tóc có thể hút giấy vụn vì lược bị nhiễm điện.',
+        'Không phải “nhựa luôn hút tóc”; hiện tượng rõ hơn sau cọ xát.',
+        [Q('Lược nhựa sau khi cọ xát có thể hút giấy vụn vì',['Bị nhiễm điện','Bị nóng chảy','Tạo từ trường mạnh','Tăng khối lượng'],0,'Cọ xát có thể làm vật bị nhiễm điện.','Tập trung vào cọ xát.'),Q('Vỏ dây điện thường bằng nhựa vì',['Nhựa dẫn điện tốt','Nhựa cách điện','Nhựa tạo điện','Nhựa luôn mềm'],1,'Nhựa giúp cách điện, tăng an toàn.','Lõi dẫn điện, vỏ cách điện.'),Q('Vật nào thường dẫn điện tốt?',['Dây đồng','Thanh nhựa','Gỗ khô','Thủy tinh'],0,'Đồng là kim loại dẫn điện tốt.','Tìm vật kim loại.')]),
+      S('9-5','🔌','Mạch điện – ampe kế','Mắc ampe kế và xác định chiều dòng điện.',
+        ['Ampe kế đo cường độ dòng điện.','Ampe kế mắc nối tiếp với đoạn mạch cần đo.','Chiều dòng điện quy ước ở mạch ngoài: từ cực dương nguồn đến cực âm.'],
+        ['Xác định thiết bị cần đo dòng qua.','Đặt ampe kế nối tiếp.','Đánh dấu chiều từ cực dương nguồn qua mạch ngoài về cực âm.'],
+        'Ví dụ: Muốn đo dòng qua bóng đèn, đặt ampe kế trên cùng nhánh nối tiếp với bóng.',
+        'Hay nhầm ampe kế với vôn kế: A nối tiếp, V song song.',
+        [Q('Ampe kế dùng đo',['Cường độ dòng điện','Hiệu điện thế','Nhiệt độ','Khối lượng'],0,'Ampe kế đo cường độ dòng điện.','A → ampere.'),Q('Ampe kế nên mắc',['Nối tiếp','Song song bắt buộc mọi trường hợp','Ngoài mạch','Không cần dây dẫn'],0,'Muốn đo dòng qua phần tử, ampe kế mắc nối tiếp.','A nối tiếp.'),Q('Chiều dòng điện quy ước ở mạch ngoài là',['Từ cực dương đến cực âm','Từ cực âm đến cực dương','Từ đèn về cả hai cực','Không có chiều'],0,'Chiều quy ước đi từ cực dương nguồn qua mạch ngoài về cực âm.','Bắt đầu ở cực +.')]),
+      S('9-6','📏','Vôn kế','Mắc vôn kế song song để đo hiệu điện thế.',
+        ['Vôn kế đo hiệu điện thế.','Vôn kế mắc song song với hai đầu phần tử cần đo.'],
+        ['Xác định hai đầu phần tử.','Mắc hai chốt vôn kế vào hai đầu đó.','Kiểm tra: V song song.'],
+        'Ví dụ: Muốn đo hiệu điện thế hai đầu bóng đèn, mắc vôn kế song song với bóng.',
+        'Mẹo nhớ: A nối tiếp – V song song.',
+        [Q('Vôn kế dùng đo',['Cường độ dòng điện','Hiệu điện thế','Nhiệt lượng','Tốc độ'],1,'Vôn kế đo hiệu điện thế.','V → volt.'),Q('Vôn kế đo hai đầu bóng đèn nên mắc',['Nối tiếp','Song song','Thay bóng đèn','Nối tắt nguồn'],1,'Vôn kế cần mắc song song với hai đầu bóng.','V song song.'),Q('Cặp ghi nhớ đúng là',['A song song – V nối tiếp','A nối tiếp – V song song','Cả hai nối tiếp','Cả hai song song'],1,'Đây là quy tắc cơ bản khi mắc dụng cụ đo.','A nối tiếp, V song song.')]),
+      S('9-7','🔥','Truyền nhiệt','Nhận biết đối lưu trong chất lỏng và chất khí.',
+        ['Đối lưu là hình thức truyền nhiệt quan trọng trong chất lỏng và chất khí.','Phần nóng thường nhẹ hơn và chuyển động lên, phần lạnh hơn chuyển xuống.'],
+        ['Xác định môi trường là chất lỏng/khí.','Tìm chuyển động thành dòng do chênh lệch nhiệt độ.'],
+        'Ví dụ: Khi đun nước, nước nóng phía dưới đi lên, nước lạnh phía trên đi xuống tạo dòng đối lưu.',
+        'Không nhầm đối lưu với dẫn nhiệt thuần túy trong chất rắn.',
+        [Q('Hình thức truyền nhiệt nổi bật trong lòng chất lỏng khi đun là',['Đối lưu','Chỉ phản xạ','Khúc xạ','Nhiễm điện'],0,'Chất lỏng truyền nhiệt mạnh bằng đối lưu.','Nghĩ đến dòng nước lên – xuống.'),Q('Không khí nóng thường có xu hướng',['Đi lên','Đi xuống mạnh hơn','Đứng yên tuyệt đối','Biến thành chất rắn'],0,'Không khí nóng thường nở ra, nhẹ hơn và đi lên.','Nhớ đối lưu.'),Q('Đối lưu thường xảy ra rõ ở',['Chất lỏng và chất khí','Chỉ chất rắn','Chân không tuyệt đối','Mọi vật như nhau'],0,'Đối lưu gắn với chuyển động khối của chất lỏng và khí.','Cần môi trường có thể chuyển động thành dòng.')]),
+      S('9-8','🌍','Quần thể – quần xã – hệ sinh thái','Phân biệt các cấp tổ chức sinh thái.',
+        ['Quần thể: các cá thể cùng loài trong khu vực nhất định.','Quần xã: nhiều quần thể khác loài cùng sống.','Hệ sinh thái: quần xã + môi trường vô sinh tương tác.'],
+        ['Đếm số loài.','Một loài → nghĩ quần thể.','Nhiều loài → quần xã.','Nếu kèm môi trường vô sinh và tương tác → hệ sinh thái.'],
+        'Ví dụ: Một đàn voi cùng loài trong rừng có thể là quần thể; cả cây, thú, chim, nấm trong rừng là quần xã.',
+        'Đừng gọi mọi nhóm sinh vật là quần thể; quần thể phải cùng loài.',
+        [Q('Một đàn voi cùng loài sống trong rừng là ví dụ gần nhất của',['Quần thể','Quần xã','Sinh quyển','Khoáng vật'],0,'Các cá thể cùng loài, cùng khu vực → quần thể.','Một loài hay nhiều loài?'),Q('Tập hợp nhiều loài cùng sống trong một khu vực là',['Quần xã','Quần thể','Một cá thể','Một tế bào'],0,'Nhiều quần thể khác loài tạo thành quần xã.','Nhiều loài → quần xã.'),Q('Hệ sinh thái gồm',['Chỉ động vật','Quần xã và môi trường vô sinh tương tác','Chỉ cây xanh','Chỉ đất và nước'],1,'Hệ sinh thái bao gồm sinh vật và môi trường vô sinh có tương tác.','Có cả hữu sinh và vô sinh.')]),
+      S('9-9','🕸️','Chuỗi – lưới thức ăn','Nhận biết quan hệ dinh dưỡng trong hệ sinh thái.',
+        ['Chuỗi thức ăn: dãy sinh vật có quan hệ dinh dưỡng nối tiếp.','Lưới thức ăn: nhiều chuỗi thức ăn có mắt xích chung liên kết với nhau.'],
+        ['Xác định “ai ăn ai”.','Xếp theo chiều thức ăn → sinh vật tiêu thụ.','Nếu nhiều chuỗi liên kết → lưới.'],
+        'Ví dụ: Cỏ → châu chấu → ếch → rắn là một chuỗi thức ăn.',
+        'Mũi tên nên thể hiện dòng vật chất/năng lượng từ sinh vật bị ăn sang sinh vật ăn.',
+        [Q('Dãy nào là một chuỗi thức ăn hợp lí?',['Cỏ → châu chấu → ếch','Ếch → cỏ → châu chấu','Rắn → cỏ → chim','Đá → cỏ → cá'],0,'Châu chấu ăn cỏ, ếch ăn châu chấu.','Xếp theo quan hệ thức ăn.'),Q('Lưới thức ăn là',['Một chuỗi duy nhất','Nhiều chuỗi có mắt xích chung liên kết','Chỉ gồm thực vật','Không có quan hệ dinh dưỡng'],1,'Lưới thức ăn được tạo bởi nhiều chuỗi liên kết với nhau.','Từ “lưới” gợi nhiều đường nối.'),Q('Một loài trong lưới thức ăn có thể',['Chỉ thuộc đúng một chuỗi','Tham gia nhiều chuỗi khác nhau','Không bao giờ bị ăn','Không bao giờ ăn loài khác'],1,'Một loài có thể là mắt xích chung của nhiều chuỗi.','Nghĩ đến mạng lưới liên kết.')]),
+      S('9-10','🦋','Đa dạng sinh học','Giải thích cơ sở của các biện pháp bảo tồn.',
+        ['Bảo vệ sinh cảnh giúp duy trì nơi ở, thức ăn và nơi sinh sản.','Khu bảo tồn hạn chế tác động tiêu cực của con người.','Kiểm soát loài ngoại lai giúp giảm cạnh tranh, săn mồi bất lợi cho loài bản địa.','Khai thác cần đi kèm phục hồi/tái tạo.'],
+        ['Nêu biện pháp.','Nói rõ cơ chế/tác dụng.','Liên hệ đến duy trì quần thể, quan hệ sinh thái hoặc khả năng phục hồi.'],
+        'Ví dụ: Bảo vệ sinh cảnh giúp các loài duy trì nơi ở và nguồn thức ăn, từ đó hạn chế suy giảm số lượng.',
+        'Đừng chỉ viết khẩu hiệu “hãy bảo vệ thiên nhiên”; cần nêu tác dụng cụ thể.',
+        [Q('Bảo vệ sinh cảnh giúp đa dạng sinh học vì',['Duy trì nơi ở và nguồn thức ăn','Làm mọi loài giống nhau','Loại bỏ toàn bộ cạnh tranh','Ngăn mọi biến đổi tự nhiên'],0,'Sinh cảnh là nơi sống, sinh sản và kiếm ăn của sinh vật.','Nghĩ đến “nhà” của các loài.'),Q('Cần kiểm soát loài ngoại lai vì chúng có thể',['Cạnh tranh hoặc gây hại loài bản địa','Luôn có lợi tuyệt đối','Không bao giờ sinh sản','Không tương tác với loài khác'],0,'Một số loài ngoại lai có thể phát triển mạnh và gây mất cân bằng.','Tập trung vào cạnh tranh/săn mồi.'),Q('Khai thác tài nguyên sinh vật bền vững nên',['Khai thác tối đa','Kết hợp phục hồi, tái tạo','Khai thác bất kể mùa','Loại bỏ khu bảo tồn'],1,'Khai thác đi đôi với phục hồi giúp duy trì khả năng tái tạo.','Từ khóa: bền vững = khai thác + phục hồi.')]),
+      S('9-11','🧠','Cơ thể người – bài tiết – tuyến nội tiết','Ôn nhanh các kiến thức nhận biết cơ bản.',
+        ['Bài tiết giúp loại bỏ chất thải và góp phần duy trì môi trường trong cơ thể ổn định.','Tuyến yên là một tuyến nội tiết.','Giang mai là bệnh có thể lây truyền qua đường tình dục.'],
+        ['Tìm chức năng chính của quá trình.','Với tuyến nội tiết, nhớ một số tuyến tiêu biểu như tuyến yên.'],
+        'Ví dụ: Bài tiết không phải “giảm cân”; chức năng chính là loại bỏ chất thải và góp phần ổn định môi trường trong cơ thể.',
+        'Không chọn đáp án nghe “có vẻ tốt” nhưng không đúng chức năng sinh học chính.',
+        [Q('Vai trò chính của bài tiết là',['Loại bỏ chất thải, góp phần ổn định môi trường trong cơ thể','Tăng chiều cao ngay','Tạo thức ăn','Làm cơ thể mất hết nước'],0,'Bài tiết giúp loại bỏ chất thải chuyển hóa và góp phần giữ ổn định môi trường trong.','Tập trung vào chất thải.'),Q('Tuyến nào là tuyến nội tiết?',['Tuyến yên','Tuyến nước bọt','Tuyến vị','Tuyến mồ hôi'],0,'Tuyến yên là tuyến nội tiết.','Nhớ tuyến yên.'),Q('Cơ thể cần loại bỏ chất thải vì',['Chất thải tích tụ có thể gây hại','Để ngừng trao đổi chất','Để không cần hô hấp','Để tăng nhiệt vô hạn'],0,'Chất thải chuyển hóa cần được loại bỏ để duy trì hoạt động bình thường.','Tích tụ chất thải không có lợi.'),Q('Giang mai thuộc nhóm bệnh có thể lây truyền qua',['Đường tình dục','Chỉ qua ánh sáng','Chỉ qua tiếng ồn','Chỉ do thiếu ngủ'],0,'Giang mai là bệnh có thể lây truyền qua đường tình dục.','Nhớ nội dung phòng tránh bệnh lây truyền qua đường tình dục.')]),
+      S('9-12','🌦️','Môi trường – sinh quyển – biến đổi khí hậu','Ôn các khái niệm môi trường xuất hiện trong phần nhận biết.',
+        ['Ô nhiễm môi trường là sự biến đổi bất lợi về các tính chất vật lí, hóa học và sinh học của môi trường.','Sinh quyển là phần Trái Đất có sự sống; không trùng hoàn toàn với toàn bộ lớp vỏ Trái Đất.','Biến đổi khí hậu thể hiện qua sự thay đổi kéo dài của các giá trị trung bình như nhiệt độ, lượng mưa, độ ẩm.'],
+        ['Đọc đúng từ khóa của khái niệm.','Với biến đổi khí hậu, chú ý “giá trị trung bình” và sự thay đổi kéo dài.','Loại các phương án tuyệt đối hóa hoặc dùng đại lượng không liên quan.'],
+        'Ví dụ: Nếu nhiệt độ trung bình nhiều năm của một khu vực thay đổi rõ rệt, đó là một dấu hiệu liên quan đến biến đổi khí hậu.',
+        'Không đồng nhất một ngày nóng/lạnh bất thường với toàn bộ biến đổi khí hậu; câu hỏi khái niệm nhấn vào xu thế và giá trị trung bình.',
+        [Q('Ô nhiễm môi trường liên quan đến sự biến đổi bất lợi của các tính chất',['Vật lí, hóa học và sinh học','Chỉ toán học','Chỉ cơ học','Chỉ công nghệ'],0,'Khái niệm ô nhiễm xét đến các biến đổi vật lí, hóa học và sinh học của môi trường.','Nhớ bộ ba: vật lí – hóa học – sinh học.'),Q('Khi nói đến biến đổi khí hậu, đại lượng thường được xét theo',['Giá trị trung bình trong thời gian dài','Một lần đo duy nhất','Giá bán thị trường','Số trang sách'],0,'Biến đổi khí hậu được nhận biết qua sự thay đổi kéo dài của các giá trị trung bình khí hậu.','Từ khóa: trung bình và dài hạn.'),Q('Phát biểu phù hợp về sinh quyển là',['Là phần Trái Đất có sự sống','Trùng hoàn toàn với toàn bộ lớp vỏ Trái Đất','Chỉ gồm đại dương','Chỉ gồm khí quyển'],0,'Sinh quyển là khu vực của Trái Đất nơi sự sống tồn tại.','Từ “sinh” gợi sự sống.')])
+    ]
+  }
+};
+
+
+const WRITTEN = {
+  7:[
+    {title:'🌳 Giải thích xói mòn',prompt:'Một sườn đồi bị chặt nhiều cây. Sau các trận mưa lớn, đất bị cuốn xuống chân đồi. Em hãy giải thích theo chuỗi nguyên nhân → hậu quả.',hints:['Bắt đầu từ việc mất tán cây và hệ rễ.','Nêu tác động của nước mưa lên lớp đất không còn được che phủ.'],answer:'Mất cây làm giảm lớp che phủ và hệ rễ giữ đất. Khi mưa, nước tác động trực tiếp và cuốn lớp đất mặt đi, vì vậy nguy cơ xói mòn tăng.'},
+    {title:'⚡ Chuyển hóa năng lượng',prompt:'Một quạt điện đang chạy. Hãy nêu năng lượng đầu vào và ít nhất hai dạng năng lượng đầu ra.',hints:['Quạt nhận năng lượng từ ổ điện.','Quan sát cánh quạt chuyển động và các tác dụng phụ như âm, nóng.'],answer:'Quạt nhận điện năng. Điện năng chuyển chủ yếu thành cơ năng làm cánh quạt quay, đồng thời một phần chuyển thành âm năng và nhiệt năng.'},
+    {title:'🍞 Hạn chế nấm mốc',prompt:'Sau nhiều ngày mưa, một túi bánh dễ bị mốc. Hãy nêu một biện pháp bảo quản và giải thích vì sao có tác dụng.',hints:['Nấm mốc phát triển thuận lợi trong môi trường ẩm.'],answer:'Có thể bảo quản nơi khô ráo hoặc bảo quản lạnh phù hợp. Việc giảm độ ẩm/điều kiện thuận lợi giúp hạn chế nấm mốc phát triển.'},
+    {title:'🏠 Chọn vật liệu mái',prompt:'Ở vùng nắng nóng, nên chọn mái nhà có đặc điểm như thế nào để giảm nóng? Giải thích ngắn gọn.',hints:['Mục tiêu là giảm hấp thụ và truyền nhiệt vào nhà.'],answer:'Nên chọn vật liệu cách nhiệt tốt, màu sáng, ít hấp thụ nhiệt; nhờ đó lượng nhiệt truyền vào bên trong nhà giảm.'}
+  ],
+  8:[
+    {title:'⚛️ Nguyên tử trung hòa',prompt:'Một nguyên tử trung hòa có 13 proton. Hãy cho biết số electron và giải thích vì sao nguyên tử trung hòa về điện.',hints:['Nguyên tử trung hòa có số proton bằng số electron.','Proton và electron mang điện tích trái dấu.'],answer:'Nguyên tử có 13 electron. Vì số proton bằng số electron, điện tích dương của proton và điện tích âm của electron cân bằng nhau nên tổng điện tích bằng 0.'},
+    {title:'🧷 Lập công thức hóa học',prompt:'Lập công thức hóa học của hợp chất tạo bởi Mg hóa trị II và Cl hóa trị I. Trình bày các bước.',hints:['Đặt dạng MgₓClᵧ.','Dùng quy tắc: II×x = I×y.'],answer:'Đặt MgₓClᵧ. Theo quy tắc hóa trị: II×x = I×y ⇒ x:y = 1:2. Chọn x=1, y=2, được MgCl₂.'},
+    {title:'🚴 Tính tốc độ',prompt:'Một học sinh đi được 450 m trong 90 s. Tính tốc độ theo m/s và ghi đủ công thức, phép tính, đơn vị.',hints:['Dùng v = s/t.'],answer:'v = s/t = 450/90 = 5 m/s.'},
+    {title:'🪞 Gương phẳng',prompt:'Một bạn đứng cách gương 1,3 m rồi tiến gần gương 0,3 m. Tính khoảng cách giữa bạn và ảnh sau khi di chuyển.',hints:['Tính khoảng cách mới từ bạn đến gương.','Ảnh cách gương bằng vật; khoảng cách vật–ảnh bằng 2 lần khoảng cách vật–gương.'],answer:'Sau khi tiến, bạn cách gương 1,0 m. Ảnh cũng cách gương 1,0 m ở phía sau gương. Khoảng cách bạn–ảnh = 2×1,0 = 2,0 m.'},
+    {title:'🌱 Cây bị úng',prompt:'Một chậu cây bị ngập nước nhiều ngày. Em cần làm gì để bảo vệ cây? Giải thích dựa vào hô hấp của rễ.',hints:['Rễ cần oxygen.','Nước lấp các khoảng khí trong đất.'],answer:'Cần khơi lỗ thoát nước hoặc làm thoát nước đọng để đất thông thoáng hơn. Khi đất có không khí, rễ nhận được oxygen để hô hấp, giúp cây duy trì hoạt động sống.'}
+  ],
+  9:[
+    {title:'🔌 Mạch điện',prompt:'Trên giấy, hãy vẽ mạch kín gồm nguồn điện, công tắc, bóng đèn và ampe kế để đo dòng qua bóng. Đánh dấu chiều dòng điện. Sau đó nêu cách mắc thêm vôn kế để đo hiệu điện thế hai đầu bóng.',hints:['Ampe kế mắc nối tiếp.','Chiều dòng điện quy ước ở mạch ngoài: từ cực dương đến cực âm.','Vôn kế mắc song song với bóng.'],answer:'Mạch kín: nguồn – công tắc – ampe kế – bóng đèn mắc nối tiếp. Chiều dòng điện quy ước đi từ cực dương nguồn qua mạch ngoài về cực âm. Muốn đo hiệu điện thế hai đầu bóng, mắc vôn kế song song với hai đầu bóng.'},
+    {title:'🧮 Bài toán PTHH',prompt:'Cho 4,8 g Mg phản ứng hoàn toàn với HCl dư: Mg + 2HCl → MgCl₂ + H₂. Biết M(Mg)=24 g/mol, M(MgCl₂)=95 g/mol. Tính khối lượng MgCl₂.',hints:['Tính nMg = m/M.','Tỉ lệ Mg : MgCl₂ là 1:1.','Cuối cùng dùng m = n×M.'],answer:'nMg = 4,8/24 = 0,2 mol. Theo PTHH, nMgCl₂ = 0,2 mol. mMgCl₂ = 0,2×95 = 19 g.'},
+    {title:'🦋 Bảo vệ đa dạng sinh học',prompt:'Nêu hai biện pháp bảo vệ đa dạng sinh học và giải thích cơ sở khoa học của từng biện pháp.',hints:['Có thể chọn bảo vệ sinh cảnh, khu bảo tồn, kiểm soát loài ngoại lai, khai thác đi đôi với phục hồi.'],answer:'Ví dụ: (1) Bảo vệ sinh cảnh để duy trì nơi ở, thức ăn và nơi sinh sản của các loài. (2) Kiểm soát loài ngoại lai để hạn chế cạnh tranh hoặc gây hại cho loài bản địa. Các biện pháp khác đúng và giải thích hợp lí cũng chấp nhận.'},
+    {title:'🕸️ Chuỗi và lưới thức ăn',prompt:'Nêu khái niệm chuỗi thức ăn và lưới thức ăn, đồng thời chỉ ra điểm khác nhau cơ bản.',hints:['Chuỗi là một dãy; lưới là nhiều chuỗi có mắt xích chung.'],answer:'Chuỗi thức ăn là một dãy các loài có quan hệ dinh dưỡng nối tiếp nhau. Lưới thức ăn là tập hợp nhiều chuỗi thức ăn có các mắt xích chung liên kết với nhau. Lưới thể hiện nhiều mối quan hệ hơn một chuỗi đơn lẻ.'},
+    {title:'🌦️ Biến đổi khí hậu',prompt:'Vì sao không thể chỉ dựa vào một ngày rất nóng để kết luận khí hậu đã biến đổi? Nêu từ khóa cần chú ý khi nói về biến đổi khí hậu.',hints:['Khí hậu được xét trên khoảng thời gian dài và các giá trị trung bình.'],answer:'Một ngày nóng chỉ là trạng thái thời tiết ngắn hạn. Biến đổi khí hậu liên quan đến sự thay đổi kéo dài của các giá trị trung bình như nhiệt độ, lượng mưa, độ ẩm trong thời gian dài.'}
+  ]
+};
+
+function S(id,icon,title,desc,remember,steps,example,mistake,questions){return {id,icon,title,desc,remember,steps,example,mistake,questions}}
+function Q(text,opts,answer,explain,hint){return {text,opts,answer,explain,hint}}
+
+const STORAGE_KEY='khtn_app_state';
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {};
+    const parsed=JSON.parse(raw);
+    return parsed && typeof parsed==='object' ? parsed : {};
+  }catch(err){console.warn('Không đọc được tiến độ đã lưu:',err);return {};}
+}
+let state=loadState();
+state.xp=Number.isFinite(Number(state.xp))?Number(state.xp):0;
+state.done=(state.done&&typeof state.done==='object')?state.done:{};
+state.best=(state.best&&typeof state.best==='object')?state.best:{};
+state.read=(state.read&&typeof state.read==='object')?state.read:{};
+state.writtenDone=(state.writtenDone&&typeof state.writtenDone==='object')?state.writtenDone:{};
+state.lastGrade=state.lastGrade&&DATA[state.lastGrade]?String(state.lastGrade):null;
+let currentGrade=null;
+let quiz=null;
+let writtenQuiz=null;
+
+const $=s=>document.querySelector(s);
+const gradeGrid=$('#gradeGrid'), gradeArea=$('#gradeArea'), stationGrid=$('#stationGrid'), workspace=$('#workspace');
+
+function save(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(err){console.warn('Không lưu được tiến độ:',err);}
+  renderXP();
+}
+function renderXP(){ const el=$('#xpPill'); if(el) el.textContent=`⭐ ${state.xp} XP`; }
+function gradeProgress(g){ const ids=DATA[g].stations.map(s=>s.id); const n=ids.filter(id=>state.done[id]).length; return {n,total:ids.length,pct:ids.length?Math.round(n/ids.length*100):0}; }
+function renderGrades(){
+  gradeGrid.innerHTML=Object.entries(DATA).map(([g,d])=>{const p=gradeProgress(g);return `<article class="grade-card"><div class="row"><div class="num">${g}</div><div style="font-size:28px">${d.icon}</div></div><h3>${d.title}</h3><p>${d.subtitle}</p><div class="row mini"><span>${p.n}/${p.total} trạm hoàn thành</span><b>${p.pct}%</b></div><div class="progress" style="margin:8px 0 14px"><i style="width:${p.pct}%"></i></div><button class="btn primary" onclick="selectGrade(${g})">Vào phòng luyện →</button></article>`}).join('');
+}
+
+function selectGrade(g){
+  const key=String(g); if(!DATA[key]) return;
+  currentGrade=key; state.lastGrade=currentGrade; save();
+  gradeArea.style.display='block';
+  $('#gradeTitle').textContent=`2. ${DATA[key].title} – chọn cách luyện`;
+  $('#gradeDesc').textContent=DATA[key].subtitle;
+  renderModes(); renderStations(); workspace.classList.remove('active');
+  gradeArea.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderModes(){
+  const modes=[
+    ['📘','Xem đề cương','Đọc “Cần nhớ → Cách làm → Bài mẫu → Lỗi hay gặp”.','openOutline()'],
+    ['🧩','Luyện có gợi ý','Mỗi trạm một câu ngẫu nhiên; sai sẽ được gợi ý từng nấc.','startGuided()'],
+    ['✍️','Tự luận có khung','Tập trình bày theo từng bước rồi đối chiếu đáp án mẫu.','startWritten()'],
+    ['⚡','10 câu tốc độ','Trộn ngẫu nhiên các chủ đề trong khối.','startQuick()'],
+    ['🏆','Thi thử mini','12 câu cân bằng chủ đề; chỉ chấm sau khi nộp xong.','startMock()']
+  ];
+  $('#modeGrid').innerHTML=modes.map(m=>`<div class="mode-card"><div class="mode-ico">${m[0]}</div><b>${m[1]}</b><span>${m[2]}</span><button class="btn" style="margin-top:12px" onclick="${m[3]}">Mở</button></div>`).join('');
+}
+function renderStations(){
+  stationGrid.innerHTML=DATA[currentGrade].stations.map((s,i)=>{const done=!!state.done[s.id];return `<article class="station"><div class="station-top"><div class="station-icon">${s.icon}</div><div><div class="mini">TRẠM ${i+1}</div><h3>${s.title}</h3><p>${s.desc}</p></div></div><div class="tags"><span class="tag">${done?'✅ Đã hoàn thành':'🟡 Chưa hoàn thành'}</span><span class="tag">${s.questions.length} câu luyện</span></div><div class="row"><button class="btn ghost" onclick="openStation('${s.id}')">Học trạm</button><button class="btn good" onclick="startStationQuiz('${s.id}')">Luyện ngay</button></div></article>`}).join('');
+}
+function findStation(id){return Object.values(DATA).flatMap(x=>x.stations).find(s=>s.id===id)}
+function openStation(id){
+  const s=findStation(id); if(!s)return;
+  const g=id.split('-')[0]; currentGrade=g; state.lastGrade=g; save();
+  const read=!!state.read[s.id];
+  workspace.innerHTML=`
+    <div class="work-head"><div><div class="crumb">${DATA[g].title} • ${s.title}</div><b style="font-size:21px">${s.icon} Học theo từng bước</b></div><button class="btn ghost" onclick="closeWorkspace()">Đóng</button></div>
+    <div class="work-body">
+      <div class="lesson-grid">
+        <div class="lesson-box"><h4>🧠 CẦN NHỚ</h4><ul>${s.remember.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        <div class="lesson-box"><h4>🪜 CÁCH LÀM</h4><div class="steps">${s.steps.map(x=>`<div class="step">${x}</div>`).join('')}</div></div>
+      </div>
+      <div class="example"><b>👀 Bài mẫu / ví dụ:</b><br>${s.example}</div>
+      <div class="mistakes"><b>⚠️ Lỗi hay gặp:</b> ${s.mistake}</div>
+      <div class="quiz-actions"><button class="btn primary" onclick="startStationQuiz('${s.id}')">Bắt đầu luyện ${s.questions.length} câu</button><button class="btn ghost" ${read?'disabled':''} onclick="markRead('${s.id}',this)">${read?'✅ Đã ghi nhận phần đọc':'Tôi đã đọc xong'}</button></div>
+    </div>`;
+  workspace.classList.add('active'); workspace.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function markRead(id,btn){
+  if(state.read[id]){toast('Phần đọc này đã được ghi nhận trước đó.');return;}
+  state.read[id]=true; state.xp+=3; save();
+  if(btn){btn.disabled=true;btn.textContent='✅ Đã ghi nhận phần đọc';}
+  toast('Đã ghi nhận: +3 XP cho lần đọc đầu tiên.');
+}
+function closeWorkspace(){workspace.classList.remove('active');quiz=null;writtenQuiz=null;}
+
+function allQuestions(g){return DATA[g].stations.flatMap(s=>s.questions.map((q,idx)=>({...q,stationId:s.id,stationTitle:s.title,qid:`${s.id}-${idx}`})))}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function pickOne(a){return a[Math.floor(Math.random()*a.length)]}
+function buildBalancedQuiz(g,count){
+  const chosen=[];
+  for(const s of shuffle(DATA[g].stations)){
+    if(chosen.length>=count)break;
+    const idx=Math.floor(Math.random()*s.questions.length),q=s.questions[idx];
+    chosen.push({...q,stationId:s.id,stationTitle:s.title,qid:`${s.id}-${idx}`});
+  }
+  const used=new Set(chosen.map(q=>q.qid));
+  for(const q of shuffle(allQuestions(g))){if(chosen.length>=count)break;if(!used.has(q.qid)){chosen.push(q);used.add(q.qid);}}
+  return shuffle(chosen).slice(0,Math.min(count,allQuestions(g).length));
+}
+
+function startStationQuiz(id){const s=findStation(id);if(!s)return;const qs=s.questions.map((q,idx)=>({...q,stationId:s.id,stationTitle:s.title,qid:`${s.id}-${idx}`}));startQuiz(shuffle(qs),{type:'station',title:`${s.icon} ${s.title}`,stationId:id,guided:true});}
+function startGuided(){const qs=[];DATA[currentGrade].stations.forEach(s=>{const idx=Math.floor(Math.random()*s.questions.length);qs.push({...s.questions[idx],stationId:s.id,stationTitle:s.title,qid:`${s.id}-${idx}`});});startQuiz(shuffle(qs),{type:'guided',title:'🧩 Luyện có gợi ý',guided:true});}
+function startQuick(){startQuiz(shuffle(allQuestions(currentGrade)).slice(0,10),{type:'quick',title:'⚡ 10 câu tốc độ',guided:true});}
+function startMock(){startQuiz(buildBalancedQuiz(currentGrade,12),{type:'mock',title:'🏆 Thi thử mini',guided:false,deferGrade:true});}
+function openOutline(){
+  const ss=DATA[currentGrade].stations;
+  workspace.innerHTML=`<div class="work-head"><div><div class="crumb">${DATA[currentGrade].title}</div><b style="font-size:21px">📘 Đề cương ôn tập</b></div><button class="btn ghost" onclick="closeWorkspace()">Đóng</button></div><div class="work-body"><div class="summary-list">${ss.map((s,i)=>`<div class="summary-item"><b>${i+1}. ${s.icon} ${s.title}</b><div class="mini">${s.remember.join(' • ')}</div><button class="btn ghost" style="margin-top:9px" onclick="openStation('${s.id}')">Mở chi tiết</button></div>`).join('')}</div></div>`;
+  workspace.classList.add('active'); workspace.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function startQuiz(questions,meta){
+  if(!questions.length){toast('Chưa có câu hỏi cho chế độ này.');return;}
+  quiz={questions,index:0,score:0,learned:0,selected:null,attempts:0,answers:[],meta,last:null};
+  writtenQuiz=null; renderQuestion();
+}
+function renderQuestion(){
+  const q=quiz.questions[quiz.index];
+  const status=quiz.meta.deferGrade?'Không hiển thị điểm khi đang thi':`Đúng ngay lần đầu: ${quiz.score}`;
+  workspace.innerHTML=`
+    <div class="work-head"><div><div class="crumb">${DATA[currentGrade].title} • ${q.stationTitle||''}</div><b style="font-size:21px">${quiz.meta.title}</b></div><button class="btn ghost" onclick="closeWorkspace()">Thoát</button></div>
+    <div class="work-body"><div class="quiz-card">
+      <div class="qmeta"><span>Câu ${quiz.index+1}/${quiz.questions.length}</span><span>${status}</span></div>
+      <div class="progress" style="margin-top:9px"><i style="width:${Math.round(quiz.index/quiz.questions.length*100)}%"></i></div>
+      <div class="qtext">${q.text}</div>
+      <div class="answers" id="answers">${q.opts.map((o,i)=>`<button class="ans" aria-pressed="false" onclick="chooseAnswer(${i})"><b>${String.fromCharCode(65+i)}.</b> ${o}</button>`).join('')}</div>
+      <div class="hint" id="hint"></div><div class="feedback" id="feedback"></div>
+      <div class="quiz-actions">
+        ${quiz.meta.guided?'<button class="btn ghost" onclick="showHint()">💡 Gợi ý</button>':''}
+        <button class="btn primary" id="checkBtn" onclick="checkAnswer()">${quiz.meta.deferGrade?'Chốt đáp án':'Kiểm tra'}</button>
+        <button class="btn ghost" id="nextBtn" style="display:none" onclick="nextQuestion()">${quiz.index===quiz.questions.length-1?'Nộp bài':'Câu tiếp →'}</button>
+      </div>
+    </div></div>`;
+  workspace.classList.add('active'); workspace.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function chooseAnswer(i){
+  if(!quiz)return; quiz.selected=i;
+  document.querySelectorAll('.ans').forEach((b,j)=>{b.classList.toggle('selected',j===i);b.setAttribute('aria-pressed',j===i?'true':'false');});
+}
+function showHint(){
+  if(!quiz||quiz.meta.deferGrade)return;
+  const q=quiz.questions[quiz.index], h=$('#hint');
+  if(quiz.attempts===0) h.textContent='💡 '+q.hint;
+  else if(quiz.attempts===1) h.textContent='💡 Gợi ý mạnh hơn: loại các phương án không phù hợp với quy tắc/khái niệm đã học.';
+  else h.textContent='💡 Hãy mở lại phần “Cần nhớ” của trạm này nếu vẫn chưa chắc.';
+  h.classList.add('show');
+}
+function lockAnswers(){document.querySelectorAll('.ans').forEach(b=>b.disabled=true);}
+function checkAnswer(){
+  if(!quiz||quiz.selected===null){toast('Hãy chọn một đáp án trước.');return;}
+  const q=quiz.questions[quiz.index], fb=$('#feedback');
+  const buttons=[...document.querySelectorAll('.ans')];
+  if(quiz.meta.deferGrade){
+    quiz.answers[quiz.index]={q:q.text,selected:quiz.selected,answer:q.answer,opts:q.opts,explain:q.explain,station:q.stationTitle};
+    lockAnswers();
+    fb.className='feedback show';fb.style.display='block';fb.style.background='#101d2d';fb.style.border='1px solid #2a3b55';fb.style.color='#ffffff';fb.innerHTML='📝 Đã ghi nhận đáp án. Kết quả sẽ chỉ hiển thị sau khi nộp bài.';
+    $('#checkBtn').style.display='none';$('#nextBtn').style.display='inline-block';return;
+  }
+  quiz.attempts++;
+  if(quiz.selected===q.answer){
+    const firstTry=quiz.attempts===1;
+    buttons[q.answer].classList.add('correct'); lockAnswers();
+    fb.className='feedback show good'; fb.innerHTML=`✅ <b>${firstTry?'Đúng ngay!':'Em đã sửa đúng!'}</b> ${q.explain}`;
+    if(firstTry)quiz.score++; quiz.learned++; quiz.answers.push({q:q.text,ok:firstTry,learned:true,selected:quiz.selected,answer:q.answer});
+    $('#checkBtn').style.display='none'; $('#nextBtn').style.display='inline-block';
+    state.xp+=firstTry?10:5; save();
+  }else{
+    buttons[quiz.selected].classList.add('wrong'); fb.className='feedback show bad';
+    if(quiz.attempts<3){
+      fb.innerHTML=`❌ Chưa đúng. ${quiz.attempts===1?'Hãy xem gợi ý và thử lại.':'Xem lại quy tắc rồi thử thêm một lần.'}`;
+      quiz.selected=null; buttons.forEach(b=>{b.classList.remove('wrong','selected');b.setAttribute('aria-pressed','false');}); showHint();
+    }else{
+      buttons[q.answer].classList.add('correct'); lockAnswers(); fb.innerHTML=`👀 <b>Xem lời giải:</b> ${q.explain}`;
+      quiz.answers.push({q:q.text,ok:false,learned:false,selected:quiz.selected,answer:q.answer}); $('#checkBtn').style.display='none'; $('#nextBtn').style.display='inline-block';
+    }
+  }
+}
+function nextQuestion(){
+  if(!quiz)return;
+  quiz.index++; quiz.selected=null; quiz.attempts=0;
+  if(quiz.index>=quiz.questions.length) finishQuiz(); else renderQuestion();
+}
+function finishQuiz(){
+  const total=quiz.questions.length;
+  if(quiz.meta.deferGrade){quiz.score=quiz.answers.filter(a=>a&&a.selected===a.answer).length;quiz.learned=quiz.score;}
+  const pct=total?Math.round(quiz.score/total*100):0;
+  if(quiz.meta.stationId){const first=!state.done[quiz.meta.stationId];state.done[quiz.meta.stationId]=true;if(first)state.xp+=20;}
+  const key=`${currentGrade}-${quiz.meta.type}`; state.best[key]=Math.max(Number(state.best[key])||0,pct); save(); renderGrades(); renderStations();
+  const msg=pct>=85?'Rất tốt! Em đã nắm khá chắc.':pct>=67?'Đạt rồi! Hãy luyện thêm để chắc hơn.':'Hãy quay lại phần Cần nhớ và luyện từng trạm; điểm này chỉ tính câu đúng ngay lần đầu.';
+  let review='';
+  if(quiz.meta.deferGrade){
+    review=`<div class="review-list">${quiz.answers.map((a,i)=>{const ok=a.selected===a.answer;return `<div class="review-item ${ok?'ok':'bad'}"><b>${ok?'✅':'❌'} Câu ${i+1}: ${a.q}</b><div class="mini">Em chọn: ${String.fromCharCode(65+a.selected)}. ${a.opts[a.selected]}${ok?'':`<br>Đáp án phù hợp: ${String.fromCharCode(65+a.answer)}. ${a.opts[a.answer]}<br>${a.explain}`}</div></div>`}).join('')}</div>`;
+  }
+  workspace.innerHTML=`<div class="work-head"><div><div class="crumb">${DATA[currentGrade].title}</div><b style="font-size:21px">Kết quả</b></div><button class="btn ghost" onclick="closeWorkspace()">Đóng</button></div><div class="work-body"><div class="score-card"><div class="mini">${quiz.meta.deferGrade?'SỐ CÂU ĐÚNG':'ĐÚNG NGAY LẦN ĐẦU'}</div><div class="score-big">${quiz.score}/${total}</div><b>${pct}%</b><p>${msg}</p>${!quiz.meta.deferGrade?`<div class="mini">Số câu đã tự sửa đúng sau gợi ý: ${Math.max(0,quiz.learned-quiz.score)}</div>`:''}<div class="quiz-actions" style="justify-content:center"><button class="btn primary" onclick="repeatQuiz()">Luyện lại</button><button class="btn ghost" onclick="openOutline()">Xem đề cương</button></div></div>${review}</div>`;
+  quiz.last={questions:quiz.questions,meta:quiz.meta};
+}
+function repeatQuiz(){if(!quiz||!quiz.last)return;const l=quiz.last;startQuiz(l.meta.type==='mock'?buildBalancedQuiz(currentGrade,l.questions.length):shuffle(l.questions),l.meta);}
+
+function startWritten(){
+  const items=WRITTEN[currentGrade]||[];if(!items.length){toast('Chưa có bài tự luận cho khối này.');return;}
+  writtenQuiz={items:shuffle(items),index:0,done:0};quiz=null;renderWritten();
+}
+function renderWritten(){
+  const item=writtenQuiz.items[writtenQuiz.index];
+  workspace.innerHTML=`<div class="work-head"><div><div class="crumb">${DATA[currentGrade].title} • Tự luận có khung</div><b style="font-size:21px">✍️ ${item.title}</b></div><button class="btn ghost" onclick="closeWorkspace()">Thoát</button></div><div class="work-body"><div class="quiz-card"><div class="qmeta"><span>Bài ${writtenQuiz.index+1}/${writtenQuiz.items.length}</span><span>Tự đánh giá, không chấm máy</span></div><div class="qtext">${item.prompt}</div><textarea class="written-input" id="writtenInput" placeholder="Em hãy tự trình bày ở đây hoặc làm trên giấy..."></textarea><div class="hint" id="writtenHint"></div><div class="written-answer" id="writtenAnswer"><b>✅ Đáp án mẫu:</b><br>${item.answer}</div><div class="quiz-actions"><button class="btn ghost" onclick="showWrittenHint()">💡 Gợi ý</button><button class="btn primary" id="showWrittenBtn" onclick="showWrittenAnswer()">Xem đáp án mẫu</button><button class="btn good" id="writtenOk" style="display:none" onclick="writtenSelf(true)">Tôi làm được</button><button class="btn bad" id="writtenRetry" style="display:none" onclick="writtenSelf(false)">Cần luyện lại</button></div></div></div>`;
+  workspace.classList.add('active');workspace.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function showWrittenHint(){const item=writtenQuiz.items[writtenQuiz.index],h=$('#writtenHint');h.innerHTML='💡 '+item.hints.join('<br>💡 ');h.classList.add('show');}
+function showWrittenAnswer(){const a=$('#writtenAnswer');a.classList.add('show');$('#showWrittenBtn').style.display='none';$('#writtenOk').style.display='inline-block';$('#writtenRetry').style.display='inline-block';}
+function writtenSelf(ok){
+  const key=`${currentGrade}-${writtenQuiz.items[writtenQuiz.index].title}`;
+  if(ok&&!state.writtenDone[key]){state.writtenDone[key]=true;state.xp+=8;save();writtenQuiz.done++;}
+  writtenQuiz.index++;
+  if(writtenQuiz.index>=writtenQuiz.items.length){workspace.innerHTML=`<div class="work-head"><div><div class="crumb">${DATA[currentGrade].title}</div><b style="font-size:21px">Hoàn thành tự luận có khung</b></div><button class="btn ghost" onclick="closeWorkspace()">Đóng</button></div><div class="work-body"><div class="score-card"><div class="score-big">✓</div><b>Em đã xem hết ${writtenQuiz.items.length} dạng tự luận.</b><p>Hãy quay lại các bài em chọn “Cần luyện lại” và thử viết lại mà không nhìn đáp án mẫu.</p><button class="btn primary" onclick="startWritten()">Luyện một vòng mới</button></div></div>`;}else renderWritten();
+}
+
+function renderProgress(){
+  const html=Object.entries(DATA).map(([g,d])=>{const p=gradeProgress(g);const wd=Object.keys(state.writtenDone).filter(k=>k.startsWith(g+'-')).length;return `<div class="summary-item"><div class="row"><b>${d.icon} ${d.title}</b><b>${p.pct}%</b></div><div class="progress" style="margin:8px 0"><i style="width:${p.pct}%"></i></div><div class="mini">${p.n}/${p.total} trạm hoàn thành • Tự luận tự đánh giá tốt: ${wd}/${(WRITTEN[g]||[]).length} • Kỷ lục 10 câu: ${state.best[g+'-quick']||0}% • Thi thử: ${state.best[g+'-mock']||0}%</div></div>`}).join('');
+  $('#progressBody').innerHTML=`<div class="score-card" style="margin-bottom:14px"><div class="mini">TỔNG ĐIỂM KINH NGHIỆM</div><div class="score-big">${state.xp} XP</div></div><div class="summary-list">${html}</div>`;
+  $('#progressModal').classList.add('show');
+}
+function closeModal(){ $('#progressModal').classList.remove('show'); }
+let toastTimer=null;
+function toast(msg){const t=$('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+
+$('#progressBtn').onclick=renderProgress;
+$('#resetBtn').onclick=()=>{if(confirm('Đặt lại toàn bộ tiến độ và XP?')){try{localStorage.removeItem(STORAGE_KEY);}catch(err){} state={xp:0,done:{},best:{},read:{},writtenDone:{},lastGrade:null};location.reload();}};
+$('#backGrades').onclick=()=>{gradeArea.style.display='none';workspace.classList.remove('active');window.scrollTo({top:0,behavior:'smooth'});};
+$('#progressModal').addEventListener('click',e=>{if(e.target.id==='progressModal')closeModal()});
+
+renderXP(); renderGrades();
+if(state.lastGrade && DATA[state.lastGrade]) selectGrade(state.lastGrade);
+</script>
+</body>
+</html>
