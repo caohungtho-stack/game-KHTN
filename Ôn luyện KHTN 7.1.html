@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KHTN 7 - Tự học HSG Hóa học</title>
+<style>
+:root{
+  --bg:#061726;--panel:#0b2538;--panel2:#10344b;--line:#234d66;
+  --text:#f3fbff;--muted:#b8ccd8;--accent:#49d8cf;--gold:#ffd56a;
+  --ok:#49d17d;--bad:#ff7d8a;--btn:#13567a;--btn2:#173c56;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#04131f,#08253a 55%,#051827);color:var(--text);font-family:Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+.app{max-width:1050px;margin:auto;padding:18px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0 18px;border-bottom:1px solid var(--line)}
+.brand h1{font-size:1.45rem;margin:0;color:#fff}.brand p{margin:5px 0 0;color:var(--muted);font-size:.9rem}.student{font-size:.88rem;color:var(--muted);text-align:right}
+.btn{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:800;color:#fff;background:var(--btn)}
+.btn:hover{filter:brightness(1.08)}.btn.secondary{background:var(--btn2);border:1px solid var(--line)}.btn.gold{background:#806014;color:#fff3c4}.btn.small{padding:7px 10px;font-size:.85rem}
+.card{background:linear-gradient(180deg,var(--panel),#081f31);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.22)}
+.hidden{display:none!important}
+#login{max-width:620px;margin:60px auto}.login-grid{display:grid;grid-template-columns:2fr 1fr;gap:10px}.field label{display:block;color:var(--muted);font-size:.82rem;margin-bottom:6px;font-weight:700}.field input{width:100%;background:#061827;border:1px solid #315d75;color:#fff;border-radius:10px;padding:12px;outline:none}.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(73,216,207,.12)}
+.hero{margin-top:22px}.hero h2{margin:0 0 7px;font-size:1.25rem}.hero p{color:var(--muted);margin:0;line-height:1.55}.progress-line{margin-top:14px;display:flex;align-items:center;gap:10px}.progress{height:9px;background:#061827;border-radius:99px;overflow:hidden;flex:1;border:1px solid var(--line)}.progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#7be2ff);width:0}.progress-label{font-size:.82rem;color:var(--muted);min-width:58px;text-align:right}
+.topic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}.topic{cursor:pointer;transition:.18s}.topic:hover{transform:translateY(-2px);border-color:#3b7896}.topic .num{color:var(--gold);font-weight:900;font-size:.82rem}.topic h3{margin:5px 0 7px;font-size:1.1rem}.topic p{margin:0;color:var(--muted);font-size:.88rem;line-height:1.5}.topic .count{margin-top:10px;color:var(--accent);font-size:.8rem;font-weight:700}
+.breadcrumb{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:.86rem;margin:18px 0 10px}.breadcrumb button{background:none;color:var(--accent);border:0;padding:0;cursor:pointer;font-weight:800}
+.topic-head h2{margin:0}.topic-head p{color:var(--muted);line-height:1.55;margin:7px 0 0}.type-list{display:grid;gap:10px;margin-top:14px}.type-item{background:#0c293d;border:1px solid var(--line);border-radius:13px;overflow:hidden}.type-btn{width:100%;text-align:left;background:transparent;color:#fff;border:0;padding:14px 15px;cursor:pointer;font-weight:800;display:flex;justify-content:space-between;gap:12px}.type-btn span:last-child{color:var(--accent)}.type-body{border-top:1px solid var(--line);padding:15px}.block{background:#081d2e;border:1px solid #1d4258;border-radius:12px;padding:13px;margin-bottom:12px}.block h4{margin:0 0 8px;color:var(--gold);font-size:.98rem}.block p,.block li{color:#d5e4ec;line-height:1.55}.block ul{margin:6px 0 0;padding-left:20px}.formula{font-family:Consolas,monospace;background:#041724;border:1px solid #21485e;padding:2px 6px;border-radius:6px;color:#fff}.example{border-left:4px solid var(--accent)}.method{border-left:4px solid var(--gold)}
+.memory-card{margin-top:12px;background:linear-gradient(135deg,#2a3215,#182b2f);border:1px solid #806b28;border-left:4px solid var(--gold);border-radius:12px;padding:13px 14px}.memory-card h3,.memory-tip h4{margin:0 0 7px;color:#ffe082}.memory-card ul{margin:6px 0 0;padding-left:20px}.memory-card li{color:#f5edcf;line-height:1.55;margin:3px 0}.memory-tip{background:#182d2e;border:1px solid #4f6630;border-left:4px solid #a8d85d;border-radius:12px;padding:12px 13px;margin-bottom:12px}.memory-tip p{margin:0;color:#e8f6d4;line-height:1.55}.memory-key{display:inline-block;background:#0a1c1e;border:1px solid #5e7a39;border-radius:7px;padding:1px 6px;color:#f7ffd7;font-family:Consolas,monospace;font-weight:800}
+.practice-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 10px}.practice-head h4{margin:0;color:#fff}.q{background:#071a29;border:1px solid #1f465c;border-radius:12px;padding:13px;margin-bottom:10px}.q-title{font-weight:800;line-height:1.5}.q-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.q input,.q select{background:#041725;color:#fff;border:1px solid #35647d;border-radius:9px;padding:9px 10px;min-width:210px;outline:none}.q input:focus,.q select:focus{border-color:var(--accent)}.feedback{margin-top:8px;font-size:.88rem;line-height:1.5}.feedback.ok{color:#8df2ae}.feedback.bad{color:#ffabb3}.solution{margin-top:8px;padding:9px 10px;border-radius:9px;background:#102e43;color:#dceaf1;font-size:.88rem;line-height:1.55}
+.quick-nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.pill{border:1px solid var(--line);background:#0a2639;color:#d7e7ef;border-radius:999px;padding:8px 11px;font-size:.82rem;cursor:pointer}.pill:hover{border-color:var(--accent)}
+.footer{color:#8eabbc;text-align:center;font-size:.8rem;padding:26px 0 10px}
+@media(max-width:720px){.topic-grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.student{text-align:left}.login-grid{grid-template-columns:1fr}.app{padding:12px}.type-btn{font-size:.92rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="login" class="card">
+    <div class="brand"><h1>KHTN 7 – Tự học HSG Hóa học</h1><p>Học theo từng chuyên đề → từng dạng → phương pháp nhanh → ví dụ mẫu → tự luyện.</p></div>
+    <div class="login-grid" style="margin-top:18px">
+      <div class="field"><label>Họ và tên</label><input id="nameInput" placeholder="Ví dụ: Nguyễn Văn A"></div>
+      <div class="field"><label>Lớp</label><input id="classInput" placeholder="Ví dụ: 7A1"></div>
+    </div>
+    <button class="btn" style="width:100%;margin-top:12px" onclick="enterApp()">VÀO HỌC</button>
+    <p style="color:var(--muted);font-size:.82rem;line-height:1.5;margin:12px 0 0">Phần mềm chỉ giữ lại tiến độ cơ bản trên thiết bị để em học tiếp lần sau. Không có bảng xếp hạng, không có nhiều chế độ gây rối.</p>
+  </div>
+
+  <div id="main" class="hidden">
+    <div class="top">
+      <div class="brand"><h1>KHTN 7 – Tự học HSG Hóa học</h1><p>Ngắn gọn, theo đúng dạng bài.</p></div>
+      <div class="student"><strong id="studentText"></strong><br><button class="btn secondary small" onclick="resetStudent()">Đổi học sinh</button></div>
+    </div>
+
+    <section id="homeView">
+      <div class="card hero">
+        <h2>Chọn chuyên đề cần học</h2>
+        <p>Mỗi chuyên đề có một khung <strong>Mẹo cần nhớ</strong>. Mỗi dạng đi theo 4 bước: <strong>Mẹo nhớ → Phương pháp giải nhanh → Ví dụ mẫu → Bài tập tự luyện.</strong></p>
+        <div class="progress-line"><div class="progress"><span id="progressFill"></span></div><div class="progress-label" id="progressLabel">0%</div></div>
+      </div>
+      <div class="topic-grid" id="topicGrid"></div>
+    </section>
+
+    <section id="topicView" class="hidden">
+      <div class="breadcrumb"><button onclick="goHome()">← Chuyên đề</button><span>/</span><span id="crumb"></span></div>
+      <div class="card topic-head"><div class="num" id="topicNum"></div><h2 id="topicTitle"></h2><p id="topicIntro"></p></div>
+      <div id="topicTips" class="memory-card"></div>
+      <div class="type-list" id="typeList"></div>
+      <div class="quick-nav"><button class="pill" onclick="goHome()">← Về danh sách chuyên đề</button></div>
+    </section>
+    <div class="footer">Thiết kế cho học sinh lớp 7 tự học: mẹo ngắn – cách làm rõ – luyện ngay sau khi học.</div>
+  </div>
+</div>
+<script>
+const ELEMENTS={
+1:{s:'H',n:'Hydrogen',m:1,sh:[1]},2:{s:'He',n:'Helium',m:4,sh:[2]},3:{s:'Li',n:'Lithium',m:7,sh:[2,1]},4:{s:'Be',n:'Beryllium',m:9,sh:[2,2]},5:{s:'B',n:'Boron',m:11,sh:[2,3]},6:{s:'C',n:'Carbon',m:12,sh:[2,4]},7:{s:'N',n:'Nitrogen',m:14,sh:[2,5]},8:{s:'O',n:'Oxygen',m:16,sh:[2,6]},9:{s:'F',n:'Fluorine',m:19,sh:[2,7]},10:{s:'Ne',n:'Neon',m:20,sh:[2,8]},11:{s:'Na',n:'Sodium',m:23,sh:[2,8,1]},12:{s:'Mg',n:'Magnesium',m:24,sh:[2,8,2]},13:{s:'Al',n:'Aluminium',m:27,sh:[2,8,3]},14:{s:'Si',n:'Silicon',m:28,sh:[2,8,4]},15:{s:'P',n:'Phosphorus',m:31,sh:[2,8,5]},16:{s:'S',n:'Sulfur',m:32,sh:[2,8,6]},17:{s:'Cl',n:'Chlorine',m:35.5,sh:[2,8,7]},18:{s:'Ar',n:'Argon',m:40,sh:[2,8,8]},19:{s:'K',n:'Potassium',m:39,sh:[2,8,8,1]},20:{s:'Ca',n:'Calcium',m:40,sh:[2,8,8,2]},26:{s:'Fe',n:'Iron',m:56},29:{s:'Cu',n:'Copper',m:64},30:{s:'Zn',n:'Zinc',m:65},35:{s:'Br',n:'Bromine',m:80},47:{s:'Ag',n:'Silver',m:108},56:{s:'Ba',n:'Barium',m:137}
+};
+const MASS={H:1,He:4,Li:7,Be:9,B:11,C:12,N:14,O:16,F:19,Ne:20,Na:23,Mg:24,Al:27,Si:28,P:31,S:32,Cl:35.5,Ar:40,K:39,Ca:40,Fe:56,Cu:64,Zn:65,Br:80,Ag:108,Ba:137,Mn:55};
+const META={
+H:{v:[1]},O:{v:[2]},Na:{v:[1]},K:{v:[1]},Mg:{v:[2]},Ca:{v:[2]},Al:{v:[3]},Fe:{v:[2,3]},Cu:{v:[1,2]},Zn:{v:[2]},Cl:{v:[1]},C:{v:[4]},N:{v:[3]},S:{v:[2,4,6]},P:{v:[3,5]}
+};
+const GROUPS={OH:{v:1},NO3:{v:1},SO4:{v:2},CO3:{v:2},PO4:{v:3},NH4:{v:1}};
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function norm(v){return String(v??'').trim().toLowerCase().replace(/\s+/g,'').replace(/₂/g,'2').replace(/₃/g,'3').replace(/₄/g,'4').replace(/₅/g,'5').replace(/₆/g,'6').replace(/₇/g,'7').replace(/₈/g,'8').replace(/₉/g,'9').replace(/₀/g,'0')}
+function sameAnswer(got,ans){if(Array.isArray(ans))return ans.some(x=>sameAnswer(got,x));const g=norm(got),a=norm(ans);if(!g)return false;const gn=Number(g.replace(',','.')),an=Number(a.replace(',','.'));if(Number.isFinite(gn)&&Number.isFinite(an))return Math.abs(gn-an)<0.06;return g===a}
+function fmtFormula(s){return String(s).replace(/(\d+)/g,'<sub>$1</sub>')}
+function parseFormula(formula){
+  formula=formula.replace(/[·.]/g,'·');
+  const total={};
+  for(const partRaw of formula.split('·')){
+    let part=partRaw.trim(),lead=1;const lm=part.match(/^(\d+)(.*)$/);if(lm){lead=Number(lm[1]);part=lm[2]}
+    const stack=[{}];let i=0;
+    while(i<part.length){
+      if(part[i]==='('){stack.push({});i++;continue}
+      if(part[i]===')'){i++;let num='';while(/\d/.test(part[i]||'')){num+=part[i++]}const mult=Number(num||1),top=stack.pop();for(const [e,c] of Object.entries(top))stack[stack.length-1][e]=(stack[stack.length-1][e]||0)+c*mult;continue}
+      const m=part.slice(i).match(/^([A-Z][a-z]?)(\d*)/);if(!m)throw new Error('CTHH không hợp lệ');const e=m[1],c=Number(m[2]||1);stack[stack.length-1][e]=(stack[stack.length-1][e]||0)+c;i+=m[0].length;
+    }
+    if(stack.length!==1)throw new Error('CTHH không hợp lệ');for(const [e,c] of Object.entries(stack[0]))total[e]=(total[e]||0)+c*lead;
+  }
+  return total;
+}
+function mr(formula){const a=parseFormula(formula);return Object.entries(a).reduce((s,[e,c])=>s+(MASS[e]||0)*c,0)}
+function percent(formula,el){const a=parseFormula(formula),M=mr(formula);return (a[el]||0)*(MASS[el]||0)/M*100}
+function groupRoman(v){return ['','I','II','III','IV','V','VI','VII','VIII'][v]||v}
+function locationFromZ(z){const e=ELEMENTS[z];if(!e||!e.sh)return null;const period=e.sh.length,outer=e.sh[e.sh.length-1];let group=outer===8?'VIIIA':`${groupRoman(outer)}A`;if(z===2)group='VIIIA';return{period,outer,group}}
+function classifyZ(z){if([2,10,18].includes(z))return'khí hiếm';if([3,4,11,12,13,19,20].includes(z))return'kim loại';return'phi kim'}
+function makeFormula(a,va,b,vb,isGroupB=false){const g=gcd(va,vb),x=vb/g,y=va/g;const pa=x===1?a:`${a}${x}`;const bb=isGroupB&&y>1?`(${b})`:b;const pb=y===1?bb:`${bb}${y}`;return pa+pb}
+
+const TOPICS=[
+{
+ id:'atom',num:'CHUYÊN ĐỀ 1',title:'NGUYÊN TỬ',intro:'Nắm chắc p, e, n; tổng số hạt; hạt mang điện và cấu tạo electron.',
+ tips:['<strong>Nguyên tử trung hòa:</strong> p = e = Z.','<strong>Hạt nhân:</strong> p + n; <strong>vỏ:</strong> e.','Tổng số hạt: T = p + e + n = 2p + n. <strong>Chỉ biết T thường chưa đủ</strong>; cần thêm một quan hệ nữa.','Muốn xác định nguyên tố, mục tiêu cuối cùng là <strong>tìm p</strong>, vì Z = p.'],
+ types:[
+  {id:'a1',title:'Dạng 1. Xác định p, e, n từ dữ kiện cơ bản',tip:'Thấy cụm “nguyên tử trung hòa” thì viết ngay <span class="memory-key">p = e</span> trước khi làm gì khác.',method:['Nguyên tử trung hòa: p = e.','Điện tích hạt nhân +Z ⇒ p = Z ⇒ e = Z.','Khối lượng nguyên tử gần đúng: A ≈ p + n.'],example:'Ví dụ: nguyên tử có p = 8, n = 9 ⇒ e = 8; A ≈ 17 amu.',gen:'atomBasic'},
+  {id:'a2',title:'Dạng 2. Tổng số hạt p, e, n',tip:'Gặp “tổng số hạt” hãy đổi ngay thành <span class="memory-key">T = 2p + n</span>. Nếu đề còn cho p+n thì lấy hai phương trình trừ nhau để ra p rất nhanh.',method:['Đặt p = e.','Tổng hạt: p + e + n = T ⇒ 2p + n = T.','Kết hợp điều kiện thứ hai để tìm p, n.'],example:'Ví dụ: tổng hạt 34, trong hạt nhân có 23 hạt. Ta có 2p+n=34 và p+n=23 ⇒ p=e=11, n=12.',gen:'atomTotal'},
+  {id:'a3',title:'Dạng 3. Hạt mang điện – không mang điện',tip:'Nhớ đúng 2 cụm: <span class="memory-key">mang điện = p+e = 2p</span>; <span class="memory-key">không mang điện = n</span>.',method:['Hạt mang điện: p + e = 2p.','Hạt không mang điện: n.','Đổi lời văn thành phương trình rồi giải.'],example:'Ví dụ: tổng hạt 21, hạt mang điện gấp 2 lần hạt không mang điện ⇒ 2p=2n ⇒ p=n=7.',gen:'atomCharged'},
+  {id:'a4',title:'Dạng 4. Cấu hình electron lớp và lớp ngoài cùng',tip:'Trong phạm vi 20 nguyên tố đầu, dùng sơ đồ nhớ <span class="memory-key">2 – 8 – 8 – 2</span>; luôn điền electron từ lớp trong ra ngoài.',method:['Từ Z suy ra số e.','Với 20 nguyên tố đầu, phân bố theo 2 – 8 – 8 – 2.','Số lớp e ⇒ chu kì; e ngoài cùng giúp nhận biết nhóm A.'],example:'Ví dụ: Z=12 ⇒ 12e ⇒ 2,8,2 ⇒ có 3 lớp; 2e ngoài cùng.',gen:'atomShell'}
+ ]
+},
+{
+ id:'element',num:'CHUYÊN ĐỀ 2',title:'NGUYÊN TỐ HÓA HỌC',intro:'Từ số proton hoặc Z suy ra nguyên tố, kí hiệu hóa học và tên.',
+ tips:['<strong>Z = p</strong>. Mỗi Z ứng với đúng một nguyên tố.','Không có công thức biến Z thành tên nguyên tố: cần tra bảng tuần hoàn hoặc nhớ các Z thường gặp.','Mẹo 20 nguyên tố đầu: nhớ Z = 3→10, rồi nhiều cặp cùng nhóm ở chu kì sau có Z tăng thêm 8: Li–Na, Be–Mg, B–Al, C–Si, N–P, O–S, F–Cl, Ne–Ar.','<strong>Tổng số hạt một mình không đủ</strong> để kết luận nguyên tố; phải có điều kiện phụ để tìm p.'],
+ types:[
+  {id:'e1',title:'Dạng 1. Biết Z (hoặc p) → tìm nguyên tố',tip:'Muốn tìm tên nguyên tố: <span class="memory-key">Z → p → tra/nhớ nguyên tố</span>. Z không tự “tính” ra tên được.',method:['Z = số proton.','Mỗi giá trị Z ứng với duy nhất một nguyên tố.','Cần nhớ nhanh 20 nguyên tố đầu; mẹo: Z=3→10 và Z+8=11→18 là các cặp cùng nhóm.'],example:'Ví dụ: Z=17 ⇒ p=17 ⇒ chlorine, KHHH Cl.',gen:'elementZ'},
+  {id:'e2',title:'Dạng 2. Từ tổng số hạt → tìm nguyên tố',tip:'<strong>Cảnh báo:</strong> chỉ biết tổng p+e+n thì thường chưa xác định duy nhất nguyên tố. Phải có thêm quan hệ để tìm p, rồi dùng Z=p.',method:['Dùng p=e để tìm p.','Sau khi tìm được p, lấy Z=p.','Tra bảng/nhớ nguyên tố theo Z.'],example:'Ví dụ: p=e=n=7 ⇒ Z=7 ⇒ nitrogen, N.',gen:'elementFromParticles'},
+  {id:'e3',title:'Dạng 3. Từ phân bố electron → tìm nguyên tố',tip:'Từ phân bố e, chỉ cần <strong>cộng tất cả electron</strong> → e = Z (với nguyên tử trung hòa) → ra nguyên tố.',method:['Cộng tổng electron các lớp để được e.','Nguyên tử trung hòa ⇒ p=e ⇒ Z=e.','Từ Z suy ra nguyên tố.'],example:'Ví dụ: 2,8,1 ⇒ tổng e=11 ⇒ Z=11 ⇒ sodium, Na.',gen:'elementShell'}
+ ]
+},
+{
+ id:'periodic',num:'CHUYÊN ĐỀ 3',title:'SƠ LƯỢC BẢNG TUẦN HOÀN',intro:'Xác định chu kì, nhóm A, tên nguyên tố và tính kim loại/phi kim/khí hiếm.',
+ tips:['<strong>Chu kì = số lớp electron.</strong>','Trong phạm vi các nguyên tố nhóm A quen thuộc: <strong>số e lớp ngoài cùng giúp suy ra nhóm A</strong>; He là trường hợp đặc biệt.','Đề cho Z: viết phân bố e trước, rồi mới suy ra chu kì – nhóm.','Đừng chỉ nhìn số e ngoài cùng để kết luận kim loại/phi kim nếu chưa xét vị trí; H là ví dụ dễ gây nhầm.'],
+ types:[
+  {id:'p1',title:'Dạng 1. Z → chu kì và nhóm A',tip:'Mẹo 2 bước: <span class="memory-key">số lớp → chu kì</span>; <span class="memory-key">e ngoài cùng → nhóm A</span> (theo phạm vi bài học).',method:['Z ⇒ số e.','Số lớp electron = số thứ tự chu kì.','Với nguyên tố nhóm A: số e ngoài cùng = số thứ tự nhóm A (khí hiếm: VIIIA).'],example:'Ví dụ: Z=16 ⇒ 2,8,6 ⇒ chu kì 3, nhóm VIA.',gen:'periodicZ'},
+  {id:'p2',title:'Dạng 2. Chu kì + nhóm → xác định nguyên tố',tip:'Nếu quên tên nguyên tố, hãy dựng cấu hình e từ “chu kì + nhóm” rồi <strong>cộng e để tìm Z</strong>.',method:['Chu kì cho số lớp e.','Nhóm A cho số e ngoài cùng.','Đối chiếu 20 nguyên tố đầu.'],example:'Ví dụ: chu kì 3, nhóm VIIA ⇒ 2,8,7 ⇒ Z=17 ⇒ Cl.',gen:'periodicPos'},
+  {id:'p3',title:'Dạng 3. Kim loại – phi kim – khí hiếm',tip:'Khí hiếm nhận ra nhanh bằng lớp ngoài cùng bền; đừng suy “có 1e ngoài cùng là kim loại” cho mọi trường hợp vì H là phi kim.',method:['20 nguyên tố đầu: IA, IIA và Al thường là kim loại.','VIIIA là khí hiếm.','Các nguyên tố còn lại ở phía phải chủ yếu là phi kim; dùng vị trí để kết luận theo phạm vi lớp 7.'],example:'Ví dụ: Z=18 ⇒ Ar, nhóm VIIIA ⇒ khí hiếm.',gen:'periodicClass'}
+ ]
+},
+{
+ id:'molecule',num:'CHUYÊN ĐỀ 4',title:'PHÂN TỬ – ĐƠN CHẤT – HỢP CHẤT',intro:'Đọc công thức, đếm nguyên tử, phân loại chất và tính khối lượng phân tử.',
+ tips:['Phân loại đơn chất/hợp chất bằng <strong>số loại nguyên tố</strong>, không phải tổng số nguyên tử.','Chỉ số ngoài ngoặc <strong>nhân toàn bộ nguyên tử trong ngoặc</strong>.','Mr = tổng (số nguyên tử × nguyên tử khối).','% khối lượng = khối lượng phần nguyên tố / Mr × 100%.'],
+ types:[
+  {id:'m1',title:'Dạng 1. Phân biệt đơn chất và hợp chất',tip:'Đếm <strong>loại kí hiệu hóa học</strong>: O₂ chỉ có O → đơn chất; CO₂ có C và O → hợp chất.',method:['Đơn chất: chỉ có 1 nguyên tố hóa học.','Hợp chất: có từ 2 nguyên tố hóa học trở lên.','Nhìn số loại KHHH trong công thức, không nhìn số nguyên tử.'],example:'Ví dụ: O₂ là đơn chất; H₂O và CaCO₃ là hợp chất.',gen:'classifyFormula'},
+  {id:'m2',title:'Dạng 2. Đếm số nguyên tử trong công thức',tip:'Có ngoặc thì nhớ câu: <strong>“Ngoặc nhân tất”</strong>. Ví dụ (SO₄)₃ ⇒ S=3, O=12.',method:['Chỉ số sau KHHH cho số nguyên tử.','Chỉ số ngoài ngoặc nhân toàn bộ nhóm trong ngoặc.','Không có chỉ số ⇒ hiểu là 1.'],example:'Ví dụ: Al₂(SO₄)₃ có Al=2, S=3, O=12.',gen:'countAtoms'},
+  {id:'m3',title:'Dạng 3. Tính khối lượng phân tử (Mr)',tip:'Làm Mr nhanh bằng bảng 3 cột: <strong>nguyên tố | số nguyên tử | khối lượng đóng góp</strong>, rồi cộng cột cuối.',method:['Đếm số nguyên tử từng nguyên tố.','Nhân số nguyên tử với khối lượng nguyên tử.','Cộng tất cả lại.'],example:'Ví dụ: Mr(CuSO₄)=64+32+4×16=160.',gen:'molecularMass'},
+  {id:'m4',title:'Dạng 4. Tính % khối lượng nguyên tố',tip:'Nếu hợp chất chỉ có 2 nguyên tố, tính % một nguyên tố rồi lấy <span class="memory-key">100% − % đã biết</span> để ra nguyên tố còn lại.',method:['Tính Mr của hợp chất.','Khối lượng phần nguyên tố = số nguyên tử × nguyên tử khối.','%m = khối lượng phần / Mr × 100%.'],example:'Ví dụ: %O trong SO₂ = 32/64×100% = 50%.',gen:'massPercent'}
+ ]
+},
+{
+ id:'bond',num:'CHUYÊN ĐỀ 5',title:'LIÊN KẾT HÓA HỌC',intro:'Hiểu xu hướng nhường – nhận – dùng chung electron để hình thành liên kết.',
+ tips:['<strong>Nhường e → ion dương; nhận e → ion âm.</strong>','Mẹo nhanh lớp 7: kim loại + phi kim thường tạo liên kết ion; phi kim + phi kim thường tạo liên kết cộng hóa trị.','Mục tiêu của nhường/nhận/dùng chung e là đạt lớp electron ngoài cùng bền.','Điện tích ion có độ lớn bằng số electron đã nhường hoặc nhận trong mô hình đơn giản.'],
+ types:[
+  {id:'b1',title:'Dạng 1. Xác định ion tạo thành',tip:'<strong>Mất e → dấu +; nhận e → dấu −.</strong> Số e mất/nhận chính là độ lớn điện tích trong các bài cơ bản.',method:['Kim loại thường nhường e để đạt lớp ngoài cùng bền.','Phi kim thường nhận e để đủ 8e lớp ngoài cùng.','Số e nhường/nhận quyết định điện tích ion.'],example:'Ví dụ: Na (2,8,1) nhường 1e ⇒ Na⁺; Cl (2,8,7) nhận 1e ⇒ Cl⁻.',gen:'ion'},
+  {id:'b2',title:'Dạng 2. Nhận biết liên kết ion hay cộng hóa trị',tip:'Mẹo nhận nhanh: <strong>kim loại + phi kim → ion</strong>; <strong>phi kim + phi kim → cộng hóa trị</strong>. Đây là quy tắc nhanh cho phạm vi bài lớp 7.',method:['Kim loại + phi kim ⇒ thường là liên kết ion.','Phi kim + phi kim ⇒ thường là liên kết cộng hóa trị.','Xét loại nguyên tố trước, không cần vẽ ngay.'],example:'Ví dụ: NaCl: ion; HCl: cộng hóa trị.',gen:'bondType'},
+  {id:'b3',title:'Dạng 3. Số electron cần nhường/nhận',tip:'Nhóm A quen thuộc: 1,2,3 e ngoài cùng → thường nhường 1,2,3e; 5,6,7 e → thường nhận 3,2,1e; 4e thường thiên về dùng chung.',method:['Đếm e lớp ngoài cùng.','Kim loại IA, IIA, IIIA thường nhường 1,2,3e.','Phi kim VA, VIA, VIIA thường nhận 3,2,1e để đủ 8.'],example:'Ví dụ: O có 6e ngoài cùng ⇒ nhận 2e ⇒ O²⁻.',gen:'electronTransfer'}
+ ]
+},
+{
+ id:'valency',num:'CHUYÊN ĐỀ 6',title:'HÓA TRỊ VÀ CÔNG THỨC HÓA HỌC',intro:'Đây là chuyên đề trọng tâm: 7 dạng bài từ cơ bản đến HSG.',
+ tips:['Quy tắc lõi: với AₓBᵧ, <strong>x·a = y·b</strong>.','Lập CTHH nhớ 4 bước: <strong>chéo → rút gọn → ngoặc → bỏ số 1</strong>.','Khi tìm công thức từ Mr hoặc %, hãy <strong>đặt ẩn → lập phương trình → giải → kiểm tra lại</strong>.','Chỉ số trong CTHH phải là các số nguyên dương tối giản trong các bài cơ bản.'],
+ types:[
+  {id:'v1',title:'Dạng 1. Viết công thức hóa học của đơn chất, hợp chất',tip:'Đơn chất hai nguyên tử thường gặp cần nhớ: <span class="memory-key">H₂, N₂, O₂, F₂, Cl₂</span>. Kim loại thường viết bằng chính KHHH.',method:['Đơn chất kim loại thường viết bằng KHHH: Fe, Cu, Al...','Một số phi kim thường gặp dạng phân tử hai nguyên tử: H₂, N₂, O₂, F₂, Cl₂.','Hợp chất: viết đúng KHHH và chỉ số.'],example:'Ví dụ: oxygen → O₂; magnesium → Mg; calcium chloride → CaCl₂.',gen:'writeFormula'},
+  {id:'v2',title:'Dạng 2. Nêu thông tin từ công thức hóa học',tip:'Đừng nhầm <strong>hệ số</strong> với <strong>chỉ số</strong>: 3H₂O là 3 đơn vị H₂O; mỗi H₂O vẫn có 2H và 1O.',method:['Xác định các nguyên tố có mặt.','Đếm số nguyên tử mỗi nguyên tố.','Tính Mr nếu đề yêu cầu.'],example:'Ví dụ: CaCO₃ gồm Ca, C, O; có 1Ca,1C,3O; Mr=100.',gen:'formulaInfo'},
+  {id:'v3',title:'Dạng 3. Tính % khối lượng nguyên tố',tip:'Tử số là <strong>khối lượng của nguyên tố đang hỏi</strong> trong một công thức; mẫu số là <strong>Mr của cả hợp chất</strong>.',method:['Tính Mr.','Tính khối lượng phần của nguyên tố.','Lấy phần/Mr ×100%.'],example:'Ví dụ: %Fe trong Fe₂O₃ = 112/160×100% = 70%.',gen:'massPercent'},
+  {id:'v4',title:'Dạng 4. Biết CTHH → xác định hóa trị',tip:'Muốn tìm hóa trị a của A trong AₓBᵧ: dùng <span class="memory-key">a = y·b / x</span>, rồi kiểm tra kết quả hợp lý.',method:['Với AₓBᵧ: x·a = y·b.','Biết hóa trị một bên ⇒ suy ra bên còn lại.','Rút gọn và kiểm tra hóa trị hợp lý.'],example:'Ví dụ: Al₂O₃, O(II): 2·a=3·II ⇒ a=III.',gen:'findValency'},
+  {id:'v5',title:'Dạng 5. Biết hóa trị → lập CTHH',tip:'Câu thần chú lập CTHH: <strong>“Chéo – Rút – Ngoặc – Bỏ 1”</strong>. Chéo hóa trị xong phải rút gọn nếu còn ước chung.',method:['Đặt AₓBᵧ.','Áp dụng x·a = y·b.','Chọn x,y là số nguyên nhỏ nhất; nếu là nhóm nguyên tử và chỉ số >1 phải đặt ngoặc.'],example:'Ví dụ: Al(III) và SO₄(II) ⇒ Al₂(SO₄)₃.',gen:'makeFormula'},
+  {id:'v6',title:'Dạng 6. Tìm CTHH khi biết khối lượng phân tử',tip:'Hãy coi Mr như một <strong>phương trình</strong>. Ẩn có thể là chỉ số x/y hoặc nguyên tử khối; giải xong phải kiểm tra x,y là số nguyên dương.',method:['Viết biểu thức Mr theo ẩn x/y hoặc nguyên tử khối chưa biết.','Thay Mr đã cho và giải phương trình.','Đối chiếu nguyên tử khối để tìm nguyên tố nếu cần.'],example:'Ví dụ: NaₓCO₃ có Mr=106 ⇒ 23x+12+48=106 ⇒ x=2 ⇒ Na₂CO₃.',gen:'massToFormula'},
+  {id:'v7',title:'Dạng 7. Tìm CTHH khi biết % khối lượng',tip:'Đổi % về dạng phân số/ thập phân, lập <strong>phần / toàn bộ = %</strong>, giải ẩn rồi <strong>thử lại %</strong> để tự kiểm tra.',method:['Đặt công thức theo dạng đề cho.','Lập phương trình % khối lượng.','Giải ẩn rồi kiểm tra chỉ số nguyên tối giản.'],example:'Ví dụ: HₓSi có %Si=87,5% ⇒ 28/(x+28)=0,875 ⇒ x=4 ⇒ H₄Si.',gen:'percentToFormula'}
+ ]
+}
+];
+
+const FIXED_FORMULAS=['H2O','CO2','SO2','NaCl','MgO','Al2O3','CaCO3','CuSO4','Fe2O3','Al2(SO4)3','Ca(NO3)2','NH4NO3','K2SO4','Mg(OH)2'];
+function gen(type){
+ switch(type){
+ case'atomBasic':{const z=rand(3,20),n=z+rand(-1,3);return{p:`Một nguyên tử có ${z} proton và ${n} neutron. Số electron là bao nhiêu?`,a:z,h:'Nguyên tử trung hòa nên p=e.',s:`p=e=${z}; n=${n}.`}}
+ case'atomTotal':{const p=rand(5,18),n=p+rand(0,4),T=2*p+n,H=p+n;return{p:`Một nguyên tử có tổng số hạt p, e, n là ${T}. Tổng số hạt trong hạt nhân là ${H}. Tìm số proton.`,a:p,h:'Dùng 2p+n=T và p+n=H.',s:`(2p+n)-(p+n)=${T}-${H} ⇒ p=${p}.`}}
+ case'atomCharged':{const p=pick([6,7,8,9,10,11,12]),n=p;const T=3*p;return{p:`Nguyên tử có tổng ${T} hạt; số hạt mang điện gấp 2 lần số hạt không mang điện. Số neutron là bao nhiêu?`,a:n,h:'Hạt mang điện = p+e=2p; không mang điện=n.',s:`2p=2n ⇒ p=n. 2p+n=${T} ⇒ 3n=${T} ⇒ n=${n}.`}}
+ case'atomShell':{const z=rand(3,20),e=ELEMENTS[z];return{p:`Nguyên tử Z=${z}. Hãy nhập phân bố electron theo lớp, ví dụ 2,8,1.`,a:e.sh.join(','),h:'Điền electron từ lớp trong ra ngoài: 2 rồi 8 rồi 8.',s:`Z=${z} ⇒ ${z}e ⇒ ${e.sh.join(',')}.`}}
+ case'elementZ':{const z=rand(1,20),e=ELEMENTS[z];return{p:`Z = ${z}. Kí hiệu hóa học của nguyên tố là gì?`,a:e.s,h:'Z chính là số proton; tra/nhớ 20 nguyên tố đầu.',s:`Z=${z} ⇒ ${e.n} ⇒ ${e.s}.`}}
+ case'elementFromParticles':{const z=rand(3,18),e=ELEMENTS[z];return{p:`Một nguyên tử có p=e=${z}. Hãy nhập kí hiệu hóa học.`,a:e.s,h:'Z=p.',s:`Z=${z} ⇒ ${e.n}, KHHH ${e.s}.`}}
+ case'elementShell':{const z=rand(3,20),e=ELEMENTS[z];return{p:`Nguyên tử có phân bố e: ${e.sh.join(',')}. KHHH là gì?`,a:e.s,h:'Cộng tổng electron để được Z.',s:`Tổng e=${z} ⇒ Z=${z} ⇒ ${e.s}.`}}
+ case'periodicZ':{const z=rand(3,20),loc=locationFromZ(z);return{p:`Z=${z}. Nguyên tố thuộc chu kì mấy?`,a:loc.period,h:'Số lớp electron = số chu kì.',s:`${ELEMENTS[z].sh.join(',')} có ${loc.period} lớp ⇒ chu kì ${loc.period}.`}}
+ case'periodicPos':{const z=rand(3,18),loc=locationFromZ(z),e=ELEMENTS[z];return{p:`Nguyên tố ở chu kì ${loc.period}, nhóm ${loc.group}. KHHH là gì?`,a:e.s,h:'Dựng cấu hình e: số lớp = chu kì, e ngoài cùng = nhóm A.',s:`Vị trí đó ứng với Z=${z} ⇒ ${e.s}.`}}
+ case'periodicClass':{const z=rand(3,20);return{p:`Z=${z} (${ELEMENTS[z].s}). Hãy nhập: kim loại / phi kim / khí hiếm.`,a:classifyZ(z),h:'Nhóm VIIIA là khí hiếm; IA, IIA và Al trong phạm vi này là kim loại.',s:`${ELEMENTS[z].s} được xếp là ${classifyZ(z)} trong phạm vi 20 nguyên tố đầu.`}}
+ case'classifyFormula':{const f=pick(['O2','N2','Cl2','Fe','Cu','H2O','CO2','NaCl','CaCO3','Al2O3']);const kind=Object.keys(parseFormula(f)).length===1?'đơn chất':'hợp chất';return{p:`${fmtFormula(f)} là đơn chất hay hợp chất?`,a:kind,h:'Đếm số loại nguyên tố, không đếm số nguyên tử.',s:`${f} có ${Object.keys(parseFormula(f)).length} loại nguyên tố ⇒ ${kind}.`,html:true}}
+ case'countAtoms':{const f=pick(['Al2(SO4)3','Ca(NO3)2','Mg(OH)2','NH4NO3','Fe2(SO4)3']);const atoms=parseFormula(f),el=pick(Object.keys(atoms));return{p:`Trong ${fmtFormula(f)} có bao nhiêu nguyên tử ${el}?`,a:atoms[el],h:'Nếu nguyên tố ở trong ngoặc, nhân với chỉ số ngoài ngoặc.',s:`${f}: số ${el} = ${atoms[el]}.`,html:true}}
+ case'molecularMass':{const f=pick(FIXED_FORMULAS),M=mr(f);return{p:`Tính Mr của ${fmtFormula(f)}.`,a:M,h:'Đếm nguyên tử từng nguyên tố rồi cộng nguyên tử khối.',s:`Mr(${f}) = ${M}.`,html:true}}
+ case'massPercent':{const f=pick(['CO2','SO2','Na2O','Al2O3','Fe2O3','CaCO3','CuSO4']),els=Object.keys(parseFormula(f)),el=pick(els),v=percent(f,el);return{p:`Tính % khối lượng ${el} trong ${fmtFormula(f)} (làm tròn 0,1%).`,a:Number(v.toFixed(1)),h:`%${el} = khối lượng phần ${el} / Mr ×100%.`,s:`Mr=${mr(f)}; %${el}≈${v.toFixed(1)}%.`,html:true}}
+ case'ion':{const items=[['Na','Na+'],['Mg','Mg2+'],['Al','Al3+'],['Cl','Cl-'],['O','O2-'],['S','S2-']];const [a,b]=pick(items);return{p:`Nguyên tử ${a} thường tạo ion nào? Nhập dạng như Na+, O2-.`,a:b,h:'Kim loại nhường e; phi kim nhận e để lớp ngoài cùng bền.',s:`${a} thường tạo ${b}.`}}
+ case'bondType':{const items=[['NaCl','ion'],['MgO','ion'],['CaCl2','ion'],['HCl','cộng hóa trị'],['H2O','cộng hóa trị'],['O2','cộng hóa trị'],['CO2','cộng hóa trị']];const [f,b]=pick(items);return{p:`Liên kết chủ yếu trong ${fmtFormula(f)} là ion hay cộng hóa trị?`,a:b,h:'Kim loại + phi kim thường ion; phi kim + phi kim thường cộng hóa trị.',s:`${f}: ${b}.`,html:true}}
+ case'electronTransfer':{const items=[['Na',1,'nhường'],['Mg',2,'nhường'],['Al',3,'nhường'],['Cl',1,'nhận'],['O',2,'nhận'],['N',3,'nhận']];const [e,n,act]=pick(items);return{p:`${e} thường ${act} bao nhiêu electron để đạt cấu hình bền?`,a:n,h:'Dựa vào số e lớp ngoài cùng.',s:`${e} thường ${act} ${n}e.`}}
+ case'writeFormula':{const items=[['oxygen','O2'],['hydrogen','H2'],['nitrogen','N2'],['chlorine','Cl2'],['magnesium','Mg'],['aluminium','Al'],['sodium chloride','NaCl'],['magnesium oxide','MgO'],['calcium chloride','CaCl2']];const [n,f]=pick(items);return{p:`Viết CTHH của ${n}.`,a:f,h:'Nhớ dạng đơn chất và công thức hợp chất quen thuộc.',s:`CTHH: ${f}.`}}
+ case'formulaInfo':{const f=pick(['CaCO3','Na2CO3','K2CO3','KMnO4','FeSO4','Zn(NO3)2']),els=Object.keys(parseFormula(f));return{p:`${fmtFormula(f)} được tạo bởi bao nhiêu nguyên tố hóa học khác nhau?`,a:els.length,h:'Đếm các KHHH khác nhau.',s:`${f} gồm ${els.join(', ')} ⇒ ${els.length} nguyên tố.`,html:true}}
+ case'findValency':{const items=[['Al2O3','Al',2,3,2,3],['Fe2O3','Fe',2,3,2,3],['SO3','S',2,3,1,6],['CH4','C',1,4,1,4],['NH3','N',1,3,1,3]];const [f,el,vKnown,y,x,v]=pick(items);return{p:`Trong ${fmtFormula(f)}, biết nguyên tố còn lại có hóa trị ${groupRoman(vKnown)}. Hóa trị của ${el} là bao nhiêu? Nhập số.`,a:v,h:'Dùng x·a = y·b.',s:`Áp dụng quy tắc hóa trị ⇒ ${el} có hóa trị ${groupRoman(v)} (${v}).`,html:true}}
+ case'makeFormula':{const A=pick([['Na',1],['Mg',2],['Al',3],['Ca',2],['Fe',3]]),B=pick([['Cl',1,false],['O',2,false],['SO4',2,true],['NO3',1,true],['OH',1,true],['PO4',3,true]]);const f=makeFormula(A[0],A[1],B[0],B[1],B[2]);return{p:`Lập CTHH từ ${A[0]}(${groupRoman(A[1])}) và ${B[0]}(${groupRoman(B[1])}).`,a:f,h:'Chéo hóa trị rồi rút gọn; nhóm nguyên tử có chỉ số >1 phải đặt ngoặc.',s:`Tỉ lệ chỉ số ${B[1]}:${A[1]} rút gọn ⇒ ${f}.`}}
+ case'massToFormula':{const items=[{p:'NaₓCO₃ có Mr = 106. Tìm x.',a:2,s:'23x + 12 + 3×16 = 106 ⇒ 23x=46 ⇒ x=2.'},{p:'Cu(NO₃)ₓ có Mr = 188. Tìm x.',a:2,s:'64 + 62x = 188 ⇒ x=2.'},{p:'Fe₂(SO₄)ₓ có Mr = 400. Tìm x.',a:3,s:'112 + 96x = 400 ⇒ x=3.'},{p:'Caₓ(PO₄)₂ có Mr = 310. Tìm x.',a:3,s:'40x + 190 = 310 ⇒ x=3.'}];const q=pick(items);return{...q,h:'Viết Mr theo x rồi giải phương trình.'}}
+ case'percentToFormula':{const items=[{p:'HₓSi có %Si = 87,5%. Tìm x.',a:4,s:'28/(x+28)=0,875 ⇒ x=4 ⇒ H4Si.'},{p:'R₂O₃ có %R = 70%. Biết R có nguyên tử khối 56. Công thức là gì?',a:'Fe2O3',s:'R=Fe; Fe2O3 có %Fe=112/160=70%.'},{p:'Oxide X₂O₃ có %X = 52,9%. X có nguyên tử khối 27. Viết CTHH.',a:'Al2O3',s:'X=Al ⇒ Al2O3; %Al=54/102≈52,9%.'}];const q=pick(items);return{...q,h:'Lập biểu thức phần trăm = khối lượng phần / Mr ×100%.'}}
+ default:return{p:'Câu hỏi đang được cập nhật.',a:'',h:'',s:''}
+ }
+}
+
+const state={name:'',className:'',done:{}};
+function loadState(){try{const x=JSON.parse(localStorage.getItem('khtn7_simple_v3')||'{}');if(x&&typeof x==='object'){state.name=x.name||'';state.className=x.className||'';state.done=x.done||{}}}catch(e){}}
+function saveState(){try{localStorage.setItem('khtn7_simple_v3',JSON.stringify(state))}catch(e){}}
+function enterApp(){const n=document.getElementById('nameInput').value.trim(),c=document.getElementById('classInput').value.trim();if(!n||!c){alert('Em nhập Họ tên và Lớp trước nhé.');return}state.name=n;state.className=c;saveState();showMain()}
+function showMain(){document.getElementById('login').classList.add('hidden');document.getElementById('main').classList.remove('hidden');document.getElementById('studentText').textContent=`${state.name} – Lớp ${state.className}`;renderHome()}
+function resetStudent(){if(!confirm('Đổi học sinh? Tiến độ của hồ sơ hiện tại vẫn được lưu trên thiết bị.'))return;state.name='';state.className='';saveState();document.getElementById('main').classList.add('hidden');document.getElementById('login').classList.remove('hidden');document.getElementById('nameInput').value='';document.getElementById('classInput').value=''}
+function goHome(){document.getElementById('topicView').classList.add('hidden');document.getElementById('homeView').classList.remove('hidden');renderHome();window.scrollTo({top:0,behavior:'smooth'})}
+function allTypeIds(){return TOPICS.flatMap(t=>t.types.map(x=>x.id))}
+function renderHome(){const grid=document.getElementById('topicGrid');grid.innerHTML='';TOPICS.forEach(t=>{const d=document.createElement('div');d.className='card topic';const finished=t.types.filter(x=>state.done[x.id]).length;d.innerHTML=`<div class="num">${t.num}</div><h3>${t.title}</h3><p>${t.intro}</p><div class="count">${t.types.length} dạng · đã học ${finished}/${t.types.length}</div>`;d.onclick=()=>openTopic(t.id);grid.appendChild(d)});const ids=allTypeIds(),done=ids.filter(id=>state.done[id]).length,pct=Math.round(done/ids.length*100);document.getElementById('progressFill').style.width=pct+'%';document.getElementById('progressLabel').textContent=pct+'%'}
+function openTopic(id){const t=TOPICS.find(x=>x.id===id);if(!t)return;document.getElementById('homeView').classList.add('hidden');document.getElementById('topicView').classList.remove('hidden');document.getElementById('crumb').textContent=t.title;document.getElementById('topicNum').textContent=t.num;document.getElementById('topicTitle').textContent=t.title;document.getElementById('topicIntro').textContent=t.intro;const tips=document.getElementById('topicTips');tips.innerHTML=`<h3>🧠 MẸO CẦN NHỚ CỦA CHUYÊN ĐỀ</h3><ul>${(t.tips||[]).map(x=>`<li>${x}</li>`).join('')}</ul>`;const list=document.getElementById('typeList');list.innerHTML='';t.types.forEach(tp=>list.appendChild(renderType(tp)));window.scrollTo({top:0,behavior:'smooth'})}
+function renderType(tp){const wrap=document.createElement('div');wrap.className='type-item';const btn=document.createElement('button');btn.className='type-btn';btn.innerHTML=`<span>${tp.title}${state.done[tp.id]?' ✅':''}</span><span>mở</span>`;const body=document.createElement('div');body.className='type-body hidden';btn.onclick=()=>{body.classList.toggle('hidden');btn.lastElementChild.textContent=body.classList.contains('hidden')?'mở':'đóng';if(!body.dataset.loaded&&!body.classList.contains('hidden')){fillTypeBody(body,tp);body.dataset.loaded='1'}};wrap.append(btn,body);return wrap}
+function fillTypeBody(body,tp){body.innerHTML=`<div class="memory-tip"><h4>🧠 Mẹo cần nhớ</h4><p>${tp.tip||''}</p></div><div class="block method"><h4>Phương pháp giải nhanh</h4><ul>${tp.method.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="block example"><h4>Ví dụ mẫu</h4><p>${tp.example}</p></div><div class="practice-head"><h4>Bài tập tự luyện</h4><button class="btn secondary small" data-new>LÀM BỘ KHÁC</button></div><div data-qwrap></div><button class="btn gold small" data-done style="margin-top:4px">ĐÁNH DẤU ĐÃ HỌC DẠNG NÀY</button>`;const qwrap=body.querySelector('[data-qwrap]');const load=()=>{qwrap.innerHTML='';for(let i=0;i<5;i++)qwrap.appendChild(renderQuestion(gen(tp.gen),i));};body.querySelector('[data-new]').onclick=load;body.querySelector('[data-done]').onclick=()=>{state.done[tp.id]=true;saveState();body.querySelector('[data-done]').textContent='ĐÃ HỌC ✓';};if(state.done[tp.id])body.querySelector('[data-done]').textContent='ĐÃ HỌC ✓';load()}
+function renderQuestion(q,i){const d=document.createElement('div');d.className='q';const title=document.createElement('div');title.className='q-title';if(q.html)title.innerHTML=`Câu ${i+1}. ${q.p}`;else title.textContent=`Câu ${i+1}. ${q.p}`;const row=document.createElement('div');row.className='q-row';const input=document.createElement('input');input.placeholder='Nhập đáp án';const check=document.createElement('button');check.className='btn small';check.textContent='Kiểm tra';const hint=document.createElement('button');hint.className='btn secondary small';hint.textContent='Gợi ý';const sol=document.createElement('button');sol.className='btn secondary small';sol.textContent='Lời giải';const fb=document.createElement('div');fb.className='feedback';check.onclick=()=>{if(sameAnswer(input.value,q.a)){fb.className='feedback ok';fb.textContent='✓ Đúng.'}else{fb.className='feedback bad';fb.textContent='Chưa đúng. '+q.h}};hint.onclick=()=>{fb.className='feedback';fb.textContent='Gợi ý: '+q.h};sol.onclick=()=>{fb.className='solution';fb.textContent='Lời giải: '+q.s};input.addEventListener('keydown',e=>{if(e.key==='Enter')check.click()});row.append(input,check,hint,sol);d.append(title,row,fb);return d}
+loadState();
+if(state.name&&state.className){showMain()}else{document.getElementById('nameInput').value=state.name;document.getElementById('classInput').value=state.className}
+</script>
+</body>
+</html>
